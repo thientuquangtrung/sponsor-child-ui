@@ -4,8 +4,8 @@ import { Icons } from "./icons";
 export function Logo() {
     return (
         <>
-            <Icons.logo className="h-6 w-6" />
-            <span className="font-bold">{appConfig.name}</span>
+            <Icons.logo className="h-12 w-12" />
+            <Icons.textLogoBlack className="h-12" />
         </>
     )
 }

@@ -7,7 +7,7 @@ export function Footer() {
         <footer className="min-h-[3rem] border-t">
             <div className="container flex flex-col items-center justify-between gap-4 md:flex-row py-[40px]">
                 <div>
-                    <img src={logo} alt="intratech" />
+                    <img className='w-[300px]' src={logo} alt="sponsor-child" />
                     <p className="text-center text-sm leading-loose text-muted-foreground md:text-left mt-4">
                         A product by{' '}
                         <a

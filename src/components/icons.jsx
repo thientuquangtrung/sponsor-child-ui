@@ -1,11 +1,12 @@
 import logo from "@/assets/images/logo-short.png";
+import textLogoBlack from "@/assets/images/text-logo-black.png";
 
 export const Icons = {
     logo: (props) => (
-        // <svg viewBox="0 0 24 24" {...props}>
-        //     <rect x="2" y="2" width="20" height="20" rx="7" fill="#0F172A"/>
-        // </svg>
         <img {...props} src={logo} />
+    ),
+    textLogoBlack: (props) => (
+        <img {...props} src={textLogoBlack} />
     ),
     gitHub: (props) => (
         <svg viewBox="0 0 438.549 438.549" {...props}>

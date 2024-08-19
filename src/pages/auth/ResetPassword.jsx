@@ -10,7 +10,7 @@ const ResetPassword = () => {
                     <img className="w-3/4 mx-auto md:w-full" src={forgotPassword} alt="intratech-forgot-password" />
                 </div>
                 <div className="flex-1 h-full">
-                    <img className="size-8 absolute top-4 right-4 md:top-8 md:right-8" src={logo} alt="intratech" />
+                    <img className="size-12 absolute top-4 right-4 md:top-8 md:right-8" src={logo} alt="sponsor-child" />
                     <h1 className="text-4xl font-semibold">
                         Forgot <br /> Your Password?
                     </h1>
