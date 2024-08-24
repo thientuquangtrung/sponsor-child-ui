@@ -3,7 +3,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 
 import { Button } from '@/components/ui/button';
-import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useLoginMutation } from '@/redux/auth/authApi';
 import { toast } from 'sonner';
@@ -52,8 +52,10 @@ export default function LoginForm() {
                     name="email"
                     render={({ field }) => (
                         <FormItem>
+                            <FormLabel className="text-lg">Email</FormLabel>
                             <FormControl>
-                                <Input className="h-12" placeholder="Email address" {...field} />
+                                
+                                <Input className="text-lg h-12" placeholder="Nhập địa chỉ email" {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -64,15 +66,16 @@ export default function LoginForm() {
                     name="password"
                     render={({ field }) => (
                         <FormItem>
+                            <FormLabel className="text-lg">Mật khẩu</FormLabel>
                             <FormControl>
-                                <Input className="h-12" placeholder={'Password'} type={'password'} {...field} />
+                                <Input className="text-lg h-12" placeholder={'Nhập mật khẩu'} type={'password'} {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
                     )}
                 />
-                <Button className="w-full h-12" type="submit">
-                    Login
+                <Button className="w-full h-12 text-white text-2xl bg-gradient-to-r from-primary to-secondary" type="submit">
+                    Đăng nhập
                 </Button>
             </form>
         </Form>

@@ -49,14 +49,14 @@ export default function RegisterForm() {
 
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                 <FormField
                     control={form.control}
                     name="username"
                     render={({ field }) => (
                         <FormItem>
                             <FormControl>
-                                <Input className="h-12" placeholder="Username" {...field} />
+                                <Input className="text-lg h-12" placeholder="Họ tên hoặc biệt danh của bạn" {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -68,7 +68,7 @@ export default function RegisterForm() {
                     render={({ field }) => (
                         <FormItem>
                             <FormControl>
-                                <Input className="h-12" placeholder="Email address" {...field} />
+                                <Input className="text-lg h-12" placeholder="Nhập địa chỉ email" {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -80,14 +80,14 @@ export default function RegisterForm() {
                     render={({ field }) => (
                         <FormItem>
                             <FormControl>
-                                <Input className="h-12" placeholder={'Password'} type={'password'} {...field} />
+                                <Input className="text-lg h-12" placeholder={'Nhập mật khẩu'} type={'password'} {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
                     )}
                 />
-                <ButtonLoading isLoading={isLoading} className="w-full h-12" type="submit">
-                    Sign up
+                <ButtonLoading isLoading={isLoading} className="text-white text-2xl w-full h-12 bg-gradient-to-r from-primary to-secondary" type="submit">
+                    Đăng ký
                 </ButtonLoading>
             </form>
         </Form>
