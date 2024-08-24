@@ -39,7 +39,6 @@ export function Header() {
 
     const handleProfile = () => {
         navigate('/profile'); 
-        console.log(user, 'profile');
     };
 
     return (

@@ -11,9 +11,9 @@ const NewPassword = () => {
                 </div>
                 <div className="flex-1 h-full">
                     <img className="size-12 absolute top-4 right-4 md:top-8 md:right-8" src={logo} alt="sponsor-child" />
-                    <h1 className="text-4xl font-semibold">New Credentials</h1>
+                    <h1 className="text-4xl font-semibold">Mật khẩu mới</h1>
                     <h2 className="text-muted-foreground mt-4 mb-8">
-                        Your new password must be different from previously used passwords.
+                        Mật khẩu mới của bạn phải khác với mật khẩu đã sử dụng trước đó.
                     </h2>
                     <NewPasswordForm />
                 </div>
