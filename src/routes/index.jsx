@@ -55,6 +55,10 @@ export default function Router() {
                     element: <PageAssetsHub />,
                 },
                 {
+                    path: 'profile',
+                    element: <PageMyProfile />,
+                },
+                {
                     path: 'empty',
                     element: <PageEmpty />,
                 },
@@ -71,6 +75,7 @@ const RegisterPage = Loadable(lazy(() => import('../pages/auth/Register')));
 const ResetPasswordPage = Loadable(lazy(() => import('../pages/auth/ResetPassword')));
 const NewPasswordPage = Loadable(lazy(() => import('../pages/auth/NewPassword')));
 
+const PageMyProfile = Loadable(lazy(() => import('../pages/asset-pages/MyProfile')));
 const PageMyAssets = Loadable(lazy(() => import('../pages/asset-pages/MyAssets')));
 const PageAddAsset = Loadable(lazy(() => import('../pages/asset-pages/AddAsset')));
 const PageAssetsHub = Loadable(lazy(() => import('../pages/asset-pages/AssetsHub')));

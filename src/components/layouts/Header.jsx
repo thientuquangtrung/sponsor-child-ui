@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Icons } from '@/components/icons';
@@ -30,10 +30,16 @@ export function Header() {
     const dispatch = useDispatch();
     const [open, setOpen] = useState(false);
     const location = useLocation();
+    const navigate = useNavigate();
 
     const handleLogout = () => {
         logout();
         dispatch(LogoutUser());
+    };
+
+    const handleProfile = () => {
+        navigate('/profile'); 
+        console.log(user, 'profile');
     };
 
     return (
@@ -225,8 +231,9 @@ export function Header() {
                                         <p className="text-xs leading-none text-muted-foreground">{user?.email}</p>
                                     </div>
                                 </DropdownMenuLabel>
+                                <DropdownMenuItem onClick={handleProfile}>Xem thông tin cá nhân</DropdownMenuItem>
                                 <DropdownMenuSeparator />
-                                <DropdownMenuItem onClick={handleLogout}>Log out</DropdownMenuItem>
+                                <DropdownMenuItem onClick={handleLogout}>Đăng xuất</DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
                     </nav>
