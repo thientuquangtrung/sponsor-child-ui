@@ -7,7 +7,7 @@ const initialState = {
 
 export const ThemeProviderContext = createContext(initialState);
 
-export function ThemeProvider({ children, defaultTheme = 'system', storageKey = 'shadcn-ui-theme', ...props }) {
+export function ThemeProvider({ children, defaultTheme = 'light', storageKey = 'shadcn-ui-theme', ...props }) {
     const [theme, setTheme] = useState(() => localStorage.getItem(storageKey) ?? defaultTheme);
 
     useEffect(() => {
