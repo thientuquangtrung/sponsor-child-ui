@@ -23,12 +23,12 @@ export function Footer() {
                 <div>
                     <p className="flex items-center justify-center text-sm leading-loose text-muted-foreground md:justify-end">
                         {/* get current year */}
-                        <Copyright className="mr-1 text-muted-foreground" /> {new Date().getFullYear()} All rights
-                        reserved
+                        <Copyright className="mr-1 w-6 h-6 text-muted-foreground" /> 
+                        <span className='flex-1'>{new Date().getFullYear()} All rights reserved</span>
                     </p>
                     <p className="flex items-center justify-center text-sm leading-5 mt-2 text-muted-foreground md:justify-end">
-                        <MapPin className="mr-1 text-muted-foreground" />
-                        GIFC Tower-1504, 240 Kintex-ro, Ilsanseo-gu, Goyang-si, Gyeonggi-do, 10391, KOREA
+                        <MapPin className="mr-1 w-6 h-6 text-muted-foreground" />
+                        <span className="flex-1">Lô E2a-7, Đường D1, Đ. D1, Long Thạnh Mỹ, Thành Phố Thủ Đức</span>
                     </p>
                 </div>
             </div>

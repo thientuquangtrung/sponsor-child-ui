@@ -9,11 +9,11 @@ import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { useState } from 'react';
 
 const profileSchema = z.object({
-    username: z.string().min(1, 'Tên tài khoản không được bỏ trống'),
+    fullname: z.string().min(1, 'Tên tài khoản không được bỏ trống'),
     email: z.string().email('Email không hợp lệ'),
-    dateOfBirth: z.string().min(1, 'Ngày sinh không được bỏ trống'),
-    phoneNumber: z.string().min(1, 'Số điện thoại không được bỏ trống'),
-    address: z.string().min(1, 'Địa chỉ không được bỏ trống'),
+    dateOfBirth: z.string(),
+    phoneNumber: z.string(),
+    address: z.string(),
     bio: z.string().max(255, 'Giới thiệu bản thân tối đa 255 ký tự')
 });
 
@@ -23,7 +23,7 @@ export default function MyProfile() {
     const form = useForm({
         resolver: zodResolver(profileSchema),
         defaultValues: {
-            username: '',
+            fullname: '',
             email: '',
             dateOfBirth: '',
             phoneNumber: '',
@@ -71,7 +71,7 @@ export default function MyProfile() {
     }
 
     return (
-        <div className="container mx-auto px-16 py-12">
+        <div className="container mx-auto px-4 md:px-16 py-12">
             <div className="flex flex-col items-center space-y-4">
                 <h2 className="text-3xl font-semibold mb-8">Thông tin cá nhân</h2>
                 <div className="relative flex flex-col items-center space-y-4">
@@ -82,7 +82,7 @@ export default function MyProfile() {
                         onDrop={handleDrop}
                     >
                         <Avatar className="h-40 w-40 border-4 border-white rounded-full shadow-lg">
-                            <AvatarImage src={avatarSrc} alt="Avatar" />
+                            <AvatarImage className="object-cover" src={avatarSrc} alt="Avatar" />
                             <AvatarFallback>AB</AvatarFallback>
                         </Avatar>
                         <input
@@ -97,16 +97,16 @@ export default function MyProfile() {
             </div>
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 mt-12">
-                    <div className="grid grid-cols-2 gap-8">
+                    <div className="grid md:grid-cols-2 gap-8">
                         <div className="space-y-8">
                             <FormField
                                 control={form.control}
-                                name="username"
+                                name="fullname"
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel className="text-xl">Tên tài khoản</FormLabel>
                                         <FormControl>
-                                            <Input className="text-lg h-14 rounded-lg border-2 border-primary" placeholder="Nhập tên tài khoản" {...field} />
+                                            <Input className="text-lg h-14 border-2 border-primary" placeholder="Nhập tên tài khoản" {...field} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -119,7 +119,7 @@ export default function MyProfile() {
                                     <FormItem>
                                         <FormLabel className="text-xl">Email</FormLabel>
                                         <FormControl>
-                                            <Input className="text-lg h-14 rounded-lg border-2 border-primary" placeholder="Nhập email" {...field} />
+                                            <Input className="text-lg h-14 border-2 border-primary" placeholder="Nhập email" {...field} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -134,7 +134,7 @@ export default function MyProfile() {
                                         <FormControl>
                                             <Input
                                                 type="date"
-                                                className="text-lg h-14 rounded-lg border-2 border-primary"
+                                                className="text-lg h-14 border-2 border-primary"
                                                 {...field}
                                             />
                                         </FormControl>
@@ -151,7 +151,7 @@ export default function MyProfile() {
                                     <FormItem>
                                         <FormLabel className="text-xl">Số điện thoại</FormLabel>
                                         <FormControl>
-                                            <Input className="text-lg h-14 rounded-lg border-2 border-primary" placeholder="Nhập số điện thoại" {...field} />
+                                            <Input className="text-lg h-14 border-2 border-primary" placeholder="Nhập số điện thoại" {...field} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -164,7 +164,7 @@ export default function MyProfile() {
                                     <FormItem>
                                         <FormLabel className="text-xl">Địa chỉ</FormLabel>
                                         <FormControl>
-                                            <Input className="text-lg h-14 rounded-lg border-2 border-primary" placeholder="Nhập địa chỉ" {...field} />
+                                            <Input className="text-lg h-14 border-2 border-primary" placeholder="Nhập địa chỉ" {...field} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -177,7 +177,7 @@ export default function MyProfile() {
                                     <FormItem>
                                         <FormLabel className="text-xl">Giới thiệu bản thân</FormLabel>
                                         <FormControl>
-                                            <Input className="text-lg h-20 rounded-lg border-2 border-primary" placeholder="Tối đa 255 ký tự" {...field} />
+                                            <Input className="text-lg h-20 border-2 border-primary" placeholder="Tối đa 255 ký tự" {...field} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -186,7 +186,7 @@ export default function MyProfile() {
                         </div>
                     </div>
                     <div className="flex justify-center">
-                        <Button className="w-[40%] h-14 mt-4 rounded-2xl text-white text-2xl bg-gradient-to-r from-primary to-secondary" type="submit">
+                        <Button className="w-full md:w-[40%] h-14 mt-4 text-white text-2xl bg-gradient-to-r from-primary to-secondary" type="submit">
                             Cập nhật
                         </Button>
         </div>
