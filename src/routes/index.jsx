@@ -41,7 +41,10 @@ export default function Router() {
             path: '/',
             element: <Applayout />,
             children: [
-                { element: <Navigate to={DEFAULT_PATH} replace />, index: true },
+                // { element: <Navigate to={DEFAULT_PATH} replace />, index: true },
+
+                { element: <HomePage />, index: true },
+
                 {
                     path: 'assets',
                     element: <PageMyAssets />,
@@ -82,3 +85,5 @@ const PageAssetsHub = Loadable(lazy(() => import('../pages/asset-pages/AssetsHub
 
 const PageEmpty = Loadable(lazy(() => import('../pages/Empty')));
 const Page404 = Loadable(lazy(() => import('../pages/NoMatch')));
+
+const HomePage = Loadable(lazy(() => import('../pages/HomePage')));
