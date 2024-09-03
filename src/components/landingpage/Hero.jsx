@@ -20,7 +20,7 @@ const Hero = () => {
             </div>
 
             <div
-                className="lg:h-4/12 bg-gray-200 lg:w-9/12 sm:w-full flex justify-between lg:absolute bottom-0 left-0 rounded-r-[20px] z-10 p-6"
+                className="lg:h-4/12 bg-gray-100 lg:w-9/12 sm:w-full flex justify-between lg:absolute bottom-0 left-0 rounded-r-[20px] z-10 p-6"
             >
                 <div className="w-1/3 p-2">
                     <div className="mb-2">

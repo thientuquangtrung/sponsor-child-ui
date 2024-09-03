@@ -202,7 +202,7 @@ const SliderWrapper = styled("div")`
 .slick-dots li.slick-active button:before
 {
     opacity: .75;
-    color: #ff7f44;
+    color: #27aca9;
 }
 
 `
