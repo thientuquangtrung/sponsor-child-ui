@@ -1,3 +1,4 @@
+import CampaignDetail from '@/components/landingpage/CampaignDetail'
 import Event from '@/components/landingpage/Event'
 import FeaturedCampaign from '@/components/landingpage/FeaturedCampaign'
 import FeedbackCenter from '@/components/landingpage/FeedbackCenter'

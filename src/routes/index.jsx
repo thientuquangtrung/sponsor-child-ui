@@ -8,6 +8,8 @@ import { AuthLayout } from '@/components/layouts/AuthLayout';
 // config
 import { DEFAULT_PATH } from '../config/app';
 import LoadingScreen from '@/components/common/LoadingScreen';
+import CampaignDetail from '@/components/landingpage/CampaignDetail';
+import DonateTarget from '@/components/landingpage/DonateTarget';
 
 const Loadable = (Component) => {
     const LoadableComponent = (props) => {
@@ -45,6 +47,14 @@ export default function Router() {
 
                 { element: <HomePage />, index: true },
 
+                {   
+                    path: 'campaign-detail/:id',
+                    element: <CampaignDetail />, 
+                },
+                {
+                    path: 'donate-target',
+                    element: <DonateTarget />,
+                },
                 {
                     path: 'assets',
                     element: <PageMyAssets />,
