@@ -4,6 +4,9 @@ import { Navigate, useRoutes } from 'react-router-dom';
 // layouts
 import { Applayout } from '@/components/layouts/AppLayout';
 import { AuthLayout } from '@/components/layouts/AuthLayout';
+import { SponsorLayout } from '@/components/layouts/SponsorLayout';
+
+
 
 // config
 import { DEFAULT_PATH } from '../config/app';
@@ -38,12 +41,29 @@ export default function Router() {
             ],
         },
         {
+            path: '/sponsor',
+            element: <SponsorLayout />,
+            children: [
+                { element: <SponsorHome />, path: 'home' },
+                { element: <SponsorCampaigns />, path: 'campaigns' },
+                { element: <DonationHistory />, path: 'donation-history' },
+
+
+
+            ],
+        },
+        {
             path: '/',
             element: <Applayout />,
             children: [
                 // { element: <Navigate to={DEFAULT_PATH} replace />, index: true },
 
                 { element: <HomePage />, index: true },
+
+                {
+                    path: 'about',
+                    element: <AboutPage />,
+                },
 
                 {
                     path: 'assets',
@@ -82,3 +102,9 @@ const PageEmpty = Loadable(lazy(() => import('../pages/Empty')));
 const Page404 = Loadable(lazy(() => import('../pages/NoMatch')));
 
 const HomePage = Loadable(lazy(() => import('../pages/HomePage')));
+const AboutPage = Loadable(lazy(() => import('../pages/AboutPage')));
+
+//sponsor 
+const SponsorHome = Loadable(lazy(() => import('@/components/sponsor/SponsorHome')));
+const SponsorCampaigns = Loadable(lazy(() => import('@/components/sponsor/SponsorCampaigns')));
+const DonationHistory = Loadable(lazy(() => import('@/components/sponsor/DonationHistory')));
