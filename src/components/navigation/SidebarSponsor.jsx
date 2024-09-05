@@ -10,7 +10,7 @@ const SidebarSponsor = () => {
     const [open, setOpen] = useState(true);
 
     const menus = [
-        { icon: Home, label: 'Trang Chủ', path: '/sponsor/home' },
+        { icon: Home, label: 'Trang Chủ', path: '/sponsor' },
         { icon: LayoutDashboard, label: 'Quản Lý Chiến Dịch', path: '/sponsor/campaigns' },
         { icon: BarChart2, label: 'Thống Kê', path: '/sponsor/statistics' },
         { icon: History, label: 'Lịch sử quyên góp', path: '/sponsor/donation-history' },
@@ -24,7 +24,7 @@ const SidebarSponsor = () => {
     const SidebarContent = ({ isMobile = false }) => (
         <div className={cn(
             "flex flex-col h-full",
-            isMobile ? "bg-background" : "bg-[#0e0e0e] text-gray-100"
+            isMobile ? "bg-background" : "bg-primary text-gray-950"
         )}>
             <div className="p-4 flex justify-end">
                 <Button variant="ghost" size="icon" onClick={() => setOpen(!open)}>

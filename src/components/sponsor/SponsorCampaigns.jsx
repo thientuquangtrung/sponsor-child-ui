@@ -206,8 +206,8 @@ export function SponsorCampaigns() {
         <div className="w-full space-y-4 mx-3">
             <div className="flex items-center justify-between">
                 <h1 className="text-2xl font-bold ml-6 mt-6">Quản lý Chiến dịch</h1>
-                <Button className="mr-2 mt-3" onClick={() => navigate('/campaigns/add')}>
-                    Thêm Chiến dịch
+                <Button className="mr-2 mt-3" onClick={() => navigate('/sponsor/campaigns/add')}>
+                    Tạo Chiến dịch
                     <Plus className="ml-2 h-4 w-4" />
                 </Button>
             </div>
