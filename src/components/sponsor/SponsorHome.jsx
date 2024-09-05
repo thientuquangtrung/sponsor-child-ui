@@ -117,7 +117,7 @@ const SponsorHome = () => {
   return (
     <div className="p-8 bg-gray-50 min-h-screen">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">Tổng Quan Về Nhà Tài Trợ</h1>
+        <h1 className="text-3xl font-bold text-gray-900">Tổng Quan Về Nhà Bảo Lãnh</h1>
         <div className="flex items-center space-x-4">
           <div className="text-right">
             <p className="font-semibold text-gray-900">{sponsorInfo.name}</p>

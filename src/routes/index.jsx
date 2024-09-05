@@ -44,9 +44,10 @@ export default function Router() {
             path: '/sponsor',
             element: <SponsorLayout />,
             children: [
-                { element: <SponsorHome />, path: 'home' },
+                { element: <SponsorHome />, index: true },
                 { element: <SponsorCampaigns />, path: 'campaigns' },
                 { element: <DonationHistory />, path: 'donation-history' },
+                { element: <AddCampaign />, path: 'campaigns/add' },
 
 
 
@@ -113,3 +114,5 @@ const AboutPage = Loadable(lazy(() => import('../pages/AboutPage')));
 const SponsorHome = Loadable(lazy(() => import('@/components/sponsor/SponsorHome')));
 const SponsorCampaigns = Loadable(lazy(() => import('@/components/sponsor/SponsorCampaigns')));
 const DonationHistory = Loadable(lazy(() => import('@/components/sponsor/DonationHistory')));
+const AddCampaign = Loadable(lazy(() => import('@/components/sponsor/AddCampaign')));
+
