@@ -26,31 +26,52 @@ const AddCampaign = () => {
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                         <div className="space-y-2">
                             <Label htmlFor="title">Tiêu Đề Chiến Dịch</Label>
-                            <Input id="title" {...register("title", { required: "Vui lòng nhập Tiêu Đề" })} />
+                            <Input
+                                id="title"
+                                placeholder="Nhập tiêu đề chiến dịch"
+                                {...register("title", { required: "Vui lòng nhập Tiêu Đề" })}
+                            />
                             {errors.title && <p className="text-red-500 text-sm">{errors.title.message}</p>}
                         </div>
 
                         <div className="space-y-2">
                             <Label htmlFor="description">Mô Tả Chiến Dịch</Label>
-                            <Textarea id="description" {...register("description", { required: "Vui lòng nhập Mô tả" })} />
+                            <Textarea
+                                id="description"
+                                placeholder="Mô tả chi tiết về chiến dịch của bạn"
+                                {...register("description", { required: "Vui lòng nhập Mô tả" })}
+                            />
                             {errors.description && <p className="text-red-500 text-sm">{errors.description.message}</p>}
                         </div>
 
                         <div className="space-y-2">
                             <Label htmlFor="targetAmount">Số Tiền Mục Tiêu (VNĐ)</Label>
-                            <Input id="targetAmount" type="number" {...register("targetAmount", { required: "Vui lòng nhập Số tiền mục tiêu" })} />
+                            <Input
+                                id="targetAmount"
+                                type="number"
+                                placeholder="Ví dụ: 10000000"
+                                {...register("targetAmount", { required: "Vui lòng nhập Số tiền mục tiêu" })}
+                            />
                             {errors.targetAmount && <p className="text-red-500 text-sm">{errors.targetAmount.message}</p>}
                         </div>
 
                         <div className="space-y-2">
                             <Label htmlFor="thumbnailUrl">Đường Dẫn Ảnh Đại Diện</Label>
-                            <Input id="thumbnailUrl" {...register("thumbnailUrl", { required: "Vui lòng nhập đường dẫn ảnh đại diện" })} />
+                            <Input
+                                id="thumbnailUrl"
+                                placeholder="https://example.com/image.jpg"
+                                {...register("thumbnailUrl", { required: "Vui lòng nhập đường dẫn ảnh đại diện" })}
+                            />
                             {errors.thumbnailUrl && <p className="text-red-500 text-sm">{errors.thumbnailUrl.message}</p>}
                         </div>
 
                         <div className="space-y-2">
                             <Label htmlFor="imagesFolder">Thư Mục Chứa Ảnh</Label>
-                            <Input id="imagesFolder" {...register("imagesFolder", { required: "Vui lòng nhập Thư mục chứa ảnh" })} />
+                            <Input
+                                id="imagesFolder"
+                                placeholder="Nhập tên thư mục chứa ảnh"
+                                {...register("imagesFolder", { required: "Vui lòng nhập Thư mục chứa ảnh" })}
+                            />
                             {errors.imagesFolder && <p className="text-red-500 text-sm">{errors.imagesFolder.message}</p>}
                         </div>
 
@@ -59,7 +80,7 @@ const AddCampaign = () => {
                             <CustomCalendar
                                 date={startDate}
                                 onDateSelect={setStartDate}
-                                className=" ml-6"
+                                className="ml-6"
                             />
                         </div>
 
@@ -68,7 +89,7 @@ const AddCampaign = () => {
                             <CustomCalendar
                                 date={endDate}
                                 onDateSelect={setEndDate}
-                                className=" ml-6"
+                                className="ml-6"
                             />
                         </div>
                     </form>
