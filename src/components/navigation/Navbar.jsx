@@ -247,7 +247,7 @@ export function Navbar() {
                                     </div>
                                 </DropdownMenuLabel>
                                 <DropdownMenuSeparator />
-                                <NavLink to="/sponsor">
+                                <NavLink to="/guarantee">
                                     <DropdownMenuItem>
                                         Nhà bảo lãnh
                                     </DropdownMenuItem>

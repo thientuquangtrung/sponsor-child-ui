@@ -17,7 +17,7 @@ const AddCampaign = () => {
 
     return (
         <div className='py-20 relative'>
-            <Card className="w-full max-w-2xl mx-auto rounded-lg border-2 border-primary">
+            <Card className="w-full max-w-4xl mx-auto rounded-lg border-2 border-primary">
                 <CardHeader>
                     <CardTitle className="text-center">Thêm Chiến Dịch Mới</CardTitle>
                     <CardDescription>Tạo một chiến dịch gây quỹ mới</CardDescription>
