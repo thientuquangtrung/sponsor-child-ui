@@ -18,6 +18,9 @@ module.exports = {
             },
         },
         extend: {
+            boxShadow: {
+                'xl': '0 1px 16px 0px rgba(0, 0, 0, 0.2)',
+            },
             backgroundImage: {
                 'custom-image': "url('@/assets/images/login-background-1.jpg')",
             },
