@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { NavLink, useLocation, useNavigate } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Icons } from '@/components/icons';
@@ -23,6 +23,8 @@ import { ModeToggle } from '@/components/common/ModeToggle';
 import { useDispatch, useSelector } from 'react-redux';
 import { LogoutUser } from '@/redux/auth/authActionCreators';
 import { useLogoutMutation } from '@/redux/auth/authApi';
+import SearchIcon from '@/assets/icons/SearchIcon';
+import { Input } from '@/components/ui/input';
 
 export function Header() {
     const [logout] = useLogoutMutation();
@@ -30,25 +32,26 @@ export function Header() {
     const dispatch = useDispatch();
     const [open, setOpen] = useState(false);
     const location = useLocation();
-    const navigate = useNavigate();
+    const [searchQuery, setSearchQuery] = useState('');
 
     const handleLogout = () => {
         logout();
         dispatch(LogoutUser());
     };
 
-    const handleProfile = () => {
-        navigate('/profile'); 
+    const handleSearchChange = (event) => {
+        setSearchQuery(event.target.value);
     };
 
     return (
-        <header className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 w-full border-b">
+        <nav className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 w-full border-b">
             <div className="container px-4 md:px-8 flex h-14 items-center">
+                {/* Desktop View */}
                 <div className="mr-4 hidden md:flex">
                     <NavLink to="/" className="mr-6 flex items-center">
                         <Logo />
                     </NavLink>
-                    <nav className="flex items-center space-x-6 text-sm font-medium">
+                    <div className="flex items-center space-x-6 text-sm font-medium">
                         {mainMenu.map((menu, index) =>
                             menu.items !== undefined ? (
                                 <DropdownMenu key={index}>
@@ -92,7 +95,7 @@ export function Header() {
                                     to={menu.to ?? ''}
                                     className={({ isActive }) =>
                                         cn(
-                                            'text-sm font-medium transition-colors hover:text-foreground',
+                                            'text-xl font-medium transition-colors hover:text-foreground pl-14',
                                             isActive ? '!text-primary' : 'text-foreground/60',
                                         )
                                     }
@@ -101,8 +104,19 @@ export function Header() {
                                 </NavLink>
                             ),
                         )}
-                    </nav>
+                    </div>
+                    <div className="flex items-center space-x-4 ml-24 ">
+                        <Input
+                            placeholder="Tìm kiếm tên chiến dịch ..."
+                            value={searchQuery}
+                            onChange={handleSearchChange}
+                            className="max-w-sm"
+                            endIcon={<SearchIcon />}
+                        />
+
+                    </div>
                 </div>
+
                 {/* mobile */}
                 <Sheet open={open} onOpenChange={setOpen}>
                     <SheetTrigger asChild>
@@ -128,9 +142,9 @@ export function Header() {
                                     mainMenu.findIndex((item) =>
                                         item.items !== undefined
                                             ? item.items
-                                                  .filter((subitem) => subitem.to !== undefined)
-                                                  .map((subitem) => subitem.to)
-                                                  .includes(location.pathname)
+                                                .filter((subitem) => subitem.to !== undefined)
+                                                .map((subitem) => subitem.to)
+                                                .includes(location.pathname)
                                             : false,
                                     )
                                 }
@@ -203,11 +217,13 @@ export function Header() {
                         </ScrollArea>
                     </SheetContent>
                 </Sheet>
+
                 <a href="/" className="mr-6 flex items-center space-x-2 md:hidden">
                     <Icons.logo className="h-6 w-6" />
                     <span className="font-bold inline-block">{appConfig.name}</span>
                 </a>
-                {/* right */}
+
+                {/* Right Section */}
                 <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
                     <div className="w-full flex-1 md:w-auto md:flex-none">{/* <CommandMenu /> */}</div>
                     <nav className="flex items-center space-x-2">
@@ -230,14 +246,21 @@ export function Header() {
                                         <p className="text-xs leading-none text-muted-foreground">{user?.email}</p>
                                     </div>
                                 </DropdownMenuLabel>
-                                <DropdownMenuItem onClick={handleProfile}>Xem thông tin cá nhân</DropdownMenuItem>
                                 <DropdownMenuSeparator />
-                                <DropdownMenuItem onClick={handleLogout}>Đăng xuất</DropdownMenuItem>
+                                <NavLink to="/guarantee">
+                                    <DropdownMenuItem>
+                                        Nhà bảo lãnh
+                                    </DropdownMenuItem>
+                                </NavLink>
+                                <NavLink to="/profile">
+                                    <DropdownMenuItem>Xem thông tin cá nhân</DropdownMenuItem>
+                                </NavLink>
+                                <DropdownMenuItem onClick={handleLogout}>Đăng xuất</DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
                     </nav>
                 </div>
             </div>
-        </header>
+        </nav>
     );
 }
