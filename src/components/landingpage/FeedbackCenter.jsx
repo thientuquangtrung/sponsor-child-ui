@@ -46,7 +46,7 @@ export default function FeedbackCenter() {
                 />
             </div>
             <div className="col-span-1 md:pr-[30%] md:pl-0 sm:px-[15%]">
-                <h1 className="lg:text-[32px] sm:text-[35px] px-[8px] text-[#000000b3] pb-2 pt-6 font-cabin font-semibold"
+                <h1 className="lg:text-[26px] sm:text-[35px] px-[8px] text-[#000000b3] pb-2 pt-6 font-cabin font-semibold text-center"
                     style={{ textShadow: "-11px 10px 8px #909090b3" }}>
                     Chia sẻ từ người dùng Thiện nguyện
                 </h1>
@@ -55,14 +55,14 @@ export default function FeedbackCenter() {
                     <Slider {...settings} className="pt-4">
                         {Feedbacks && Feedbacks.map((feedback, index) => (
                             <div key={index} className="px-[8px]">
-                                <Quote className="text-[#ff7f44] text-[25px]" />
-                                <p className="text-[#5d6775] lg:text-[16px] md:text-[13px]">
+                                <Quote className="text-primary text-[25px]" />
+                                <p className="lg:text-[16px] md:text-[13px]">
                                     {feedback.role}
                                 </p>
-                                <p className="pt-[10px] font-semibold lg:text-[20px] md:text-[15px] text-[#ff7f44] ">
+                                <p className="pt-[10px] font-semibold lg:text-[20px] md:text-[15px] text-primary">
                                     {feedback.name}
                                 </p>
-                                <p className="pb-[10px] text-[#5d6775] lg:text-[16px] md:text-[13px]">
+                                <p className="pb-[10px]  lg:text-[16px] md:text-[13px]">
                                     {feedback.content}
                                 </p>
                             </div>

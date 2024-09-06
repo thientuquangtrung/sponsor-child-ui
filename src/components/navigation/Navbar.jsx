@@ -247,7 +247,12 @@ export function Navbar() {
                                     </div>
                                 </DropdownMenuLabel>
                                 <DropdownMenuSeparator />
-                                <DropdownMenuItem onClick={handleLogout}>Log out</DropdownMenuItem>
+                                <NavLink to="/sponsor">
+                                    <DropdownMenuItem>
+                                        Nhà bảo lãnh
+                                    </DropdownMenuItem>
+                                </NavLink>
+                                <DropdownMenuItem onClick={handleLogout}>Đăng xuất</DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
                     </nav>
