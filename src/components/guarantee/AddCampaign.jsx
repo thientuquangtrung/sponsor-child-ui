@@ -1,102 +1,297 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+import { useDropzone } from 'react-dropzone';
 import { Button } from "@/components/ui/button";
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { CustomCalendar } from '@/components/ui/customcalendar';
+import { Upload, X } from 'lucide-react';
+
+const addCampaignSchema = z.object({
+    title: z.string().min(1, "Bạn vui lòng nhập Tiêu Đề chiến dịch"),
+    description: z.string().min(1, "Bạn vui lòng nhập thông tin chi tiết về chiến dịch"),
+    targetAmount: z.string().min(1, "Bạn vui lòng nhập số tiền mục tiêu lớn hơn 0"),
+    startDate: z.date(),
+    endDate: z.date().nullable(),
+    thumbnailUrl: z.any().refine((val) => val !== null, "Bạn vui lòng tải lên hình ảnh cho chiến dịch"),
+    imagesFolder: z.array(z.any()).optional()
+});
+
+const useCustomDropzone = (onDrop, isMultiple) => {
+    return useDropzone({
+        onDrop,
+        accept: {
+            'image/*': ['.jpeg', '.jpg', '.png', '.gif', '.bmp', '.webp']
+        },
+        multiple: isMultiple
+    });
+};
+
+const CustomDropzone = ({ onDrop, multiple, children }) => {
+    const { getRootProps, getInputProps } = useCustomDropzone(onDrop, multiple);
+
+    return (
+        <div {...getRootProps()}  >
+            <input {...getInputProps()} />
+            {children}
+        </div>
+    );
+};
 
 const AddCampaign = () => {
-    const { register, handleSubmit, formState: { errors } } = useForm();
-    const [startDate, setStartDate] = useState(new Date());
-    const [endDate, setEndDate] = useState(null);
+    const [imagesFolder, setImagesFolder] = useState([]);
+    const [thumbnail, setThumbnail] = useState(null);
+
+    const form = useForm({
+        resolver: zodResolver(addCampaignSchema),
+        defaultValues: {
+            title: '',
+            description: '',
+            targetAmount: '',
+            startDate: new Date(),
+            endDate: null,
+            thumbnailUrl: null,
+            imagesFolder: [],
+        }
+    });
+
+    const onDrop = useCallback((acceptedFiles) => {
+        const newImagesFolder = acceptedFiles.map(file => Object.assign(file, {
+            preview: URL.createObjectURL(file)
+        }));
+
+        setImagesFolder(prevImagesFolder => {
+            const updatedImagesFolder = [...prevImagesFolder, ...newImagesFolder];
+            form.setValue('imagesFolder', updatedImagesFolder);
+            return updatedImagesFolder;
+        });
+    }, [form]);
+
+    const onDropThumbnail = useCallback((acceptedFiles) => {
+        const file = acceptedFiles[0];
+        setThumbnail(Object.assign(file, {
+            preview: URL.createObjectURL(file)
+        }));
+        form.setValue('thumbnailUrl', file);
+        form.clearErrors('thumbnailUrl');
+    }, [form]);
+
+    const removeImageFolder = (index) => {
+        const newImagesFolder = [...imagesFolder];
+        URL.revokeObjectURL(newImagesFolder[index].preview);
+        newImagesFolder.splice(index, 1);
+        setImagesFolder(newImagesFolder);
+        form.setValue('imagesFolder', newImagesFolder);
+    };
+
+    const removeThumbnail = () => {
+        URL.revokeObjectURL(thumbnail.preview);
+        setThumbnail(null);
+        form.setValue('thumbnailUrl', null);
+    };
 
     const onSubmit = () => {
+
+    };
+
+    const formatNumber = (value) => {
+        return value.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     };
 
     return (
         <div className='py-20 relative'>
-            <Card className="w-full max-w-4xl mx-auto rounded-lg border-2 border-primary">
+            <Card className="w-full max-w-7xl mx-auto rounded-lg border-2">
                 <CardHeader>
                     <CardTitle className="text-center">Thêm Chiến Dịch Mới</CardTitle>
                     <CardDescription>Tạo một chiến dịch gây quỹ mới</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="title">Tiêu Đề Chiến Dịch</Label>
-                            <Input
-                                id="title"
-                                placeholder="Nhập tiêu đề chiến dịch"
-                                {...register("title", { required: "Vui lòng nhập Tiêu Đề" })}
+                    <Form {...form}>
+                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                            <FormField
+                                control={form.control}
+                                name="title"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Tiêu Đề Chiến Dịch</FormLabel>
+                                        <FormControl>
+                                            <Input placeholder="Nhập tiêu đề chiến dịch" {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
                             />
-                            {errors.title && <p className="text-red-500 text-sm">{errors.title.message}</p>}
-                        </div>
 
-                        <div className="space-y-2">
-                            <Label htmlFor="description">Mô Tả Chiến Dịch</Label>
-                            <Textarea
-                                id="description"
-                                placeholder="Mô tả chi tiết về chiến dịch của bạn"
-                                {...register("description", { required: "Vui lòng nhập Mô tả" })}
+                            <FormField
+                                control={form.control}
+                                name="description"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Mô Tả Chiến Dịch</FormLabel>
+                                        <FormControl>
+                                            <Textarea placeholder="Mô tả chi tiết về chiến dịch của bạn" {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
                             />
-                            {errors.description && <p className="text-red-500 text-sm">{errors.description.message}</p>}
-                        </div>
 
-                        <div className="space-y-2">
-                            <Label htmlFor="targetAmount">Số Tiền Mục Tiêu (VNĐ)</Label>
-                            <Input
-                                id="targetAmount"
-                                type="number"
-                                placeholder="Ví dụ: 10000000"
-                                {...register("targetAmount", { required: "Vui lòng nhập Số tiền mục tiêu" })}
+                            <FormField
+                                control={form.control}
+                                name="targetAmount"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Số Tiền Mục Tiêu (VNĐ)</FormLabel>
+                                        <FormControl>
+                                            <Input
+                                                type="text"
+                                                placeholder="Ví dụ: 10,000,000 đ"
+                                                {...field}
+                                                onChange={(e) => {
+                                                    const value = e.target.value.replace(/[^\d]/g, '');
+                                                    field.onChange(formatNumber(value));
+                                                }}
+                                            />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
                             />
-                            {errors.targetAmount && <p className="text-red-500 text-sm">{errors.targetAmount.message}</p>}
-                        </div>
 
-                        <div className="space-y-2">
-                            <Label htmlFor="thumbnailUrl">Đường Dẫn Ảnh Đại Diện</Label>
-                            <Input
-                                id="thumbnailUrl"
-                                placeholder="https://example.com/image.jpg"
-                                {...register("thumbnailUrl", { required: "Vui lòng nhập đường dẫn ảnh đại diện" })}
-                            />
-                            {errors.thumbnailUrl && <p className="text-red-500 text-sm">{errors.thumbnailUrl.message}</p>}
-                        </div>
 
-                        <div className="space-y-2">
-                            <Label htmlFor="imagesFolder">Thư Mục Chứa Ảnh</Label>
-                            <Input
-                                id="imagesFolder"
-                                placeholder="Nhập tên thư mục chứa ảnh"
-                                {...register("imagesFolder", { required: "Vui lòng nhập Thư mục chứa ảnh" })}
+                            <FormField
+                                control={form.control}
+                                name="thumbnailUrl"
+                                render={() => (
+                                    <FormItem>
+                                        <FormLabel>Ảnh Chiến Dịch</FormLabel>
+                                        <FormControl>
+                                            <CustomDropzone onDrop={onDropThumbnail} multiple={false}>
+                                                {thumbnail ? (
+                                                    <div className="flex justify-center items-center w-full py-4">
+                                                        <div className="relative">
+                                                            <img
+                                                                src={thumbnail.preview}
+                                                                alt="Thumbnail"
+                                                                className="w-96 h-96 object-cover rounded-lg"
+                                                            />
+                                                            <button
+                                                                type="button"
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    removeThumbnail();
+                                                                }}
+                                                                className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1"
+                                                            >
+                                                                <X size={16} />
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                ) : (
+                                                    <div className="flex flex-col items-center justify-center w-full py-4 border-2 border-dashed border-gray-300 rounded-lg">
+                                                        <Upload className="mx-auto mb-2 text-gray-400" />
+                                                        <p>Kéo và thả hình ảnh vào đây, hoặc click để chọn</p>
+                                                    </div>
+                                                )}
+                                            </CustomDropzone>
+                                        </FormControl>
+                                        <FormDescription>
+                                            Tải lên một hình ảnh cho chiến dịch của bạn (JPEG, PNG, GIF, BMP, WebP)
+                                        </FormDescription>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
                             />
-                            {errors.imagesFolder && <p className="text-red-500 text-sm">{errors.imagesFolder.message}</p>}
-                        </div>
+                            <FormField
+                                control={form.control}
+                                name="imagesFolder"
+                                render={() => (
+                                    <FormItem>
+                                        <FormLabel>Ảnh Phụ (Không bắt buộc)</FormLabel>
+                                        <FormControl>
+                                            <div className="w-fit">
+                                                <CustomDropzone onDrop={onDrop} multiple={true}>
+                                                    <div className="flex items-center justify-center w-20 h-20 border border-dashed border-gray-300 rounded-lg hover:border-primary cursor-pointer">
+                                                        <Upload className="w-6 h-6 text-gray-400" />
+                                                    </div>
+                                                </CustomDropzone>
+                                            </div>
+                                        </FormControl>
+                                        <FormDescription>Tải lên một hoặc nhiều ảnh phụ cho chiến dịch của bạn (JPEG, PNG, GIF, BMP, WebP)</FormDescription>
+                                    </FormItem>
+                                )}
+                            />
 
-                        <div className="space-y-2">
-                            <Label>Ngày Bắt Đầu</Label>
-                            <CustomCalendar
-                                date={startDate}
-                                onDateSelect={setStartDate}
-                                className="ml-6"
-                            />
-                        </div>
+                            {imagesFolder.length > 0 && (
+                                <div className="mt-4 border rounded-lg p-4">
+                                    <div className="grid grid-cols-7 gap-4">
+                                        {imagesFolder.map((file, index) => (
+                                            <div key={index} className="relative aspect-square">
+                                                <img
+                                                    src={file.preview}
+                                                    alt={`Upload ${index + 1}`}
+                                                    className="w-full h-full object-cover rounded-lg"
+                                                />
+                                                <button
+                                                    type="button"
+                                                    onClick={() => removeImageFolder(index)}
+                                                    className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1"
+                                                >
+                                                    <X size={16} />
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
 
-                        <div className="space-y-2">
-                            <Label>Ngày Kết Thúc</Label>
-                            <CustomCalendar
-                                date={endDate}
-                                onDateSelect={setEndDate}
-                                className="ml-6"
+
+                            <FormField
+                                control={form.control}
+                                name="startDate"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Ngày Bắt Đầu </FormLabel>
+                                        <FormControl>
+                                            <CustomCalendar
+                                                date={field.value}
+                                                onDateSelect={(date) => field.onChange(date)}
+                                                className="ml-7"
+                                            />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
                             />
-                        </div>
-                    </form>
+
+                            <FormField
+                                control={form.control}
+                                name="endDate"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Ngày Kết Thúc </FormLabel>
+                                        <FormControl>
+                                            <CustomCalendar
+                                                date={field.value}
+                                                onDateSelect={(date) => field.onChange(date)}
+                                                className="ml-6"
+                                            />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
+                            <div className="flex justify-center">
+                                <Button type="submit" className="w-1/2">Tạo Chiến Dịch</Button>
+                            </div>
+                        </form>
+                    </Form>
                 </CardContent>
-                <CardFooter>
-                    <Button onClick={handleSubmit(onSubmit)} className="w-full">Tạo Chiến Dịch</Button>
-                </CardFooter>
             </Card>
         </div>
     );
