@@ -6,14 +6,14 @@ import { useDropzone } from 'react-dropzone';
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { CustomCalendar } from '@/components/ui/customcalendar';
 import { Upload, X } from 'lucide-react';
+import QuillEditor from '@/lib/QuillEditor.js';
 
 const addCampaignSchema = z.object({
     title: z.string().min(1, "Bạn vui lòng nhập Tiêu Đề chiến dịch"),
-    description: z.string().min(1, "Bạn vui lòng nhập thông tin chi tiết về chiến dịch"),
+    story: z.string().min(1, "Bạn vui lòng nhập thông tin chi tiết về chiến dịch"),
     targetAmount: z.string().min(1, "Bạn vui lòng nhập số tiền mục tiêu lớn hơn 0"),
     startDate: z.date(),
     endDate: z.date().nullable(),
@@ -50,7 +50,7 @@ const AddCampaign = () => {
         resolver: zodResolver(addCampaignSchema),
         defaultValues: {
             title: '',
-            description: '',
+            story: '',
             targetAmount: '',
             startDate: new Date(),
             endDate: null,
@@ -128,12 +128,15 @@ const AddCampaign = () => {
 
                             <FormField
                                 control={form.control}
-                                name="description"
+                                name="story"
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Mô Tả Chiến Dịch</FormLabel>
                                         <FormControl>
-                                            <Textarea placeholder="Mô tả chi tiết về chiến dịch của bạn" {...field} />
+                                            <QuillEditor
+                                                value={field.value}
+                                                onChange={(content) => field.onChange(content)}
+                                            />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
