@@ -2,18 +2,20 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 
-import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import { useRegisterMutation } from '@/redux/auth/authApi';
-import ButtonLoading from '../ui/loading-button';
+import ButtonLoading from '@/components/ui/loading-button';
 import { useDispatch } from 'react-redux';
 import { UpdateAuthentication } from '@/redux/auth/authActionCreators';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 
 const formSchema = z.object({
-    username: z.string().min(2).max(50),
+    fullname: z.string().min(2).max(50),
     email: z.string().email(),
     password: z.string().min(2).max(50),
+    gender: z.number(),
 });
 
 export default function RegisterForm() {
@@ -24,9 +26,10 @@ export default function RegisterForm() {
     const form = useForm({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            username: '',
+            fullname: '',
             email: '',
             password: '',
+            gender: 0,
         },
     });
 
@@ -38,8 +41,8 @@ export default function RegisterForm() {
             .unwrap()
             .then((res) => {
                 console.log(res);
-                dispatch(UpdateAuthentication(res.data));
-                toast.success('Registered successfully!');
+                // dispatch(UpdateAuthentication(res.data));
+                toast.success(res.message);
             })
             .catch((err) => {
                 console.log(err);
@@ -52,11 +55,15 @@ export default function RegisterForm() {
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                 <FormField
                     control={form.control}
-                    name="username"
+                    name="fullname"
                     render={({ field }) => (
                         <FormItem>
                             <FormControl>
-                                <Input className="text-lg h-12" placeholder="Họ tên hoặc biệt danh của bạn" {...field} />
+                                <Input
+                                    className="text-lg h-12"
+                                    placeholder="Họ tên hoặc biệt danh của bạn"
+                                    {...field}
+                                />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -80,13 +87,57 @@ export default function RegisterForm() {
                     render={({ field }) => (
                         <FormItem>
                             <FormControl>
-                                <Input className="text-lg h-12" placeholder={'Nhập mật khẩu'} type={'password'} {...field} />
+                                <Input
+                                    className="text-lg h-12"
+                                    placeholder={'Nhập mật khẩu'}
+                                    type={'password'}
+                                    {...field}
+                                />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
                     )}
                 />
-                <ButtonLoading isLoading={isLoading} className="text-white text-2xl w-full h-12 bg-gradient-to-r from-primary to-secondary" type="submit">
+                <FormField
+                    control={form.control}
+                    name="gender"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormControl>
+                                <RadioGroup
+                                    onValueChange={field.onChange}
+                                    defaultValue={field.value}
+                                    className="flex space-x-1"
+                                >
+                                    <FormItem className="flex items-center space-x-3 space-y-0">
+                                        <FormControl>
+                                            <RadioGroupItem value={0} />
+                                        </FormControl>
+                                        <FormLabel className="font-normal">Nam</FormLabel>
+                                    </FormItem>
+                                    <FormItem className="flex items-center space-x-3 space-y-0">
+                                        <FormControl>
+                                            <RadioGroupItem value={1} />
+                                        </FormControl>
+                                        <FormLabel className="font-normal">Nữ</FormLabel>
+                                    </FormItem>
+                                    <FormItem className="flex items-center space-x-3 space-y-0">
+                                        <FormControl>
+                                            <RadioGroupItem value={2} />
+                                        </FormControl>
+                                        <FormLabel className="font-normal">Khác</FormLabel>
+                                    </FormItem>
+                                </RadioGroup>
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                <ButtonLoading
+                    isLoading={isLoading}
+                    className="text-white text-2xl w-full h-12 bg-gradient-to-r from-primary to-secondary"
+                    type="submit"
+                >
                     Đăng ký
                 </ButtonLoading>
             </form>

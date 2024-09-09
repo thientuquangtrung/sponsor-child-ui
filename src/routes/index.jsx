@@ -77,6 +77,10 @@ export default function Router() {
                 },
 
                 {
+                    path: 'home',
+                    element: <HomePage />,
+                },
+                {
                     path: 'assets',
                     element: <PageMyAssets />,
                 },

@@ -14,7 +14,7 @@ const formSchema = z.object({
 });
 
 export default function ResetPasswordForm() {
-    const [resetPassword, { isLoading, error, data }] = useResetPasswordMutation();
+    const [resetPassword, { isLoading, isError, isSuccess }] = useResetPasswordMutation();
 
     // 1. Define your form.
     const form = useForm({
@@ -29,10 +29,17 @@ export default function ResetPasswordForm() {
         // Do something with the form values.
         // ✅ This will be type-safe and validated.
         console.log(values);
-        resetPassword(values);
+        resetPassword(values)
+            .unwrap()
+            .then(() => {
+                console.log('sent');
+            })
+            .catch((err) => {
+                console.log(err);
+            });
     }
 
-    if (error) {
+    if (isError) {
         return (
             <Alert variant="destructive">
                 <AlertCircle className="h-4 w-4" />
@@ -42,7 +49,7 @@ export default function ResetPasswordForm() {
         );
     }
 
-    if (data) {
+    if (isSuccess) {
         return (
             <Alert className="text-green-600 border-green-600">
                 <CircleCheck className="w-4 h-4 !text-green-600" />
@@ -67,7 +74,11 @@ export default function ResetPasswordForm() {
                         </FormItem>
                     )}
                 />
-                <ButtonLoading isLoading={isLoading} className="text-white text-2xl w-full h-12 bg-gradient-to-r from-primary to-secondary" type="submit">
+                <ButtonLoading
+                    isLoading={isLoading}
+                    className="text-white text-2xl w-full h-12 bg-gradient-to-r from-primary to-secondary"
+                    type="submit"
+                >
                     Tiếp tục
                 </ButtonLoading>
             </form>
