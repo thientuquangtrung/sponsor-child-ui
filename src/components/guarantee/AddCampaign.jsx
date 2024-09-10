@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { CustomCalendar } from '@/components/ui/customcalendar';
 import { Upload, X } from 'lucide-react';
-import QuillEditor from '@/lib/QuillEditor.js';
+import QuillEditor from '@/lib/QuillEditor';
 
 const addCampaignSchema = z.object({
     title: z.string().min(1, "Bạn vui lòng nhập Tiêu Đề chiến dịch"),
@@ -94,7 +94,8 @@ const AddCampaign = () => {
         form.setValue('thumbnailUrl', null);
     };
 
-    const onSubmit = () => {
+    const onSubmit = (data) => {
+        console.log(data);
 
     };
 
@@ -126,17 +127,21 @@ const AddCampaign = () => {
                                 )}
                             />
 
+
                             <FormField
                                 control={form.control}
                                 name="story"
                                 render={({ field }) => (
-                                    <FormItem>
+                                    <FormItem className="space-y-2">
                                         <FormLabel>Mô Tả Chiến Dịch</FormLabel>
                                         <FormControl>
-                                            <QuillEditor
-                                                value={field.value}
-                                                onChange={(content) => field.onChange(content)}
-                                            />
+                                            <div className="h-[400px] overflow-hidden rounded-md border border-input">
+                                                <QuillEditor
+                                                    value={field.value}
+                                                    onChange={(content) => field.onChange(content)}
+                                                    className="h-full"
+                                                />
+                                            </div>
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
