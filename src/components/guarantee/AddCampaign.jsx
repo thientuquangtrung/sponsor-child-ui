@@ -10,6 +10,10 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/com
 import { CustomCalendar } from '@/components/ui/customcalendar';
 import { Upload, X } from 'lucide-react';
 import QuillEditor from '@/components/guarantee/QuillEditor';
+import { toast } from 'sonner'
+import { useUploadImageMutation } from '@/redux/cloudinary/cloudinaryApi';
+// import { useDispatch, useSelector } from 'react-redux';
+// import { setProgress, setIsUploading } from '@/redux/slices/uploadProgressSlice';
 
 const addCampaignSchema = z.object({
     title: z.string().min(1, "Bạn vui lòng nhập Tiêu Đề chiến dịch"),
@@ -45,6 +49,7 @@ const CustomDropzone = ({ onDrop, multiple, children }) => {
 const AddCampaign = () => {
     const [imagesFolder, setImagesFolder] = useState([]);
     const [thumbnail, setThumbnail] = useState(null);
+    const [uploadImage] = useUploadImageMutation();
 
     const form = useForm({
         resolver: zodResolver(addCampaignSchema),
@@ -58,6 +63,20 @@ const AddCampaign = () => {
             imagesFolder: [],
         }
     });
+    const uploadToCloudinary = async (file, folder) => {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('upload_preset', import.meta.env.VITE_UPLOAD_PRESET_NAME);
+        formData.append('folder', folder);
+
+        try {
+            const result = await uploadImage(formData).unwrap();
+            return result.secure_url;
+        } catch (error) {
+            console.error('Upload failed:', error);
+            throw error;
+        }
+    };
 
     const onDrop = useCallback((acceptedFiles) => {
         const newImagesFolder = acceptedFiles.map(file => Object.assign(file, {
@@ -70,6 +89,7 @@ const AddCampaign = () => {
             return updatedImagesFolder;
         });
     }, [form]);
+
 
     const onDropThumbnail = useCallback((acceptedFiles) => {
         const file = acceptedFiles[0];
@@ -94,9 +114,45 @@ const AddCampaign = () => {
         form.setValue('thumbnailUrl', null);
     };
 
-    const onSubmit = (data) => {
-        console.log(data);
 
+    const onSubmit = async (data) => {
+        try {
+            const userFolder = 'user_001'; // test with user_001
+            const tempCampaignId = `c_001`; //test with c_001
+
+            // Upload thumbnail
+            const thumbnailUrl = await uploadToCloudinary(
+                data.thumbnailUrl,
+                `${userFolder}/campaign/${tempCampaignId}/thumbnail`
+            );
+
+            // Upload images-supported
+            const imageUrls = await Promise.all(
+                data.imagesFolder.map(file =>
+                    uploadToCloudinary(file, `${userFolder}/campaign/${tempCampaignId}/images-supported`)
+                )
+            );
+
+            // Prepare the final data object
+            const finalData = {
+                ...data,
+                thumbnailUrl,
+                imagesFolder: imageUrls,
+                tempCampaignId
+            };
+
+            console.log('Final data to be sent to backend:', finalData);
+
+            // Reset form or navigate to a success page
+            form.reset();
+            setThumbnail(null);
+            setImagesFolder([]);
+
+            toast.success('Campaign created successfully!');
+        } catch (error) {
+            console.error('Submission failed:', error);
+            toast.error('Failed to create campaign. Please try again.');
+        }
     };
 
     const formatNumber = (value) => {

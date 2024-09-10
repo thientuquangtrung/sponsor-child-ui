@@ -5,11 +5,13 @@ import { Toaster } from 'sonner';
 import { Cloudinary } from "@cloudinary/url-gen";
 
 export default function App() {
-    const cld = new Cloudinary({
-        cloud: {
-            cloudName: import.meta.env.VITE_CLOUD_NAME
-        }
-    });
+    // const cld = new Cloudinary({
+    //     cloud: {
+    //         cloudName: import.meta.env.VITE_CLOUD_NAME
+    //     }
+    //     }
+    // )
+    ;
 
     return (
         <ThemeProvider>
