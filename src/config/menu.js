@@ -22,7 +22,7 @@ export const mainMenu = [
     // },
     {
         title: "Giới thiệu",
-        to: "about",
+        to: "introduction",
     },
     {
         title: "Chiến dịch",

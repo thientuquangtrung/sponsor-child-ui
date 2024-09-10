@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import banner from '@/assets/images/banner.png';
+
 
 const DonateTarget = () => {
     const [activeTab, setActiveTab] = useState('all');
@@ -62,7 +64,7 @@ const DonateTarget = () => {
         },
         {
             daysLeft: 242,
-            image: 'https://static.thiennguyen.app/public/donate-target/photo/2024/5/8/8902f1f1-24c2-4fce-93e9-a6cb19bd01ce.jpg', 
+            image: 'https://static.thiennguyen.app/public/donate-target/photo/2024/5/8/8902f1f1-24c2-4fce-93e9-a6cb19bd01ce.jpg',
             title: 'Phủ xanh Đất Mẹ 63 tỉnh thành',
             description: 'Gieo Mầm Xanh Toàn Cầu',
             raisedAmount: 100602396,
@@ -70,7 +72,7 @@ const DonateTarget = () => {
         },
         {
             daysLeft: 15,
-            image: 'https://static.thiennguyen.app/public/donate-target/photo/2024/8/27/929cebbe-2560-472d-88c6-3432276dcac3.jpg', 
+            image: 'https://static.thiennguyen.app/public/donate-target/photo/2024/8/27/929cebbe-2560-472d-88c6-3432276dcac3.jpg',
             title: 'TRĂNG THU BIÊN CƯƠNG',
             description: 'TRUYỀN HÌNH QPVN',
             raisedAmount: 2186000,
@@ -84,44 +86,9 @@ const DonateTarget = () => {
 
     return (
         <div className="mx-auto py-8">
-            <div
-                className="relative bg-cover bg-center py-16"
-                style={{
-                    backgroundImage: `url('https://thiennguyen.app/_next/static/media/bg_welcome_section-2.cec40e58.png')`,
-                    backgroundColor: '#8CD5D34D',
-                }}
-            >
-                <div className="container px-10 flex items-center justify-between space-x-6">
-                    <div className="w-[70%] px-8">
-                        <h1 className="text-[48px] font-bold text-black mb-4">
-                            Giải pháp công nghệ đồng hành cùng cộng đồng thiện nguyện minh bạch
-                        </h1>
-                        <p className="text-lg font-medium text-black mb-4">Tải app để tham gia cộng đồng</p>
-                        <div className="flex space-x-4">
-                            <a href="#" className="block">
-                                <img
-                                    src="https://thiennguyen.app/_next/static/media/download_ios.be3c8ac5.png" 
-                                    alt="Download on the App Store"
-                                    className="w-32"
-                                />
-                            </a>
-                            <a href="#" className="block">
-                                <img
-                                    src="https://thiennguyen.app/_next/static/media/download_android.d8811978.png" 
-                                    alt="Get it on Google Play"
-                                    className="w-32"
-                                />
-                            </a>
-                        </div>
-                    </div>
-
-                    <div className="w-[30%]">
-                        <img
-                            src="https://thiennguyen.app/_next/static/media/hero.770ae228.png"
-                            alt="Banner"
-                            className="w-[300px]"
-                        />
-                    </div>
+            <div className="relative bg-cover bg-center">
+                <div className="relative bg-cover bg-center">
+                    <img src={banner} alt="banner" className="w-full object-cover" />
                 </div>
             </div>
 

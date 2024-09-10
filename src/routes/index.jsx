@@ -13,6 +13,8 @@ import { DEFAULT_PATH } from '../config/app';
 import LoadingScreen from '@/components/common/LoadingScreen';
 import CampaignDetail from '@/components/landingpage/CampaignDetail';
 import DonateTarget from '@/components/landingpage/DonateTarget';
+import PageIntroduction from '@/components/landingpage/PageIntroduction';
+import RegistrationPage from '@/components/landingpage/RegistrationPage';
 
 const Loadable = (Component) => {
     const LoadableComponent = (props) => {
@@ -70,6 +72,14 @@ export default function Router() {
                 {
                     path: 'donate-target',
                     element: <DonateTarget />,
+                },
+                {
+                    path: 'introduction',
+                    element: <PageIntroduction />,
+                },
+                {
+                    path: 'register',
+                    element: <RegistrationPage />,
                 },
                 {
                     path: 'about',
