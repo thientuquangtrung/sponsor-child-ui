@@ -16,7 +16,7 @@ const formSchema = z.object({
 });
 
 export default function NewPasswordForm() {
-    const [updatePassword, { isLoading, error, data }] = useNewPasswordMutation();
+    const [updatePassword, { isLoading, isSuccess, isError }] = useNewPasswordMutation();
     const [searchParams, setSearchParams] = useSearchParams();
 
     // 1. Define your form.
@@ -33,10 +33,14 @@ export default function NewPasswordForm() {
         // Do something with the form values.
         // ✅ This will be type-safe and validated.
         console.log(values);
-        updatePassword({ ...values, token: searchParams.get('token') });
+        updatePassword({
+            newPassword: values.password,
+            token: searchParams.get('token'),
+            email: searchParams.get('email'),
+        });
     }
 
-    if (error) {
+    if (isError) {
         return (
             <Alert variant="destructive">
                 <AlertCircle className="h-4 w-4" />
@@ -46,7 +50,7 @@ export default function NewPasswordForm() {
         );
     }
 
-    if (data) {
+    if (isSuccess) {
         return (
             <Alert className="text-green-600 border-green-600">
                 <CircleCheck className="w-4 h-4 !text-green-600" />
@@ -83,13 +87,22 @@ export default function NewPasswordForm() {
                     render={({ field }) => (
                         <FormItem>
                             <FormControl>
-                                <Input type="password" className="text-lg h-12" placeholder="Nhập lại mật khẩu" {...field} />
+                                <Input
+                                    type="password"
+                                    className="text-lg h-12"
+                                    placeholder="Nhập lại mật khẩu"
+                                    {...field}
+                                />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
                     )}
                 />
-                <ButtonLoading isLoading={isLoading} className="text-white w-full h-12 text-2xl bg-gradient-to-r from-primary to-secondary" type="submit">
+                <ButtonLoading
+                    isLoading={isLoading}
+                    className="text-white w-full h-12 text-2xl bg-gradient-to-r from-primary to-secondary"
+                    type="submit"
+                >
                     Thay đổi mật khẩu
                 </ButtonLoading>
             </form>
