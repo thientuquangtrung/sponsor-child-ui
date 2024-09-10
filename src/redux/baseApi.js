@@ -42,29 +42,29 @@ const baseQueryWithReAuth = async (args, api, extraOptions) => {
     return result;
 };
 
-const staggeredBaseQueryWithBailOut = retry(
-    async (args, api, extraOptions) => {
-        const result = await baseQueryWithReAuth(args, api, extraOptions);
+// const staggeredBaseQueryWithBailOut = retry(
+//     async (args, api, extraOptions) => {
+//         const result = await baseQueryWithReAuth(args, api, extraOptions);
 
-        // bail out of re-tries immediately if conditions are met,
-        // because we know successive re-retries would be redundant
-        if (checkBailOutConditions(result.error)) {
-            retry.fail(result.error);
-        }
+//         // bail out of re-tries immediately if conditions are met,
+//         // because we know successive re-retries would be redundant
+//         if (checkBailOutConditions(result.error)) {
+//             retry.fail(result.error);
+//         }
 
-        return result;
-    },
-    {
-        maxRetries: 5,
-    },
-);
+//         return result;
+//     },
+//     {
+//         maxRetries: 5,
+//     },
+// );
 
 const checkBailOutConditions = (error) =>
     error?.status === 401 || (error?.status === 400 && error?.data?.status === 400400);
 
 export const baseApi = createApi({
     reducerPath: 'api',
-    baseQuery: staggeredBaseQueryWithBailOut,
+    baseQuery: baseQueryWithReAuth,
     endpoints: (builder) => ({}),
 });
 

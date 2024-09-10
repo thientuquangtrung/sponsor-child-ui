@@ -4,7 +4,7 @@ import { Navigate, useRoutes } from 'react-router-dom';
 // layouts
 import { Applayout } from '@/components/layouts/AppLayout';
 import { AuthLayout } from '@/components/layouts/AuthLayout';
-import { SponsorLayout } from '@/components/layouts/SponsorLayout';
+import { GuaranteeLayout } from '@/components/layouts/GuaranteeLayout';
 
 
 
@@ -45,11 +45,11 @@ export default function Router() {
             ],
         },
         {
-            path: '/sponsor',
-            element: <SponsorLayout />,
+            path: '/guarantee',
+            element: <GuaranteeLayout />,
             children: [
-                { element: <SponsorHome />, index: true },
-                { element: <SponsorCampaigns />, path: 'campaigns' },
+                { element: <GuaranteeHome />, index: true },
+                { element: <GuaranteeCampaigns />, path: 'campaigns' },
                 { element: <DonationHistory />, path: 'donation-history' },
                 { element: <AddCampaign />, path: 'campaigns/add' },
 
@@ -65,9 +65,9 @@ export default function Router() {
 
                 { element: <HomePage />, index: true },
 
-                {   
+                {
                     path: 'campaign-detail/:id',
-                    element: <CampaignDetail />, 
+                    element: <CampaignDetail />,
                 },
                 {
                     path: 'donate-target',
@@ -86,6 +86,10 @@ export default function Router() {
                     element: <AboutPage />,
                 },
 
+                {
+                    path: 'home',
+                    element: <HomePage />,
+                },
                 {
                     path: 'assets',
                     element: <PageMyAssets />,
@@ -130,9 +134,9 @@ const Page404 = Loadable(lazy(() => import('../pages/NoMatch')));
 const HomePage = Loadable(lazy(() => import('../pages/HomePage')));
 const AboutPage = Loadable(lazy(() => import('../pages/AboutPage')));
 
-//sponsor 
-const SponsorHome = Loadable(lazy(() => import('@/components/sponsor/SponsorHome')));
-const SponsorCampaigns = Loadable(lazy(() => import('@/components/sponsor/SponsorCampaigns')));
-const DonationHistory = Loadable(lazy(() => import('@/components/sponsor/DonationHistory')));
-const AddCampaign = Loadable(lazy(() => import('@/components/sponsor/AddCampaign')));
+//guarantee
+const GuaranteeHome = Loadable(lazy(() => import('@/components/guarantee/GuaranteeHome')));
+const GuaranteeCampaigns = Loadable(lazy(() => import('@/components/guarantee/GuaranteeCampaigns')));
+const DonationHistory = Loadable(lazy(() => import('@/components/guarantee/DonationHistory')));
+const AddCampaign = Loadable(lazy(() => import('@/components/guarantee/AddCampaign')));
 

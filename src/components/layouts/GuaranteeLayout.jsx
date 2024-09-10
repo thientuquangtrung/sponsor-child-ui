@@ -1,10 +1,10 @@
 import { Outlet } from 'react-router-dom';
-import SidebarSponsor from '@/components/navigation/SidebarSponsor';
+import SidebarGuarantee from '@/components/navigation/SidebarGuarantee';
 
-export function SponsorLayout() {
+export function GuaranteeLayout() {
     return (
         <div className="flex">
-            <SidebarSponsor />
+            <SidebarGuarantee />
             <div className="flex-grow">
                 <Outlet />
             </div>
