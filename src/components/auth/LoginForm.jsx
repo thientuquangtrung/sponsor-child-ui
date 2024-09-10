@@ -35,7 +35,7 @@ export default function LoginForm() {
         login(values)
             .unwrap()
             .then((res) => {
-                dispatch(UpdateAuthentication(res.data));
+                dispatch(UpdateAuthentication(res));
                 toast.success('Logged in successfully!');
             })
             .catch((err) => {
@@ -54,7 +54,6 @@ export default function LoginForm() {
                         <FormItem>
                             <FormLabel className="text-lg">Email</FormLabel>
                             <FormControl>
-                                
                                 <Input className="text-lg h-12" placeholder="Nhập địa chỉ email" {...field} />
                             </FormControl>
                             <FormMessage />
@@ -68,13 +67,21 @@ export default function LoginForm() {
                         <FormItem>
                             <FormLabel className="text-lg">Mật khẩu</FormLabel>
                             <FormControl>
-                                <Input className="text-lg h-12" placeholder={'Nhập mật khẩu'} type={'password'} {...field} />
+                                <Input
+                                    className="text-lg h-12"
+                                    placeholder={'Nhập mật khẩu'}
+                                    type={'password'}
+                                    {...field}
+                                />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
                     )}
                 />
-                <Button className="w-full h-12 text-white text-2xl bg-gradient-to-r from-primary to-secondary" type="submit">
+                <Button
+                    className="w-full h-12 text-white text-2xl bg-gradient-to-r from-primary to-secondary"
+                    type="submit"
+                >
                     Đăng nhập
                 </Button>
             </form>

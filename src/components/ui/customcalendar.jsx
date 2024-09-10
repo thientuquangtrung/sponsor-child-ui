@@ -70,7 +70,7 @@ const CustomCalendar = React.forwardRef(({ className, date, onDateSelect, varian
                     {selectedDate ? format(selectedDate, "dd/MM/yyyy", { locale: vi }) : <span>Chọn ngày</span>}
                 </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
+            <PopoverContent className="w-auto p-0 border border-primary shadow-lg rounded-lg" align="start">
                 <div className="flex items-center justify-between px-3 pt-3">
                     <Select
                         onValueChange={handleMonthChange}
