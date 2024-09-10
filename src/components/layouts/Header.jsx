@@ -28,14 +28,14 @@ import { Input } from '@/components/ui/input';
 
 export function Header() {
     const [logout] = useLogoutMutation();
-    const { user } = useSelector((state) => state.auth);
+    const { user, refreshToken } = useSelector((state) => state.auth);
     const dispatch = useDispatch();
     const [open, setOpen] = useState(false);
     const location = useLocation();
     const [searchQuery, setSearchQuery] = useState('');
 
     const handleLogout = () => {
-        logout();
+        logout({ refreshToken });
         dispatch(LogoutUser());
     };
 
@@ -113,7 +113,6 @@ export function Header() {
                             className="max-w-sm"
                             endIcon={<SearchIcon />}
                         />
-
                     </div>
                 </div>
 
@@ -142,9 +141,9 @@ export function Header() {
                                     mainMenu.findIndex((item) =>
                                         item.items !== undefined
                                             ? item.items
-                                                .filter((subitem) => subitem.to !== undefined)
-                                                .map((subitem) => subitem.to)
-                                                .includes(location.pathname)
+                                                  .filter((subitem) => subitem.to !== undefined)
+                                                  .map((subitem) => subitem.to)
+                                                  .includes(location.pathname)
                                             : false,
                                     )
                                 }
@@ -234,27 +233,25 @@ export function Header() {
                             <DropdownMenuTrigger asChild>
                                 <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                                     <Avatar className="h-8 w-8">
-                                        <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-                                        <AvatarFallback>{user?.username.substring(0, 2).toUpperCase()}</AvatarFallback>
+                                        <AvatarImage src={user?.imageUrl} alt={user?.fullname} />
+                                        <AvatarFallback>{user?.fullname?.substring(0, 2).toUpperCase()}</AvatarFallback>
                                     </Avatar>
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent className="w-56" align="end" forceMount>
                                 <DropdownMenuLabel className="font-normal">
                                     <div className="flex flex-col space-y-1">
-                                        <p className="text-sm font-medium leading-none">{user?.username}</p>
+                                        <p className="text-sm font-medium leading-none">{user?.fullname}</p>
                                         <p className="text-xs leading-none text-muted-foreground">{user?.email}</p>
                                     </div>
                                 </DropdownMenuLabel>
-                                <DropdownMenuSeparator />
                                 <NavLink to="/guarantee">
-                                    <DropdownMenuItem>
-                                        Nhà bảo lãnh
-                                    </DropdownMenuItem>
+                                    <DropdownMenuItem>Nhà bảo lãnh</DropdownMenuItem>
                                 </NavLink>
                                 <NavLink to="/profile">
                                     <DropdownMenuItem>Xem thông tin cá nhân</DropdownMenuItem>
                                 </NavLink>
+                                <DropdownMenuSeparator />
                                 <DropdownMenuItem onClick={handleLogout}>Đăng xuất</DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>

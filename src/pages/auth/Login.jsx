@@ -1,10 +1,61 @@
+import { Link } from 'react-router-dom';
+import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
+import { toast } from 'sonner';
+
 import logo from '@/assets/images/logo-short.png';
 import logoGoogle from '@/assets/images/login-google.png';
 import login3d from '@/assets/images/login-1.png';
 import LoginForm from '@/components/auth/LoginForm';
-import { Link } from 'react-router-dom';
+import { auth, provider } from '@/lib/firebase';
+import { useAuthWithProviderMutation } from '@/redux/auth/authApi';
+import { useDispatch } from 'react-redux';
+import ButtonLoading from '@/components/ui/loading-button';
+import { UpdateAuthentication } from '@/redux/auth/authActionCreators';
 
 const Login = () => {
+    const dispatch = useDispatch();
+    const [authWithProvider, { isLoading }] = useAuthWithProviderMutation();
+
+    const handleAuthGoogle = () => {
+        signInWithPopup(auth, provider)
+            .then(async (result) => {
+                // // This gives you a Google Access Token. You can use it to access the Google API.
+                // const credential = GoogleAuthProvider.credentialFromResult(result);
+                // const token = credential.accessToken;
+                // The signed-in user info.
+                const user = result.user;
+                // IdP data available using getAdditionalUserInfo(result)
+                // ...
+
+                const params = {
+                    idToken: await user.getIdToken(),
+                };
+
+                // submit params to backend
+                authWithProvider(params)
+                    .unwrap()
+                    .then((res) => {
+                        dispatch(UpdateAuthentication(res));
+                        toast.success('Logged in successfully!');
+                    })
+                    .catch((err) => {
+                        console.log(err);
+                        toast.error(err.error || err.data?.error?.message || 'Try again later!');
+                    });
+            })
+            .catch((error) => {
+                // Handle Errors here.
+                // const errorCode = error.code;
+                const errorMessage = error.message;
+                // // The email of the user's account used.
+                // const email = error.customData.email;
+                // // The AuthCredential type that was used.
+                // const credential = GoogleAuthProvider.credentialFromError(error);
+                // // ...
+                toast.error({ severity: 'error', message: errorMessage });
+            });
+    };
+
     return (
         <div className="h-full w-full bg-custom-image flex flex-col md:flex-row items-center relative">
             <div className="flex-[1] p-8 h-full">
@@ -38,11 +89,15 @@ const Login = () => {
                         <span className="mx-4 text-muted-foreground">hoặc tiếp tục với</span>
                         <div className="flex-grow border-t border-gray-300"></div>
                     </div>
-                    
-                    <button className="mt-8 flex items-center justify-center mx-auto bg-white text-black py-2 px-4 rounded shadow hover:bg-gray-200">
+
+                    <ButtonLoading
+                        isLoading={isLoading}
+                        onClick={handleAuthGoogle}
+                        className="mt-8 flex items-center justify-center mx-auto bg-white text-black py-2 px-4 rounded shadow hover:bg-gray-200"
+                    >
                         <img className="w-6 h-auto" src={logoGoogle} alt="sponsor-child" />
-                        <span className='ml-4 text-lg'>Đăng nhập bằng Google</span>
-                    </button>
+                        <span className="ml-4 text-lg">Đăng nhập bằng Google</span>
+                    </ButtonLoading>
                 </div>
             </div>
         </div>

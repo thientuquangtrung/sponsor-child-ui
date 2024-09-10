@@ -17,10 +17,18 @@ export const authApi = baseApi.injectEndpoints({
                 body: data,
             }),
         }),
+        authWithProvider: builder.mutation({
+            query: (data) => ({
+                url: '/auth/firebase-login',
+                method: 'POST',
+                body: data,
+            }),
+        }),
         logout: builder.mutation({
             query: (data) => ({
                 url: '/auth/logout',
                 method: 'POST',
+                body: data,
             }),
         }),
         resetPassword: builder.mutation({
@@ -51,4 +59,5 @@ export const {
     useLogoutMutation,
     useResetPasswordMutation,
     useNewPasswordMutation,
+    useAuthWithProviderMutation,
 } = authApi;
