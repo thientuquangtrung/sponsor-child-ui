@@ -4,7 +4,7 @@ import { toast } from 'sonner';
 
 import logo from '@/assets/images/logo-short.png';
 import logoGoogle from '@/assets/images/login-google.png';
-import login3d from '@/assets/images/login-1.png';
+import login from '@/assets/images/img-login.png';
 import LoginForm from '@/components/auth/LoginForm';
 import { auth, provider } from '@/lib/firebase';
 import { useAuthWithProviderMutation } from '@/redux/auth/authApi';
@@ -57,21 +57,26 @@ const Login = () => {
     };
 
     return (
-        <div className="h-full w-full bg-custom-image flex flex-col md:flex-row items-center relative">
-            <div className="flex-[1] p-8 h-full">
-                {/* <img className="w-12 h-auto" src={logo} alt="sponsor-child" /> */}
-                {/* <h1 className="mt-8 md:mt-16 text-white text-lg">
-                    Streamline Your Workflow with Powerful 3D Asset Management and Interactive Visualization
-                </h1> */}
-                <img
-                    className="hidden md:block w-1/2 max-h-[600px] object-cover absolute bottom-1/2 translate-y-2/3 left-0 pointer-events-none user-select-none"
-                    src={login3d}
-                    alt="sponsor-child"
-                />
-            </div>
-            <div className="h-full w-full md:flex-[2] bg-background rounded-tl-[32px] rounded-tr-[32px] md:rounded-tr-none md:rounded-bl-[32px] flex flex-col items-center justify-center">
-                <div className="md:w-[500px] md:px-0 w-full px-4">
-                    <h1 className="text-3xl font-semibold mb-8">Đăng nhập</h1>
+        <div className="min-h-screen w-full flex items-center justify-center">
+            <div
+                className="absolute left-0 top-0 w-3/4 h-full"
+                style={{
+                    backgroundColor: '#dff1f1',
+                }}
+            ></div>
+
+            <div
+                className="absolute right-0 top-0 w-1/4 h-full"
+                style={{
+                    backgroundColor: '#7edad7',
+                }}
+            ></div>
+
+            <div className="relative w-full flex justify-around px-4">
+                <img src={login} alt="SponsorChild" className="w-1/2 h-auto object-contain" />
+
+                <div className="w-1/3 px-10 py-6 bg-white shadow-lg rounded-md">
+                    <h1 className="text-3xl font-semibold mb-8 text-center">Đăng nhập</h1>
                     <LoginForm />
                     <div className="flex flex-col md:flex-row gap-1 justify-between mt-8 text-muted-foreground">
                         <p>
@@ -89,7 +94,6 @@ const Login = () => {
                         <span className="mx-4 text-muted-foreground">hoặc tiếp tục với</span>
                         <div className="flex-grow border-t border-gray-300"></div>
                     </div>
-
                     <ButtonLoading
                         isLoading={isLoading}
                         onClick={handleAuthGoogle}
