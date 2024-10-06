@@ -40,7 +40,7 @@ const Login = () => {
                     })
                     .catch((err) => {
                         console.log(err);
-                        toast.error(err.error || err.data?.error?.message || 'Try again later!');
+                        toast.error(err?.message || err?.data?.message || 'Try again later!');
                     });
             })
             .catch((error) => {
@@ -88,7 +88,7 @@ const Login = () => {
                         className="mt-8 flex items-center justify-center mx-auto bg-white text-black py-2 px-4 rounded shadow hover:bg-gray-200"
                     >
                         <img className="w-6 h-auto" src={logoGoogle} alt="sponsor-child" />
-                        <span className="ml-4 text-lg">Đăng nhập bằng Google</span>
+                        <span className="ml-4 text-lg">Tài khoản Google</span>
                     </ButtonLoading>
                 </div>
             </div>
