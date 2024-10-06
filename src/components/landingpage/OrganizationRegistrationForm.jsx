@@ -3,13 +3,13 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import banner1 from '@/assets/images/b_organization.png';
 import { ArrowBigUpDash, Check } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '../ui/dialog';
-import { Label } from '../ui/label';
-import { Input } from '../ui/input';
-import { Button } from '../ui/button';
-import { Checkbox } from '../ui/checkbox'; 
-import { Radio } from '../ui/radio-group'; 
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 
 const OrganizationRegistrationForm = () => {
     const [startDate, setStartDate] = useState(null);
@@ -416,7 +416,9 @@ const OrganizationRegistrationForm = () => {
                                 </label>
                                 <label className="flex items-center">
                                     <Checkbox id="transparency" className="mr-2" />
-                                    <span>Để công khai minh bạch đối với nhà tài trợ, người ủng hộ, người đóng góp</span>
+                                    <span>
+                                        Để công khai minh bạch đối với nhà tài trợ, người ủng hộ, người đóng góp
+                                    </span>
                                 </label>
                                 <label className="flex items-center">
                                     <Checkbox id="nonProfit" className="mr-2" />
@@ -451,20 +453,20 @@ const OrganizationRegistrationForm = () => {
                                 Anh chị/tổ chức có cam kết công bố công khai việc sử dụng TKTT MB trên kênh thông tin
                                 đại chúng các nội dung sau? <span className="text-red-600">*</span>
                             </Label>
-                            <div className="flex flex-col space-y-2">
-                                <label className="flex items-center">
-                                    <Radio value="Đồng ý" name="disclosure" className="mr-2" />
-                                    <span>Đồng ý</span>
-                                </label>
-                                <label className="flex items-center">
-                                    <Radio value="Chưa chắc chắn" name="disclosure" className="mr-2" />
-                                    <span>Chưa chắc chắn</span>
-                                </label>
-                                <label className="flex items-center">
-                                    <Radio value="Không đồng ý" name="disclosure" className="mr-2" />
-                                    <span>Không đồng ý</span>
-                                </label>
-                            </div>
+                            <RadioGroup defaultValue="Đồng ý">
+                                <div className="flex items-center space-x-2">
+                                    <RadioGroupItem value="Đồng ý" id="disclosure-agree" />
+                                    <Label htmlFor="disclosure-agree">Đồng ý</Label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                    <RadioGroupItem value="Chưa chắc chắn" id="disclosure-unsure" />
+                                    <Label htmlFor="disclosure-unsure">Chưa chắc chắn</Label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                    <RadioGroupItem value="Không đồng ý" id="disclosure-disagree" />
+                                    <Label htmlFor="disclosure-disagree">Không đồng ý</Label>
+                                </div>
+                            </RadioGroup>
                         </CardContent>
                     </Card>
 
@@ -655,11 +657,16 @@ const OrganizationRegistrationForm = () => {
                             <div className="flex flex-col space-y-2">
                                 <label className="flex items-center">
                                     <Checkbox id="decree93_2021" className="mr-2" />
-                                    <span>Nghị định 93/2021/NĐ-CP về vận động, tiếp nhận, phân phối và sử dụng các nguồn đóng góp tự nguyện...</span>
+                                    <span>
+                                        Nghị định 93/2021/NĐ-CP về vận động, tiếp nhận, phân phối và sử dụng các nguồn
+                                        đóng góp tự nguyện...
+                                    </span>
                                 </label>
                                 <label className="flex items-center">
                                     <Checkbox id="decree93_2019" className="mr-2" />
-                                    <span>Nghị định 93/2019/NĐ-CP về tổ chức, hoạt động của quỹ xã hội, quỹ từ thiện</span>
+                                    <span>
+                                        Nghị định 93/2019/NĐ-CP về tổ chức, hoạt động của quỹ xã hội, quỹ từ thiện
+                                    </span>
                                 </label>
                                 <label className="flex items-center">
                                     <Checkbox id="decree45_2010" className="mr-2" />
@@ -667,7 +674,10 @@ const OrganizationRegistrationForm = () => {
                                 </label>
                                 <label className="flex items-center">
                                     <Checkbox id="circular41_2022" className="mr-2" />
-                                    <span>Thông tư 41/2022/TT-BTC hướng dẫn Chế độ kế toán áp dụng cho các hoạt động xã hội, từ thiện các quy định pháp luật liên quan</span>
+                                    <span>
+                                        Thông tư 41/2022/TT-BTC hướng dẫn Chế độ kế toán áp dụng cho các hoạt động xã
+                                        hội, từ thiện các quy định pháp luật liên quan
+                                    </span>
                                 </label>
                                 <label className="flex items-center">
                                     <Checkbox id="notAware" className="mr-2" />
@@ -683,24 +693,24 @@ const OrganizationRegistrationForm = () => {
                                 Anh chị biết đến tài khoản minh bạch và ứng dụng Sponsor Child qua kênh chính nào sau
                                 đây
                             </Label>
-                            <div className="flex flex-col space-y-2">
-                                <label className="flex items-center">
-                                    <Radio name="awareness" value="Truyền hình, Báo giấy, Báo điện tử" className="mr-2" />
-                                    <span>Truyền hình, Báo giấy, Báo điện tử</span>
-                                </label>
-                                <label className="flex items-center">
-                                    <Radio name="awareness" value="Công cụ tìm kiếm" className="mr-2" />
-                                    <span>Công cụ tìm kiếm</span>
-                                </label>
-                                <label className="flex items-center">
-                                    <Radio name="awareness" value="Nhân viên MB tư vấn" className="mr-2" />
-                                    <span>Nhân viên MB tư vấn</span>
-                                </label>
-                                <label className="flex items-center">
-                                    <Radio name="awareness" value="Bạn bè giới thiệu" className="mr-2" />
-                                    <span>Bạn bè giới thiệu</span>
-                                </label>
-                            </div>
+                            <RadioGroup defaultValue="Truyền hình, Báo giấy, Báo điện tử">
+                                <div className="flex items-center space-x-2">
+                                    <RadioGroupItem value="Truyền hình, Báo giấy, Báo điện tử" id="awareness-media" />
+                                    <Label htmlFor="awareness-media">Truyền hình, Báo giấy, Báo điện tử</Label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                    <RadioGroupItem value="Công cụ tìm kiếm" id="awareness-search" />
+                                    <Label htmlFor="awareness-search">Công cụ tìm kiếm</Label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                    <RadioGroupItem value="Nhân viên MB tư vấn" id="awareness-staff" />
+                                    <Label htmlFor="awareness-staff">Nhân viên MB tư vấn</Label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                    <RadioGroupItem value="Bạn bè giới thiệu" id="awareness-friends" />
+                                    <Label htmlFor="awareness-friends">Bạn bè giới thiệu</Label>
+                                </div>
+                            </RadioGroup>
                         </CardContent>
                     </Card>
 

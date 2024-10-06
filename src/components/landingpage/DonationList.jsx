@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ArrowLeft, ArrowRight, Search } from 'lucide-react';
-import { Input } from '../ui/input';
+import { Input } from '@/components/ui/input';
 
 const DonationList = ({ donations }) => {
     const [currentPage, setCurrentPage] = useState(1);
@@ -25,7 +25,7 @@ const DonationList = ({ donations }) => {
 
     const handleSearchChange = (event) => {
         setSearchQuery(event.target.value);
-        setCurrentPage(1); 
+        setCurrentPage(1);
     };
 
     const renderPageNumbers = () => {

@@ -3,13 +3,13 @@ import 'react-datepicker/dist/react-datepicker.css';
 import DatePicker from 'react-datepicker';
 import banner2 from '@/assets/images/b_personal.png';
 import { ArrowBigUpDash, Check } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '../ui/dialog';
-import { Label } from '../ui/label';
-import { Input } from '../ui/input';
-import { Button } from '../ui/button';
-import { Checkbox } from '../ui/checkbox'; 
-import { Radio } from '../ui/radio-group'; 
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 
 const PersonalRegistrationForm = () => {
     const [startDate, setStartDate] = useState(null);
@@ -266,16 +266,16 @@ const PersonalRegistrationForm = () => {
                             <Label htmlFor="role" className="block text-black font-semibold mb-2">
                                 Vai trò của bạn trong CLB/Đội/Nhóm <span className="text-red-600">*</span>
                             </Label>
-                            <div className="flex flex-col space-y-2">
-                                <label className="flex items-center">
-                                    <Radio name="role" value="Sáng lập" className="mr-2" />
-                                    <span>Sáng lập</span>
-                                </label>
-                                <label className="flex items-center">
-                                    <Radio name="role" value="Chủ nhiệm" className="mr-2" />
-                                    <span>Chủ nhiệm</span>
-                                </label>
-                            </div>
+                            <RadioGroup defaultValue="Sáng lập">
+                                <div className="flex items-center space-x-2">
+                                    <RadioGroupItem value="Sáng lập" id="role-founder" />
+                                    <Label htmlFor="role-founder">Sáng lập</Label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                    <RadioGroupItem value="Chủ nhiệm" id="role-leader" />
+                                    <Label htmlFor="role-leader">Chủ nhiệm</Label>
+                                </div>
+                            </RadioGroup>
                         </CardContent>
                     </Card>
 
@@ -334,43 +334,39 @@ const PersonalRegistrationForm = () => {
                                 CLB/Đội/Nhóm của bạn đang trực thuộc hoặc được bảo trợ bởi tổ chức nào?{' '}
                                 <span className="text-red-600">*</span>
                             </Label>
-                            <div className="flex flex-col space-y-2">
-                                <label className="flex items-center">
-                                    <Radio
-                                        name="sponsorship"
-                                        value="Tổ chức chính trị xã hội"
-                                        className="mr-2"
-                                    />
-                                    Tổ chức chính trị xã hội (Công đoàn, thanh niên, phụ nữ, nông dân, cựu chiến binh...)
-                                </label>
-                                <label className="flex items-center">
-                                    <Radio name="sponsorship" value="Tổ chức xã hội" className="mr-2" />
-                                    Tổ chức xã hội (ví dụ Hội Chữ thập đỏ)
-                                </label>
-                                <label className="flex items-center">
-                                    <Radio
-                                        name="sponsorship"
-                                        value="Tổ chức xã hội nghề nghiệp"
-                                        className="mr-2"
-                                    />
-                                    Tổ chức xã hội nghề nghiệp
-                                </label>
-                                <label className="flex items-center">
-                                    <Radio name="sponsorship" value="Tổ chức tôn giáo" className="mr-2" />
-                                    Tổ chức tôn giáo
-                                </label>
-                                <label className="flex items-center">
-                                    <Radio name="sponsorship" value="Tổ chức kinh tế" className="mr-2" />
-                                    Tổ chức kinh tế, Doanh nghiệp
-                                </label>
-                            </div>
+                            <RadioGroup>
+                                <div className="flex items-center space-x-2">
+                                    <RadioGroupItem value="Tổ chức chính trị xã hội" id="sponsorship-political" />
+                                    <Label htmlFor="sponsorship-political">
+                                        Tổ chức chính trị xã hội (Công đoàn, thanh niên, phụ nữ, nông dân, cựu chiến
+                                        binh...)
+                                    </Label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                    <RadioGroupItem value="Tổ chức xã hội" id="sponsorship-social" />
+                                    <Label htmlFor="sponsorship-social">Tổ chức xã hội (ví dụ Hội Chữ thập đỏ)</Label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                    <RadioGroupItem value="Tổ chức xã hội nghề nghiệp" id="sponsorship-professional" />
+                                    <Label htmlFor="sponsorship-professional">Tổ chức xã hội nghề nghiệp</Label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                    <RadioGroupItem value="Tổ chức tôn giáo" id="sponsorship-religious" />
+                                    <Label htmlFor="sponsorship-religious">Tổ chức tôn giáo</Label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                    <RadioGroupItem value="Tổ chức kinh tế" id="sponsorship-economic" />
+                                    <Label htmlFor="sponsorship-economic">Tổ chức kinh tế, Doanh nghiệp</Label>
+                                </div>
+                            </RadioGroup>
                         </CardContent>
                     </Card>
 
                     <Card className="mb-6">
                         <CardContent className="bg-white rounded-md p-4 shadow-sm">
                             <Label htmlFor="socialLinks" className="block text-black font-semibold mb-2">
-                                Đường dẫn/link facebook, website, youtube, instagram, tiktok . . . mô tả, giới thiệu hoạt động, kinh nghiệm, kế hoạch thiện nguyện, cộng đồng đã triển khai{' '}
+                                Đường dẫn/link facebook, website, youtube, instagram, tiktok . . . mô tả, giới thiệu
+                                hoạt động, kinh nghiệm, kế hoạch thiện nguyện, cộng đồng đã triển khai{' '}
                                 <span className="text-red-600">*</span>
                             </Label>
                             <Input
@@ -535,20 +531,20 @@ const PersonalRegistrationForm = () => {
                                 Anh chị/tổ chức có cam kết công bố công khai việc sử dụng TKTT MB trên kênh thông tin
                                 đại chúng các nội dung sau? <span className="text-red-600">*</span>
                             </Label>
-                            <div className="flex flex-col space-y-2">
-                                <label className="flex items-center">
-                                    <Radio value="Đồng ý" name="disclosure" className="mr-2" />
-                                    Đồng ý
-                                </label>
-                                <label className="flex items-center">
-                                    <Radio value="Chưa chắc chắn" name="disclosure" className="mr-2" />
-                                    Chưa chắc chắn
-                                </label>
-                                <label className="flex items-center">
-                                    <Radio value="Không đồng ý" name="disclosure" className="mr-2" />
-                                    Không đồng ý
-                                </label>
-                            </div>
+                            <RadioGroup>
+                                <div className="flex items-center space-x-2">
+                                    <RadioGroupItem value="Đồng ý" id="disclosure-agree" />
+                                    <Label htmlFor="disclosure-agree">Đồng ý</Label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                    <RadioGroupItem value="Chưa chắc chắn" id="disclosure-unsure" />
+                                    <Label htmlFor="disclosure-unsure">Chưa chắc chắn</Label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                    <RadioGroupItem value="Không đồng ý" id="disclosure-disagree" />
+                                    <Label htmlFor="disclosure-disagree">Không đồng ý</Label>
+                                </div>
+                            </RadioGroup>
                         </CardContent>
                     </Card>
 
@@ -769,28 +765,24 @@ const PersonalRegistrationForm = () => {
                                 Anh chị biết đến tài khoản minh bạch và ứng dụng Sponsor Child qua kênh chính nào sau
                                 đây
                             </Label>
-                            <div className="flex flex-col space-y-2">
-                                <label className="flex items-center">
-                                    <Radio
-                                        name="awareness"
-                                        value="Truyền hình, Báo giấy, Báo điện tử"
-                                        className="mr-2"
-                                    />
-                                    Truyền hình, Báo giấy, Báo điện tử
-                                </label>
-                                <label className="flex items-center">
-                                    <Radio name="awareness" value="Công cụ tìm kiếm" className="mr-2" />
-                                    Công cụ tìm kiếm
-                                </label>
-                                <label className="flex items-center">
-                                    <Radio name="awareness" value="Nhân viên MB tư vấn" className="mr-2" />
-                                    Nhân viên MB tư vấn
-                                </label>
-                                <label className="flex items-center">
-                                    <Radio name="awareness" value="Bạn bè giới thiệu" className="mr-2" />
-                                    Bạn bè giới thiệu
-                                </label>
-                            </div>
+                            <RadioGroup>
+                                <div className="flex items-center space-x-2">
+                                    <RadioGroupItem value="Truyền hình, Báo giấy, Báo điện tử" id="awareness-media" />
+                                    <Label htmlFor="awareness-media">Truyền hình, Báo giấy, Báo điện tử</Label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                    <RadioGroupItem value="Công cụ tìm kiếm" id="awareness-search" />
+                                    <Label htmlFor="awareness-search">Công cụ tìm kiếm</Label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                    <RadioGroupItem value="Nhân viên MB tư vấn" id="awareness-staff" />
+                                    <Label htmlFor="awareness-staff">Nhân viên MB tư vấn</Label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                    <RadioGroupItem value="Bạn bè giới thiệu" id="awareness-friends" />
+                                    <Label htmlFor="awareness-friends">Bạn bè giới thiệu</Label>
+                                </div>
+                            </RadioGroup>
                         </CardContent>
                     </Card>
 

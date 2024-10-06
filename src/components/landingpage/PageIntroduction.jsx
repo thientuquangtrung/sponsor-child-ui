@@ -17,7 +17,7 @@ import solution4 from '@/assets/images/solution4.png';
 
 import { Check } from 'lucide-react';
 
-import { Button } from '../ui/button';
+import { Button } from '@/components/ui/button';
 
 const PageIntroduction = () => {
     const navigate = useNavigate();
@@ -268,9 +268,7 @@ const PageIntroduction = () => {
                                 <div className="bg-white text-teal-600 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-2 text-4xl font-extrabold">
                                     2
                                 </div>
-                                <p className="w-[150px] font-bold drop-shadow-2xl">
-                                    Đăng ký trở thành Người Bảo Lãnh
-                                </p>
+                                <p className="w-[150px] font-bold drop-shadow-2xl">Đăng ký trở thành Người Bảo Lãnh</p>
                             </div>
 
                             <div className="relative z-10 space-y-6">
