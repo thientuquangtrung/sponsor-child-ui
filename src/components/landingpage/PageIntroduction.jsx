@@ -2,6 +2,9 @@ import React from 'react';
 
 import { useNavigate } from 'react-router-dom';
 
+import textlogo from '@/assets/images/text-logo-black.png';
+import logo from '@/assets/images/img-children.png';
+
 import banner from '@/assets/images/banner.png';
 import intro from '@/assets/images/general-introduction.png';
 import vision from '@/assets/images/icon-vision.png';
@@ -39,9 +42,10 @@ const PageIntroduction = () => {
                     <h2 className="text-2xl font-bold mb-3">Giới thiệu chung</h2>
                     <hr className="border-2 border-teal-600 w-[100px] mx-auto mb-4" />
                     <p className="text-black max-w-5xl mx-auto mb-8">
-                        Giải pháp công nghệ tích hợp bao gồm App Sponsor Child và tài khoản thiện nguyện minh bạch 4 số,
-                        dành tặng các tổ chức, cá nhân vận động gây quỹ vì cộng đồng. Giải pháp là cấu phần thuộc Đề án
-                        Hệ tri thức Việt số hóa (iTrithuc)
+                        Giải pháp công nghệ tích hợp của chúng tôi cung cấp nền tảng web thân thiện, minh bạch cho các
+                        tổ chức và cá nhân hoạt động trong lĩnh vực vận động gây quỹ cộng đồng. Hệ thống đảm bảo quản lý
+                        thông tin và giao dịch một cách rõ ràng, minh bạch, giúp tối ưu hóa quy trình gây quỹ và kết nối
+                        với cộng đồng một cách hiệu quả.
                     </p>
 
                     <div className="flex justify-between align-middle items-center">
@@ -125,56 +129,36 @@ const PageIntroduction = () => {
                     </div>
                 </div>
 
-                <div className="flex mx-28 space-x-8">
-                    <img
-                        className="w-[30%] mx-auto"
-                        src="https://thiennguyen.app/_next/static/phone-infor-86ba5e6613144aa680d166a4de5addbe.svg"
-                    />
-                    <div className="container mx-auto relative z-10">
-                        <h2 className="text-2xl font-semibold mb-2">Đồng hành dễ dàng hơn cùng</h2>
-                        <h2 className="text-2xl font-semibold mb-4">App Sponsor Child</h2>
+                <div className="flex justify-between space-x-8">
+                    <img className="w-[40%] h-auto object-contain" src={logo} />
+                    <div className="flex-1 relative">
+                        <h2 className="text-2xl font-semibold mb-4">Đồng hành dễ dàng hơn cùng</h2>
+                        <img src={textlogo} alt="logo" className="w-[250px] mb-6" />
 
-                        <div className="flex mb-8">
-                            <a href="#" className="mr-4">
-                                <img
-                                    src="https://thiennguyen.app/_next/static/media/download_ios.be3c8ac5.png"
-                                    alt="Download on the App Store"
-                                    className="w-32"
-                                />
-                            </a>
-                            <a href="#">
-                                <img
-                                    src="https://thiennguyen.app/_next/static/media/download_android.d8811978.png"
-                                    alt="Get it on Google Play"
-                                    className="w-32"
-                                />
-                            </a>
-                        </div>
-
-                        <div className="grid grid-cols-3 gap-8 mb-12">
-                            <div>
-                                <h3 className="text-4xl font-semibold">0</h3>
-                                <p className="text-lg">Tổ chức thiện nguyện</p>
+                        <div className="grid grid-cols-3 gap-6">
+                            <div className="text-center">
+                                <h3 className="text-3xl font-semibold">0</h3>
+                                <p className="text-sm">Tổ chức thiện nguyện</p>
                             </div>
-                            <div>
-                                <h3 className="text-4xl font-semibold">0</h3>
-                                <p className="text-lg">Cá nhân thiện nguyện</p>
+                            <div className="text-center">
+                                <h3 className="text-3xl font-semibold">0</h3>
+                                <p className="text-sm">Cá nhân thiện nguyện</p>
                             </div>
-                            <div>
-                                <h3 className="text-4xl font-semibold">0</h3>
-                                <p className="text-lg">Thành viên tham gia</p>
+                            <div className="text-center">
+                                <h3 className="text-3xl font-semibold">0</h3>
+                                <p className="text-sm">Thành viên tham gia</p>
                             </div>
-                            <div>
-                                <h3 className="text-4xl font-semibold">0</h3>
-                                <p className="text-lg">Chiến dịch thiện nguyện</p>
+                            <div className="text-center">
+                                <h3 className="text-3xl font-semibold">0</h3>
+                                <p className="text-sm">Chiến dịch thiện nguyện</p>
                             </div>
-                            <div>
-                                <h3 className="text-4xl font-semibold">0,00</h3>
-                                <p className="text-lg">Số tiền ủng hộ (tỷ đồng)</p>
+                            <div className="text-center">
+                                <h3 className="text-3xl font-semibold">0,00</h3>
+                                <p className="text-sm">Số tiền ủng hộ (tỷ đồng)</p>
                             </div>
-                            <div>
-                                <h3 className="text-4xl font-semibold">0</h3>
-                                <p className="text-lg">Lượt đã ủng hộ</p>
+                            <div className="text-center">
+                                <h3 className="text-3xl font-semibold">0</h3>
+                                <p className="text-sm">Lượt đã ủng hộ</p>
                             </div>
                         </div>
                     </div>
@@ -194,12 +178,12 @@ const PageIntroduction = () => {
                             </div>
                         </div>
                         <div className="flex items-start">
-                            <img src={solution3} alt="Sở hữu miễn phí" className="w-16 mr-4" />
+                            <img src={solution3} alt="Quản lý hiệu quả" className="w-16 mr-4" />
                             <div>
-                                <p className="font-bold text-lg">Sở hữu miễn phí tài khoản 4 số</p>
+                                <p className="font-bold text-lg">Tối ưu hóa quy trình gây quỹ</p>
                                 <p>
-                                    Tài khoản thanh toán ngân hàng đầu tiên tại Việt Nam chỉ có 4 số, tự động minh bạch
-                                    sao kê, dành riêng cho mục đích thiện nguyện
+                                    Hệ thống giúp tự động hóa và tối ưu hóa quy trình quản lý gây quỹ, giảm thiểu công
+                                    việc thủ công và nâng cao hiệu quả cho các tổ chức và cá nhân.
                                 </p>
                             </div>
                         </div>
@@ -219,8 +203,8 @@ const PageIntroduction = () => {
                             <div>
                                 <p className="font-bold text-lg">Mở rộng kết nối</p>
                                 <p>
-                                    Lan tỏa mục tiêu gây quỹ đến với cộng đồng hơn 20 triệu khách hàng trên hệ sinh thái
-                                    App MBBank
+                                    Lan tỏa mục tiêu gây quỹ và kết nối với cộng đồng thông qua các nền tảng mạng xã hội
+                                    và website của hệ thống.
                                 </p>
                             </div>
                         </div>
@@ -276,7 +260,7 @@ const PageIntroduction = () => {
                                     1
                                 </div>
                                 <p className="w-[150px] font-bold drop-shadow-2xl">
-                                    Đăng ký tài khoản người dùng trên App Sponsor Child
+                                    Đăng ký tài khoản người dùng trên Web Sponsor Child
                                 </p>
                             </div>
 
@@ -285,7 +269,7 @@ const PageIntroduction = () => {
                                     2
                                 </div>
                                 <p className="w-[150px] font-bold drop-shadow-2xl">
-                                    Đăng ký mở tài khoản thiện nguyện minh bạch
+                                    Đăng ký trở thành Người Bảo Lãnh
                                 </p>
                             </div>
 

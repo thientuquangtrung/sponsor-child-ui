@@ -8,6 +8,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { Label } from '../ui/label';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
+import { Checkbox } from '../ui/checkbox'; 
+import { Radio } from '../ui/radio-group'; 
 
 const OrganizationRegistrationForm = () => {
     const [startDate, setStartDate] = useState(null);
@@ -258,7 +260,7 @@ const OrganizationRegistrationForm = () => {
                                     <ArrowBigUpDash fill="teal" className="mr-2" />{' '}
                                     {uploadedFiles.length > 0 ? 'Tải lại' : 'Thêm tệp'}
                                 </Button>
-                                <input
+                                <Input
                                     type="file"
                                     ref={fileInputRef}
                                     className="hidden"
@@ -405,24 +407,24 @@ const OrganizationRegistrationForm = () => {
                             </Label>
                             <div className="flex flex-col space-y-2">
                                 <label className="flex items-center">
-                                    <input type="checkbox" className="mr-2" />
-                                    Vận động, tiếp nhận các nguồn đóng góp tự nguyện
+                                    <Checkbox id="donate" className="mr-2" />
+                                    <span>Vận động, tiếp nhận các nguồn đóng góp tự nguyện</span>
                                 </label>
                                 <label className="flex items-center">
-                                    <input type="checkbox" className="mr-2" />
-                                    Vận động gây quỹ nhằm phát triển, thực hiện các dự án cộng đồng
+                                    <Checkbox id="fundraising" className="mr-2" />
+                                    <span>Vận động gây quỹ nhằm phát triển, thực hiện các dự án cộng đồng</span>
                                 </label>
                                 <label className="flex items-center">
-                                    <input type="checkbox" className="mr-2" />
-                                    Để công khai minh bạch đối với nhà tài trợ, người ủng hộ, người đóng góp
+                                    <Checkbox id="transparency" className="mr-2" />
+                                    <span>Để công khai minh bạch đối với nhà tài trợ, người ủng hộ, người đóng góp</span>
                                 </label>
                                 <label className="flex items-center">
-                                    <input type="checkbox" className="mr-2" />
-                                    Các mục đích phi lợi nhuận khác
+                                    <Checkbox id="nonProfit" className="mr-2" />
+                                    <span>Các mục đích phi lợi nhuận khác</span>
                                 </label>
                                 <label className="flex items-center">
-                                    <input type="checkbox" className="mr-2" onChange={handleOtherCheckboxChange} />
-                                    Mục khác:
+                                    <Checkbox id="otherPurpose" className="mr-2" onChange={handleOtherCheckboxChange} />
+                                    <span>Mục khác:</span>
                                 </label>
                                 {isOtherChecked && (
                                     <div className="mt-2">
@@ -451,16 +453,16 @@ const OrganizationRegistrationForm = () => {
                             </Label>
                             <div className="flex flex-col space-y-2">
                                 <label className="flex items-center">
-                                    <input type="radio" value="Đồng ý" name="disclosure" className="mr-2" />
-                                    Đồng ý
+                                    <Radio value="Đồng ý" name="disclosure" className="mr-2" />
+                                    <span>Đồng ý</span>
                                 </label>
                                 <label className="flex items-center">
-                                    <input type="radio" value="Chưa chắc chắn" name="disclosure" className="mr-2" />
-                                    Chưa chắc chắn
+                                    <Radio value="Chưa chắc chắn" name="disclosure" className="mr-2" />
+                                    <span>Chưa chắc chắn</span>
                                 </label>
                                 <label className="flex items-center">
-                                    <input type="radio" value="Không đồng ý" name="disclosure" className="mr-2" />
-                                    Không đồng ý
+                                    <Radio value="Không đồng ý" name="disclosure" className="mr-2" />
+                                    <span>Không đồng ý</span>
                                 </label>
                             </div>
                         </CardContent>
@@ -492,11 +494,11 @@ const OrganizationRegistrationForm = () => {
 
                     <Card className="mb-6">
                         <CardContent className="bg-white rounded-md p-4 shadow-sm">
-                            <Label htmlFor="objective" className="block text-black font-semibold mb-2">
+                            <Label htmlFor="targetAmount" className="block text-black font-semibold mb-2">
                                 Số tiền mục tiêu <span className="text-red-600">*</span>
                             </Label>
                             <Input
-                                id="objective"
+                                id="targetAmount"
                                 type="text"
                                 value={targetAmount}
                                 onChange={handleTargetAmountChange}
@@ -510,7 +512,7 @@ const OrganizationRegistrationForm = () => {
 
                     <Card className="mb-6">
                         <CardContent className="flex flex-row items-center space-x-4 bg-white rounded-sm p-4 shadow-sm">
-                            <Label htmlFor="establishmentDate" className="block text-black font-semibold mb-1">
+                            <Label htmlFor="startDate" className="block text-black font-semibold mb-1">
                                 Ngày bắt đầu <span className="text-red-600">*</span>
                             </Label>
                             <div>
@@ -528,7 +530,7 @@ const OrganizationRegistrationForm = () => {
 
                     <Card className="mb-6">
                         <CardContent className="flex flex-row items-center space-x-4 bg-white rounded-sm p-4 shadow-sm">
-                            <Label htmlFor="establishmentDate" className="block text-black font-semibold mb-1">
+                            <Label htmlFor="endDate" className="block text-black font-semibold mb-1">
                                 Ngày kết thúc <span className="text-red-600">*</span>
                             </Label>
                             <div>
@@ -607,24 +609,24 @@ const OrganizationRegistrationForm = () => {
                             </Label>
                             <div className="flex flex-col space-y-2">
                                 <label className="flex items-center">
-                                    <input type="checkbox" className="mr-2" />
-                                    Momo
+                                    <Checkbox id="momo" className="mr-2" />
+                                    <span>Momo</span>
                                 </label>
                                 <label className="flex items-center">
-                                    <input type="checkbox" className="mr-2" />
-                                    VinID
+                                    <Checkbox id="vinid" className="mr-2" />
+                                    <span>VinID</span>
                                 </label>
                                 <label className="flex items-center">
-                                    <input type="checkbox" className="mr-2" />
-                                    Grab
+                                    <Checkbox id="grab" className="mr-2" />
+                                    <span>Grab</span>
                                 </label>
                                 <label className="flex items-center">
-                                    <input type="checkbox" className="mr-2" />
-                                    Kickstarter
+                                    <Checkbox id="kickstarter" className="mr-2" />
+                                    <span>Kickstarter</span>
                                 </label>
                                 <label className="flex items-center">
-                                    <input type="checkbox" className="mr-2" onChange={handleOtherCheckboxChange} />
-                                    Mục khác:
+                                    <Checkbox id="otherSurvey" className="mr-2" onChange={handleOtherCheckboxChange} />
+                                    <span>Mục khác:</span>
                                 </label>
                                 {isOtherChecked && (
                                     <div className="mt-2">
@@ -652,26 +654,24 @@ const OrganizationRegistrationForm = () => {
                             </Label>
                             <div className="flex flex-col space-y-2">
                                 <label className="flex items-center">
-                                    <input type="checkbox" className="mr-2" />
-                                    Nghị định 93/2021/NĐ-CP về vận động, tiếp nhận, phân phối và sử dụng các nguồn đóng
-                                    góp tự nguyện...
+                                    <Checkbox id="decree93_2021" className="mr-2" />
+                                    <span>Nghị định 93/2021/NĐ-CP về vận động, tiếp nhận, phân phối và sử dụng các nguồn đóng góp tự nguyện...</span>
                                 </label>
                                 <label className="flex items-center">
-                                    <input type="checkbox" className="mr-2" />
-                                    Nghị định 93/2019/NĐ-CP về tổ chức, hoạt động của quỹ xã hội, quỹ từ thiện
+                                    <Checkbox id="decree93_2019" className="mr-2" />
+                                    <span>Nghị định 93/2019/NĐ-CP về tổ chức, hoạt động của quỹ xã hội, quỹ từ thiện</span>
                                 </label>
                                 <label className="flex items-center">
-                                    <input type="checkbox" className="mr-2" />
-                                    Nghị định 45/2010/NĐ-CP quy định về tổ chức, hoạt động và quản lý hội
+                                    <Checkbox id="decree45_2010" className="mr-2" />
+                                    <span>Nghị định 45/2010/NĐ-CP quy định về tổ chức, hoạt động và quản lý hội</span>
                                 </label>
                                 <label className="flex items-center">
-                                    <input type="checkbox" className="mr-2" />
-                                    Thông tư 41/2022/TT-BTC hướng dẫn Chế độ kế toán áp dụng cho các hoạt động xã hội,
-                                    từ thiện các quy định pháp luật liên quan
+                                    <Checkbox id="circular41_2022" className="mr-2" />
+                                    <span>Thông tư 41/2022/TT-BTC hướng dẫn Chế độ kế toán áp dụng cho các hoạt động xã hội, từ thiện các quy định pháp luật liên quan</span>
                                 </label>
                                 <label className="flex items-center">
-                                    <input type="checkbox" className="mr-2" />
-                                    Không biết quy định pháp luật này liên quan
+                                    <Checkbox id="notAware" className="mr-2" />
+                                    <span>Không biết quy định pháp luật này liên quan</span>
                                 </label>
                             </div>
                         </CardContent>
@@ -685,25 +685,20 @@ const OrganizationRegistrationForm = () => {
                             </Label>
                             <div className="flex flex-col space-y-2">
                                 <label className="flex items-center">
-                                    <input
-                                        type="radio"
-                                        name="awareness"
-                                        value="Truyền hình, Báo giấy, Báo điện tử"
-                                        className="mr-2"
-                                    />
-                                    Truyền hình, Báo giấy, Báo điện tử
+                                    <Radio name="awareness" value="Truyền hình, Báo giấy, Báo điện tử" className="mr-2" />
+                                    <span>Truyền hình, Báo giấy, Báo điện tử</span>
                                 </label>
                                 <label className="flex items-center">
-                                    <input type="radio" name="awareness" value="Công cụ tìm kiếm" className="mr-2" />
-                                    Công cụ tìm kiếm
+                                    <Radio name="awareness" value="Công cụ tìm kiếm" className="mr-2" />
+                                    <span>Công cụ tìm kiếm</span>
                                 </label>
                                 <label className="flex items-center">
-                                    <input type="radio" name="awareness" value="Nhân viên MB tư vấn" className="mr-2" />
-                                    Nhân viên MB tư vấn
+                                    <Radio name="awareness" value="Nhân viên MB tư vấn" className="mr-2" />
+                                    <span>Nhân viên MB tư vấn</span>
                                 </label>
                                 <label className="flex items-center">
-                                    <input type="radio" name="awareness" value="Bạn bè giới thiệu" className="mr-2" />
-                                    Bạn bè giới thiệu
+                                    <Radio name="awareness" value="Bạn bè giới thiệu" className="mr-2" />
+                                    <span>Bạn bè giới thiệu</span>
                                 </label>
                             </div>
                         </CardContent>
