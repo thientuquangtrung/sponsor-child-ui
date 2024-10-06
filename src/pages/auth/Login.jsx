@@ -57,25 +57,13 @@ const Login = () => {
     };
 
     return (
-        <div className="min-h-screen w-full flex items-center justify-center">
-            <div
-                className="absolute left-0 top-0 w-3/4 h-full"
-                style={{
-                    backgroundColor: '#dff1f1',
-                }}
-            ></div>
+        <div className="min-h-screen flex items-center justify-center">
+            <div className="absolute left-0 top-0 w-3/4 h-full bg-[#dff1f1]"></div>
+            <div className="absolute right-0 top-0 w-1/4 h-full bg-[#7edad7]"></div>
 
-            <div
-                className="absolute right-0 top-0 w-1/4 h-full"
-                style={{
-                    backgroundColor: '#7edad7',
-                }}
-            ></div>
-
-            <div className="relative w-full flex justify-around px-4">
-                <img src={login} alt="SponsorChild" className="w-1/2 h-auto object-contain" />
-
-                <div className="w-1/3 px-10 py-6 bg-white shadow-lg rounded-md">
+            <div className="relative w-full flex flex-col md:flex-row justify-around px-4">
+                <img src={login} alt="SponsorChild" className="w-full md:w-1/2 h-auto object-contain mb-6 md:mb-0" />
+                <div className="w-full md:w-1/3 px-4 md:px-10 py-6 bg-white shadow-lg rounded-md">
                     <h1 className="text-3xl font-semibold mb-8 text-center">Đăng nhập</h1>
                     <LoginForm />
                     <div className="flex flex-col md:flex-row gap-1 justify-between mt-8 text-muted-foreground">

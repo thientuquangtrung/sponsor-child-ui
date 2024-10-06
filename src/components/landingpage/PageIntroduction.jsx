@@ -1,10 +1,7 @@
 import React from 'react';
-
 import { useNavigate } from 'react-router-dom';
-
 import textlogo from '@/assets/images/text-logo-black.png';
 import logo from '@/assets/images/img-children.png';
-
 import banner from '@/assets/images/banner.png';
 import intro from '@/assets/images/general-introduction.png';
 import vision from '@/assets/images/icon-vision.png';
@@ -14,9 +11,7 @@ import solution1 from '@/assets/images/solution1.png';
 import solution2 from '@/assets/images/solution2.png';
 import solution3 from '@/assets/images/solution3.png';
 import solution4 from '@/assets/images/solution4.png';
-
 import { Check } from 'lucide-react';
-
 import { Button } from '@/components/ui/button';
 
 const PageIntroduction = () => {
@@ -34,22 +29,20 @@ const PageIntroduction = () => {
 
             <section
                 className="py-8 relative bg-cover bg-center"
-                style={{
-                    backgroundImage: `url(${intro})`,
-                }}
+                style={{ backgroundImage: `url(${intro})` }}
             >
                 <div className="container mx-auto text-center">
                     <h2 className="text-2xl font-bold mb-3">Giới thiệu chung</h2>
                     <hr className="border-2 border-teal-600 w-[100px] mx-auto mb-4" />
-                    <p className="text-black max-w-5xl mx-auto mb-8">
+                    <p className="text-black max-w-5xl mx-auto mb-8 px-4">
                         Giải pháp công nghệ tích hợp của chúng tôi cung cấp nền tảng web thân thiện, minh bạch cho các
                         tổ chức và cá nhân hoạt động trong lĩnh vực vận động gây quỹ cộng đồng. Hệ thống đảm bảo quản lý
                         thông tin và giao dịch một cách rõ ràng, minh bạch, giúp tối ưu hóa quy trình gây quỹ và kết nối
                         với cộng đồng một cách hiệu quả.
                     </p>
 
-                    <div className="flex justify-between align-middle items-center">
-                        <div className="text-center flex-1 max-w-[300px]">
+                    <div className="flex flex-col md:flex-row justify-around items-center">
+                        <div className="text-center flex-1 max-w-[300px] mx-4">
                             <img src={vision} alt="Tầm nhìn" className="mx-auto mb-4 w-[80px] h-[80px]" />
                             <h3 className="text-lg font-bold">Tầm nhìn</h3>
                             <p className="text-black">
@@ -58,7 +51,7 @@ const PageIntroduction = () => {
                             </p>
                         </div>
 
-                        <div className="text-center flex-1 max-w-[300px]">
+                        <div className="text-center flex-1 max-w-[300px] mx-4">
                             <img src={mission} alt="Sứ mệnh" className="mx-auto mb-4 w-[80px] h-[80px]" />
                             <h3 className="text-lg font-bold">Sứ mệnh</h3>
                             <p className="text-black">
@@ -67,7 +60,7 @@ const PageIntroduction = () => {
                             </p>
                         </div>
 
-                        <div className="text-center flex-1 max-w-[300px]">
+                        <div className="text-center flex-1 max-w-[300px] mx-4">
                             <img src={value} alt="Giá trị cốt lõi" className="mx-auto mb-4 w-[80px] h-[80px]" />
                             <h3 className="text-lg font-bold">Giá trị cốt lõi</h3>
                             <p className="text-black">Minh bạch, sẻ chia, kết nối, thuận tiện</p>
@@ -96,8 +89,8 @@ const PageIntroduction = () => {
                     />
                 </div>
 
-                <div className="flex justify-evenly mb-12 mx-28">
-                    <div className="bg-white text-black rounded-lg shadow-md max-w-lg">
+                <div className="flex justify-evenly flex-wrap mb-12 mx-4">
+                    <div className="bg-white text-black rounded-lg shadow-md max-w-lg m-4">
                         <h3 className="text-xl text-center font-semibold bg-gray-200 py-2 px-4 rounded-t-lg">
                             Minh bạch cho tổ chức, cá nhân gây quỹ
                         </h3>
@@ -112,7 +105,7 @@ const PageIntroduction = () => {
                             </p>
                         </div>
                     </div>
-                    <div className="bg-white text-black rounded-lg shadow-md max-w-lg">
+                    <div className="bg-white text-black rounded-lg shadow-md max-w-lg m-4">
                         <h3 className="text-xl text-center font-semibold bg-gray-200 py-2 px-4 rounded-t-lg">
                             Niềm tin cho nhà hảo tâm
                         </h3>
@@ -129,13 +122,13 @@ const PageIntroduction = () => {
                     </div>
                 </div>
 
-                <div className="flex justify-between space-x-8">
-                    <img className="w-[40%] h-auto object-contain" src={logo} />
+                <div className="flex flex-col md:flex-row justify-between space-y-4 md:space-y-0 md:space-x-8 mx-4">
+                    <img className="w-full md:w-[40%] h-auto object-contain" src={logo} alt="Logo" />
                     <div className="flex-1 relative">
                         <h2 className="text-2xl font-semibold mb-4">Đồng hành dễ dàng hơn cùng</h2>
                         <img src={textlogo} alt="logo" className="w-[250px] mb-6" />
 
-                        <div className="grid grid-cols-3 gap-6">
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
                             <div className="text-center">
                                 <h3 className="text-3xl font-semibold">0</h3>
                                 <p className="text-sm">Tổ chức thiện nguyện</p>
@@ -166,7 +159,7 @@ const PageIntroduction = () => {
             </section>
 
             <section className="bg-white py-16">
-                <div className="container mx-auto">
+                <div className="container mx-auto px-4">
                     <h2 className="text-3xl font-bold mb-4 text-center">Giải pháp thúc đẩy tính minh bạch</h2>
                     <hr className="border-2 border-teal-700 w-[100px] mx-auto mb-16" />
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -232,7 +225,7 @@ const PageIntroduction = () => {
                         className="absolute w-[150px] h-[100px] right-[30px] bottom-[20px]"
                     />
                 </div>
-                <div className="mx-auto text-center">
+                <div className="mx-auto text-center px-4">
                     <h2 className="text-3xl font-semibold text-center mb-8 drop-shadow-2xl">
                         Bắt đầu sứ mệnh cộng đồng của bạn
                     </h2>
@@ -254,52 +247,22 @@ const PageIntroduction = () => {
                             />
                         </svg>
 
-                        <div className="flex justify-center gap-12">
-                            <div className="relative z-10 space-y-6">
-                                <div className="bg-white text-teal-600 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-2 text-4xl font-extrabold">
-                                    1
+                        <div className="flex flex-col md:flex-row justify-center gap-12">
+                            {["Đăng ký tài khoản người dùng trên Web Sponsor Child", "Đăng ký trở thành Người Bảo Lãnh", "Nhận thông báo tài khoản người dùng được xác thực", "Tạo và chia sẻ mục tiêu gây quỹ", "Cập nhật hoạt động và báo cáo"].map((text, index) => (
+                                <div key={index} className="relative z-10 space-y-6">
+                                    <div className="bg-white text-teal-600 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-2 text-4xl font-extrabold">
+                                        {index + 1}
+                                    </div>
+                                    <p className="w-[150px] font-bold drop-shadow-2xl">{text}</p>
                                 </div>
-                                <p className="w-[150px] font-bold drop-shadow-2xl">
-                                    Đăng ký tài khoản người dùng trên Web Sponsor Child
-                                </p>
-                            </div>
-
-                            <div className="relative z-10 space-y-6">
-                                <div className="bg-white text-teal-600 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-2 text-4xl font-extrabold">
-                                    2
-                                </div>
-                                <p className="w-[150px] font-bold drop-shadow-2xl">Đăng ký trở thành Người Bảo Lãnh</p>
-                            </div>
-
-                            <div className="relative z-10 space-y-6">
-                                <div className="bg-white text-teal-600 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-2 text-4xl font-extrabold">
-                                    3
-                                </div>
-                                <p className="w-[150px] font-bold drop-shadow-2xl">
-                                    Nhận thông báo tài khoản người dùng được xác thực
-                                </p>
-                            </div>
-
-                            <div className="relative z-10 space-y-6">
-                                <div className="bg-white text-teal-600 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-2 text-4xl font-extrabold">
-                                    4
-                                </div>
-                                <p className="w-[150px] font-bold drop-shadow-2xl">Tạo và chia sẻ mục tiêu gây quỹ</p>
-                            </div>
-
-                            <div className="relative z-10 space-y-6">
-                                <div className="bg-white text-teal-600 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-2 text-4xl font-extrabold">
-                                    5
-                                </div>
-                                <p className="w-[150px] font-bold drop-shadow-2xl">Cập nhật hoạt động và báo cáo</p>
-                            </div>
+                            ))}
                         </div>
                     </div>
                 </div>
             </section>
-            <div className="flex justify-center my-12">
+            <div className="flex justify-center my-12 px-4">
                 <Button
-                    className="bg-gradient-to-r from-teal-400 to-secondary text-white text-lg font-semibold px-6 py-6 rounded-md"
+                    className="bg-gradient-to-r from-teal-400 to-secondary text-white text-lg font-semibold px-6 py-3 rounded-md"
                     onClick={navigateToRegister}
                 >
                     Đăng ký ngay

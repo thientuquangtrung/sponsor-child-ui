@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import banner from '@/assets/images/banner.png';
 
-
 const DonateTarget = () => {
     const [activeTab, setActiveTab] = useState('all');
 
@@ -85,11 +84,9 @@ const DonateTarget = () => {
     };
 
     return (
-        <div className="mx-auto py-8">
+        <div className="mx-auto py-8 px-4">
             <div className="relative bg-cover bg-center">
-                <div className="relative bg-cover bg-center">
-                    <img src={banner} alt="banner" className="w-full object-cover" />
-                </div>
+                <img src={banner} alt="banner" className="w-full object-cover rounded-lg shadow-md" />
             </div>
 
             <div className="flex items-center justify-center my-8">
@@ -98,19 +95,19 @@ const DonateTarget = () => {
                 <div className="border-t-2 border-teal-500 w-16"></div>
             </div>
 
-            <div className="flex justify-between items-center mb-4">
-                <div className="flex space-x-2">
-                    <select className="bg-white border border-gray-300 rounded px-4 py-2">
+            <div className="flex justify-between items-center mb-4 flex-wrap">
+                <div className="flex space-x-2 flex-wrap">
+                    <select className="bg-white border border-gray-300 rounded px-4 py-2 mb-2">
                         <option>Đang thực hiện</option>
                         <option>Đã kết thúc</option>
                     </select>
-                    <select className="bg-white border border-gray-300 rounded px-4 py-2">
+                    <select className="bg-white border border-gray-300 rounded px-4 py-2 mb-2">
                         <option>Danh mục</option>
                         <option>Sức khỏe</option>
                         <option>Giáo dục</option>
                         <option>Môi trường</option>
                     </select>
-                    <select className="bg-white border border-gray-300 rounded px-4 py-2">
+                    <select className="bg-white border border-gray-300 rounded px-4 py-2 mb-2">
                         <option>Khu vực</option>
                         <option>Miền Bắc</option>
                         <option>Miền Trung</option>
@@ -118,7 +115,7 @@ const DonateTarget = () => {
                     </select>
                 </div>
 
-                <div className="relative">
+                <div className="relative mb-2">
                     <input
                         type="text"
                         className="bg-white border border-gray-300 rounded-full pl-10 pr-4 py-2 w-64"
@@ -144,42 +141,29 @@ const DonateTarget = () => {
             </div>
 
             <div className="flex justify-start space-x-8 mb-4">
-                <button
-                    className={`text-lg font-semibold ${
-                        activeTab === 'all' ? 'text-teal-600 border-b-2 border-teal-600' : 'text-gray-700'
-                    }`}
-                    onClick={() => handleTabClick('all')}
-                >
-                    Tất cả
-                </button>
-                <button
-                    className={`text-lg font-semibold ${
-                        activeTab === 'organization' ? 'text-teal-600 border-b-2 border-teal-600' : 'text-gray-700'
-                    }`}
-                    onClick={() => handleTabClick('organization')}
-                >
-                    Tổ chức
-                </button>
-                <button
-                    className={`text-lg font-semibold ${
-                        activeTab === 'individual' ? 'text-teal-600 border-b-2 border-teal-600' : 'text-gray-700'
-                    }`}
-                    onClick={() => handleTabClick('individual')}
-                >
-                    Cá nhân
-                </button>
+                {['all', 'organization', 'individual'].map((tab) => (
+                    <button
+                        key={tab}
+                        className={`text-lg font-semibold ${
+                            activeTab === tab ? 'text-teal-600 border-b-2 border-teal-600' : 'text-gray-700'
+                        }`}
+                        onClick={() => handleTabClick(tab)}
+                    >
+                        {tab === 'all' ? 'Tất cả' : tab === 'organization' ? 'Tổ chức' : 'Cá nhân'}
+                    </button>
+                ))}
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                 {campaigns.map((campaign, index) => (
-                    <div key={index} className="bg-white rounded shadow-md">
+                    <div key={index} className="bg-white rounded shadow-md overflow-hidden">
                         <div className="relative">
                             <img
                                 src={campaign.image}
                                 alt={campaign.title}
                                 className="w-full h-48 object-cover rounded-t-md"
                             />
-                            <div className="absolute top-[10px] left-[10px] bg-white text-rose-400 font-semibold rounded-full px-3 py-1 text-xs">
+                            <div className="absolute top-2 left-2 bg-white text-rose-400 font-semibold rounded-full px-3 py-1 text-xs">
                                 Còn {campaign.daysLeft} ngày
                             </div>
                         </div>
