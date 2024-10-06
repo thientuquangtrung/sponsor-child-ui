@@ -10,7 +10,11 @@ const NewPassword = () => {
                     <img className="w-3/4 mx-auto md:w-full" src={newPassword} alt="intratech-forgot-password" />
                 </div>
                 <div className="flex-1 h-full">
-                    <img className="size-12 absolute top-4 right-4 md:top-8 md:right-8" src={logo} alt="sponsor-child" />
+                    <img
+                        className="size-12 absolute top-4 right-4 md:top-8 md:right-8"
+                        src={logo}
+                        alt="sponsor-child"
+                    />
                     <h1 className="text-4xl font-semibold">Mật khẩu mới</h1>
                     <h2 className="text-muted-foreground mt-4 mb-8">
                         Mật khẩu mới của bạn phải khác với mật khẩu đã sử dụng trước đó.
