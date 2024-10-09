@@ -13,6 +13,8 @@ import CampaignDetail from '@/components/landingpage/CampaignDetail';
 import DonateTarget from '@/components/landingpage/DonateTarget';
 import PageIntroduction from '@/components/landingpage/PageIntroduction';
 import RegistrationPage from '@/components/landingpage/RegistrationPage';
+import { Info } from 'lucide-react';
+import DonationInformation from '@/components/landingpage/DonationInformation';
 
 const Loadable = (Component) => {
     const LoadableComponent = (props) => {
@@ -68,6 +70,10 @@ export default function Router() {
                 {
                     path: 'donate-target',
                     element: <DonateTarget />,
+                },
+                {
+                    path: 'donate-target/info-donate/:id',
+                    element: <DonationInformation />,
                 },
                 {
                     path: 'introduction',

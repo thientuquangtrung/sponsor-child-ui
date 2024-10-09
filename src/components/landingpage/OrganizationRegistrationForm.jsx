@@ -1,7 +1,10 @@
 import React, { useState, useRef } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+
 import banner1 from '@/assets/images/b_organization.png';
+import textlogo from '@/assets/images/text-logo-black.png';
+
 import { ArrowBigUpDash, Check } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
@@ -111,7 +114,7 @@ const OrganizationRegistrationForm = () => {
             {!showCommitmentForm && !showSurveyForm ? (
                 <>
                     <h2 className="text-2xl font-semibold mb-6 text-center text-teal-700">
-                        Đăng ký mở Tài khoản thanh toán minh bạch
+                        Đăng ký mở Tài khoản trở thành Người Bảo Lãnh
                     </h2>
 
                     <div className="flex items-center justify-between mt-8 mb-4 relative">
@@ -131,7 +134,7 @@ const OrganizationRegistrationForm = () => {
                                 2
                             </div>
                             <span className="mt-2 text-sm text-gray-500">
-                                Cam kết mục đích sử dụng TKTT MB và giới thiệu năng lực hoạt động thiện nguyện
+                                Cam kết giới thiệu năng lực hoạt động thiện nguyện
                             </span>
                         </div>
 
@@ -360,7 +363,7 @@ const OrganizationRegistrationForm = () => {
             ) : showCommitmentForm && !showSurveyForm ? (
                 <>
                     <h2 className="text-2xl font-semibold mb-6 text-center text-teal-700">
-                        Đăng ký mở Tài khoản thanh toán minh bạch
+                        Đăng ký mở Tài khoản trở thành Người Bảo Lãnh
                     </h2>
 
                     <div className="flex items-center justify-between mt-8 mb-4 relative">
@@ -380,7 +383,7 @@ const OrganizationRegistrationForm = () => {
                                 2
                             </div>
                             <span className="mt-2 text-sm text-black">
-                                Cam kết mục đích sử dụng TKTT MB và giới thiệu năng lực hoạt động thiện nguyện
+                                Cam kết giới thiệu năng lực hoạt động thiện nguyện
                             </span>
                         </div>
 
@@ -394,10 +397,10 @@ const OrganizationRegistrationForm = () => {
                         </div>
                     </div>
 
-                    <Card className="my-6">
+                    {/* <Card className="my-6">
                         <CardHeader className="bg-teal-600 text-white p-4 rounded-t-sm">
                             <CardTitle className="text-lg font-bold">
-                                Phần 2: Cam kết mục đích sử dụng Tài khoản thanh toán minh bạch
+                                Phần 2: Cam kết giới thiệu năng lực hoạt động thiện nguyện
                             </CardTitle>
                         </CardHeader>
                         <CardContent className="bg-white rounded-md p-4 shadow-sm">
@@ -445,9 +448,9 @@ const OrganizationRegistrationForm = () => {
                                 )}
                             </div>
                         </CardContent>
-                    </Card>
+                    </Card> */}
 
-                    <Card className="mb-6">
+                    {/* <Card className="mb-6">
                         <CardContent className="bg-white rounded-md p-4 shadow-sm">
                             <Label htmlFor="disclosure" className="block text-black font-semibold mb-2">
                                 Anh chị/tổ chức có cam kết công bố công khai việc sử dụng TKTT MB trên kênh thông tin
@@ -468,14 +471,19 @@ const OrganizationRegistrationForm = () => {
                                 </div>
                             </RadioGroup>
                         </CardContent>
-                    </Card>
+                    </Card> */}
 
-                    <Card className="mb-6">
-                        <CardContent className="bg-white rounded-md p-4 shadow-sm">
-                            <Label htmlFor="planDescription" className="block text-black font-semibold mb-2">
-                                Mô tả kế hoạch gây quỹ, vận động ủng hộ thông qua TKTT MB và ứng dụng Sponsor Child
-                                trong 3 tháng tới
+                    <Card className="my-6">
+                        <CardHeader className="bg-teal-600 text-white p-4 rounded-t-sm">
+                            <CardTitle className="text-lg font-bold">
+                                Phần 2: Cam kết giới thiệu năng lực hoạt động thiện nguyện
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent className="flex flex-row items-center gap-2 bg-white rounded-md p-4 shadow-sm">
+                            <Label htmlFor="planDescription" className="block text-black font-semibold ">
+                                Mô tả kế hoạch gây quỹ, vận động ủng hộ thông qua website 
                             </Label>
+                            <img src={textlogo} alt='Sponsor Child' className='w-32'/>
                         </CardContent>
                     </Card>
 
@@ -567,7 +575,7 @@ const OrganizationRegistrationForm = () => {
             ) : (
                 <>
                     <h2 className="text-2xl font-semibold mb-6 text-center text-teal-700">
-                        Đăng ký mở Tài khoản thanh toán minh bạch
+                        Đăng ký mở Tài khoản trở thành Người Bảo Lãnh
                     </h2>
 
                     <div className="flex items-center justify-between mt-8 mb-4 relative">
@@ -587,7 +595,7 @@ const OrganizationRegistrationForm = () => {
                                 <Check size={16} />
                             </div>
                             <span className="mt-2 text-sm text-black">
-                                Cam kết mục đích sử dụng TKTT MB và giới thiệu năng lực hoạt động thiện nguyện
+                                Cam kết giới thiệu năng lực hoạt động thiện nguyện
                             </span>
                         </div>
 
@@ -626,10 +634,7 @@ const OrganizationRegistrationForm = () => {
                                     <Checkbox id="kickstarter" className="mr-2" />
                                     <span>Kickstarter</span>
                                 </label>
-                                <label className="flex items-center">
-                                    <Checkbox id="otherSurvey" className="mr-2" onChange={handleOtherCheckboxChange} />
-                                    <span>Mục khác:</span>
-                                </label>
+                                
                                 {isOtherChecked && (
                                     <div className="mt-2">
                                         <Input
@@ -693,7 +698,7 @@ const OrganizationRegistrationForm = () => {
                                 Anh chị biết đến tài khoản minh bạch và ứng dụng Sponsor Child qua kênh chính nào sau
                                 đây
                             </Label>
-                            <RadioGroup defaultValue="Truyền hình, Báo giấy, Báo điện tử">
+                            <RadioGroup>
                                 <div className="flex items-center space-x-2">
                                     <RadioGroupItem value="Truyền hình, Báo giấy, Báo điện tử" id="awareness-media" />
                                     <Label htmlFor="awareness-media">Truyền hình, Báo giấy, Báo điện tử</Label>
@@ -732,13 +737,13 @@ const OrganizationRegistrationForm = () => {
 
                     {showConfirmation && (
                         <Dialog open={showConfirmation} onOpenChange={handleCloseModal}>
-                            <DialogContent>
+                            <DialogContent className="max-w-xl">
                                 <DialogHeader>
-                                    <DialogTitle>Xác nhận đăng ký mở tài khoản thanh toán minh bạch?</DialogTitle>
+                                    <DialogTitle>Xác nhận đăng ký mở tài khoản trở thành Người Bảo Lãnh?</DialogTitle>
                                 </DialogHeader>
                                 <p className="mt-2 text-black">
-                                    Bằng việc sử dụng ứng dụng Sponsor Child hay tạo tài khoản tại Sponsor Child, Tài
-                                    khoản sponsor child sẽ đồng hành cùng bạn thực hiện sứ mệnh cộng đồng.
+                                    Bằng việc sử dụng web Sponsor Child hay tạo tài khoản tại Sponsor Child, Tài khoản
+                                    sponsor child sẽ đồng hành cùng bạn thực hiện sứ mệnh cộng đồng.
                                 </p>
                                 <DialogFooter>
                                     <Button

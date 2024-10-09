@@ -6,9 +6,15 @@ import CampaignList from './CampaignList';
 import logo from '@/assets/images/logo-short.png';
 import campaign1 from '@/assets/images/campaign_1.jpg';
 import DonationList from './DonationList';
+import { useNavigate } from 'react-router-dom';
 
 const CampaignDetail = () => {
     const [activeTab, setActiveTab] = useState('story');
+    const navigate = useNavigate();
+
+    const navigateToInfoDonate = (id) => {
+        navigate(`/donate-target/info-donate/${id}`);
+    };
 
     const campaign = {
         title: 'Ủng hộ các Gia đình chịu ảnh hưởng chất độc da cam/Dioxin',
@@ -193,7 +199,7 @@ const CampaignDetail = () => {
                             <Button variant="outline" className="flex-1 hover:bg-zinc-100">
                                 Đồng hành gây quỹ
                             </Button>
-                            <Button className="flex-1 bg-gradient-to-r from-primary to-secondary text-white">
+                            <Button className="flex-1 bg-gradient-to-r from-primary to-secondary text-white" onClick={navigateToInfoDonate}>
                                 Ủng hộ
                             </Button>
                         </div>
