@@ -37,7 +37,7 @@ export default function FeedbackCenter() {
     };
 
     return (
-        <div className="grid md:grid-cols-2 sm:grid-cols-1 py-[60px]">
+        <div className="grid md:grid-cols-2 sm:grid-cols-1 py-[60px] font-sans">
             <div className="col-span-1 flex justify-center items-center">
                 <img
                     className="w-[300px] rounded-[50%] bg-gradient-to-r from-blue-400 to-purple-500 h-[300px] object-cover"
@@ -46,7 +46,7 @@ export default function FeedbackCenter() {
                 />
             </div>
             <div className="col-span-1 md:pr-[30%] md:pl-0 sm:px-[15%]">
-                <h1 className="lg:text-[26px] sm:text-[35px] px-[8px] text-[#000000b3] pb-2 pt-6 font-cabin font-semibold text-center"
+                <h1 className="lg:text-[26px] sm:text-[35px] px-[8px] pb-2 pt-6  font-semibold text-center dark:text-white"
                     style={{ textShadow: "-11px 10px 8px #909090b3" }}>
                     Chia sẻ từ người dùng Thiện nguyện
                 </h1>

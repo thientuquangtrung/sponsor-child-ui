@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-
 import { Heart, ExternalLink, Calendar, MapPin, Users, CheckCircle, Clock } from 'lucide-react';
 
 const Event = () => {
@@ -50,10 +49,14 @@ const Event = () => {
     };
 
     return (
-        <div className="container mx-auto px-4 py-8">
-            <h2 className="text-3xl font-bold text-center mb-8">Sự kiện Thiện nguyện</h2>
+        <div className="container mx-auto px-4 py-8 font-sans">
+            <div className="flex items-center justify-center my-8">
+                <div className="border-t-2 border-teal-500 w-20"></div>
+                <h1 className="text-2xl font-semibold mx-4">Sự kiện Thiện nguyện</h1>
+                <div className="border-t-2 border-teal-500 w-20"></div>
+            </div>
             <div className="flex justify-end mb-4">
-                <Link to="/" className="text-secondary cursor-pointer font-semibold">
+                <Link to="/" className="underline cursor-pointer">
                     Xem tất cả
                 </Link>
             </div>
@@ -63,19 +66,19 @@ const Event = () => {
                         <img src={event.image} alt={event.title} className="w-full h-48 object-cover" />
                         <div className="p-4">
                             <h3 className="text-xl font-semibold mb-2 truncate">{event.title}</h3>
-                            <div className="flex items-center text-gray-600 mb-2">
+                            <div className="flex items-center text-gray-600 mb-2 ">
                                 <Calendar className="w-4 h-4 mr-2 text-gray-500" />
                                 <span>{event.date}</span>
                             </div>
-                            <div className="flex items-center text-gray-600 mb-2">
+                            <div className="flex items-center text-gray-600 mb-2 ">
                                 <MapPin className="w-4 h-4 mr-2 text-gray-500" />
                                 <span>{event.location}</span>
                             </div>
-                            <div className="flex items-center text-gray-600 mb-4">
+                            <div className="flex items-center text-gray-600 mb-4 ">
                                 <Users className="w-4 h-4 mr-2 text-gray-500" />
                                 <span>{event.participants} người tham gia</span>
                             </div>
-                            <div className="flex items-center mb-4">
+                            <div className="flex items-center mb-4 ">
                                 {event.isOngoing ? (
                                     <CheckCircle className="w-4 h-4 mr-2 text-green-500" />
                                 ) : (
