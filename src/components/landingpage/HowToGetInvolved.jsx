@@ -23,8 +23,12 @@ const HowToGetInvolved = () => {
     ];
 
     return (
-        <div className="container mx-auto px-4 py-12">
-            <h2 className="text-3xl font-bold text-center mb-10">Làm thế nào để bắt đầu Thiện nguyện</h2>
+        <div className="container mx-auto px-4 py-12 font-sans">
+            <div className="flex items-center justify-center my-8">
+                <div className="border-t-2 border-teal-500 w-20"></div>
+                <h1 className="text-2xl font-semibold mx-4">Làm thế nào để bắt đầu Thiện nguyện?</h1>
+                <div className="border-t-2 border-teal-500 w-20"></div>
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 {steps.map((step, index) => (
                     <Card key={index} className="flex flex-col">
