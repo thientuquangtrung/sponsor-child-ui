@@ -6,9 +6,15 @@ import CampaignList from './CampaignList';
 import logo from '@/assets/images/logo-short.png';
 import campaign1 from '@/assets/images/campaign_1.jpg';
 import DonationList from './DonationList';
+import { useNavigate } from 'react-router-dom';
 
 const CampaignDetail = () => {
     const [activeTab, setActiveTab] = useState('story');
+    const navigate = useNavigate();
+
+    const navigateToInfoDonate = (id) => {
+        navigate(`/donate-target/info-donate/${id}`);
+    };
 
     const campaign = {
         title: 'Ủng hộ các Gia đình chịu ảnh hưởng chất độc da cam/Dioxin',
@@ -72,9 +78,9 @@ const CampaignDetail = () => {
     ];
 
     return (
-        <div className="container mx-auto py-8">
+        <div className="container mx-auto py-8 px-4">
             <div className="flex flex-col md:flex-row md:space-x-8">
-                <div className="w-[60%] bg-white">
+                <div className="w-full md:w-3/5 bg-white">
                     <h1 className="text-2xl font-semibold">{campaign.title}</h1>
                     <div className="campaign-image-container relative mb-6">
                         <img src={campaign1} alt={campaign.title} className="w-full h-auto rounded-lg shadow-xl mt-6" />
@@ -109,16 +115,16 @@ const CampaignDetail = () => {
                         </TabsContent>
 
                         <TabsContent value="activities" className="p-4">
-                            <p className='text-gray-400 italic text-center mt-8'>Chiến dịch chưa có hoạt động</p>
+                            <p className="text-gray-400 italic text-center mt-8">Chiến dịch chưa có hoạt động</p>
                         </TabsContent>
 
                         <TabsContent value="donations" className="p-4">
-                            <DonationList donations={donations} /> 
+                            <DonationList donations={donations} />
                         </TabsContent>
                     </Tabs>
                 </div>
 
-                <div className="w-[40%] mt-4 md:mt-0 bg-white">
+                <div className="w-full md:w-2/5 mt-4 md:mt-0 bg-white">
                     <div className="shadow-xl p-4 rounded-lg">
                         <div className="flex items-center mb-4 space-x-5">
                             <img
@@ -193,7 +199,7 @@ const CampaignDetail = () => {
                             <Button variant="outline" className="flex-1 hover:bg-zinc-100">
                                 Đồng hành gây quỹ
                             </Button>
-                            <Button className="flex-1 bg-gradient-to-r from-primary to-secondary text-white">
+                            <Button className="flex-1 bg-gradient-to-r from-primary to-secondary text-white" onClick={navigateToInfoDonate}>
                                 Ủng hộ
                             </Button>
                         </div>
@@ -210,7 +216,7 @@ const CampaignDetail = () => {
                                     <div className="flex-1">
                                         <h4 className="font-semibold text-gray-800">{partner.name}</h4>
                                         <p className="text-sm text-gray-500 italic">Đã kêu gọi {partner.raised}</p>
-                                        <p className="text-xs text-gray-400" italic>
+                                        <p className="text-xs text-gray-400 italic">
                                             Ngày bắt đầu: {partner.startDate}
                                         </p>
                                     </div>
@@ -261,7 +267,7 @@ const CampaignDetail = () => {
             </div>
 
             <hr className="mt-16 border-2 border-gray-100" />
-            
+
             <CampaignList />
         </div>
     );

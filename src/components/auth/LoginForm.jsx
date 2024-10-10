@@ -40,7 +40,7 @@ export default function LoginForm() {
             })
             .catch((err) => {
                 console.log(err);
-                toast.error(err.error || err.data?.error?.message || 'Try again later!');
+                toast.error(err?.message || err?.data?.message || 'Try again later!');
             });
     }
 

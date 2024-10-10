@@ -45,7 +45,14 @@ export const authApi = baseApi.injectEndpoints({
                 body: data,
             }),
         }),
-
+        confirmMail: builder.query({
+            query: (oobCode) => ({
+                url: '/auth/verify-email',
+                params: {
+                    oobCode,
+                },
+            }),
+        }),
         checkAuth: builder.query({
             query: () => '/auth/checkauth',
         }),
@@ -60,4 +67,5 @@ export const {
     useResetPasswordMutation,
     useNewPasswordMutation,
     useAuthWithProviderMutation,
+    useConfirmMailQuery,
 } = authApi;

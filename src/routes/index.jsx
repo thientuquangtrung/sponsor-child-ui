@@ -6,8 +6,6 @@ import { Applayout } from '@/components/layouts/AppLayout';
 import { AuthLayout } from '@/components/layouts/AuthLayout';
 import { GuaranteeLayout } from '@/components/layouts/GuaranteeLayout';
 
-
-
 // config
 import { DEFAULT_PATH } from '../config/app';
 import LoadingScreen from '@/components/common/LoadingScreen';
@@ -15,6 +13,8 @@ import CampaignDetail from '@/components/landingpage/CampaignDetail';
 import DonateTarget from '@/components/landingpage/DonateTarget';
 import PageIntroduction from '@/components/landingpage/PageIntroduction';
 import RegistrationPage from '@/components/landingpage/RegistrationPage';
+import { Info } from 'lucide-react';
+import DonationInformation from '@/components/landingpage/DonationInformation';
 
 const Loadable = (Component) => {
     const LoadableComponent = (props) => {
@@ -40,6 +40,7 @@ export default function Router() {
             children: [
                 { element: <LoginPage />, path: 'login' },
                 { element: <RegisterPage />, path: 'register' },
+                { element: <ConfirmMailPage />, path: 'confirm-mail' },
                 { element: <ResetPasswordPage />, path: 'reset-password' },
                 { element: <NewPasswordPage />, path: 'new-password' },
             ],
@@ -52,9 +53,6 @@ export default function Router() {
                 { element: <GuaranteeCampaigns />, path: 'campaigns' },
                 { element: <DonationHistory />, path: 'donation-history' },
                 { element: <AddCampaign />, path: 'campaigns/add' },
-
-
-
             ],
         },
         {
@@ -72,6 +70,10 @@ export default function Router() {
                 {
                     path: 'donate-target',
                     element: <DonateTarget />,
+                },
+                {
+                    path: 'donate-target/info-donate/:id',
+                    element: <DonationInformation />,
                 },
                 {
                     path: 'introduction',
@@ -120,6 +122,7 @@ export default function Router() {
 
 const LoginPage = Loadable(lazy(() => import('../pages/auth/Login')));
 const RegisterPage = Loadable(lazy(() => import('../pages/auth/Register')));
+const ConfirmMailPage = Loadable(lazy(() => import('../pages/auth/ConfirmMail')));
 const ResetPasswordPage = Loadable(lazy(() => import('../pages/auth/ResetPassword')));
 const NewPasswordPage = Loadable(lazy(() => import('../pages/auth/NewPassword')));
 
@@ -139,4 +142,3 @@ const GuaranteeHome = Loadable(lazy(() => import('@/components/guarantee/Guarant
 const GuaranteeCampaigns = Loadable(lazy(() => import('@/components/guarantee/GuaranteeCampaigns')));
 const DonationHistory = Loadable(lazy(() => import('@/components/guarantee/DonationHistory')));
 const AddCampaign = Loadable(lazy(() => import('@/components/guarantee/AddCampaign')));
-

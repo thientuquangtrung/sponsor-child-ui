@@ -3,18 +3,16 @@ import { Heart, HopOff, Handshake } from 'lucide-react';
 
 const Hero = () => {
     return (
-        <div className="w-full relative flex lg:flex-row sm:flex-col bg-white">
-            <div className="lg:w-3/5 lg:!bg-none lg:pt-[12%] lg:h-0 sm:h-screen sm:bg-cover flex justify-center"
-            >
+        <div className="w-full relative flex lg:flex-row sm:flex-col bg-white font-sans">
+            <div className="lg:w-3/5 lg:!bg-none lg:pt-[12%] lg:h-0 sm:h-screen sm:bg-cover flex justify-center">
                 <div className="pl-20 sm:my-auto">
-                    <h1 className="lg:text-black sm:text-black font-bold text-3xl mb-2">
+                    <h1 className="lg:text-black sm:text-black font-bold text-4xl mb-2">
                         <span className="text-primary">Cộng đồng</span> hỗ trợ minh bạch,{" "}
                         <br />
                         Kết nối yêu thương, <span className="text-primary">xây dựng niềm tin</span>
                     </h1>
-                    <p className="">
+                    <p>
                         Hành trình thiện nguyện của bạn sẽ góp phần làm nên những thay đổi tích cực và bền vững.
-
                     </p>
                 </div>
             </div>
@@ -28,7 +26,8 @@ const Hero = () => {
                     </div>
                     <h2 className="font-bold mb-2 lg:text-xl">Tình thương</h2>
                     <p className="sm:text-[12px] lg:text-[16px]">
-                        Sự quan tâm và chia sẻ yêu thương với những người có hoàn cảnh khó khăn                    </p>
+                        Sự quan tâm và chia sẻ yêu thương với những người có hoàn cảnh khó khăn
+                    </p>
                 </div>
                 <div className="w-1/3 p-2">
                     <div className="mb-2">
@@ -50,9 +49,7 @@ const Hero = () => {
                 </div>
             </div>
 
-            <div
-                className="lg:block hidden w-5/12 h-full"
-            >
+            <div className="lg:block hidden w-5/12 h-full">
                 <img
                     src="https://toquoc.mediacdn.vn/280518851207290880/2022/9/4/z3648644725961ca9fe75c70acf7bcb6e1a98b3ccfa19b-16623013688991113728747.jpg"
                     className="w-full h-full lg:bg-transparent sm:bg-white"

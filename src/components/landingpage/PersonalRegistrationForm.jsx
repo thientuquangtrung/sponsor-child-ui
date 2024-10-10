@@ -1,15 +1,19 @@
 import React, { useState, useRef } from 'react';
 import 'react-datepicker/dist/react-datepicker.css';
 import DatePicker from 'react-datepicker';
+
 import banner2 from '@/assets/images/b_personal.png';
+import textlogo from '@/assets/images/text-logo-black.png';
+
 import { ArrowBigUpDash, Check } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '../ui/dialog';
-import { Label } from '../ui/label';
-import { Input } from '../ui/input';
-import { Button } from '../ui/button';
-import { Checkbox } from '../ui/checkbox'; 
-import { Radio } from '../ui/radio-group'; 
+
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 
 const PersonalRegistrationForm = () => {
     const [startDate, setStartDate] = useState(null);
@@ -123,7 +127,7 @@ const PersonalRegistrationForm = () => {
             {!showCommitmentForm && !showSurveyForm ? (
                 <>
                     <h2 className="text-2xl font-semibold mb-6 text-center text-teal-700">
-                        Đăng ký mở Tài khoản thanh toán minh bạch
+                        Đăng ký mở Tài khoản trở thành Người Bảo Lãnh
                     </h2>
 
                     <div className="flex items-center justify-between mt-8 mb-4 relative">
@@ -143,7 +147,7 @@ const PersonalRegistrationForm = () => {
                                 2
                             </div>
                             <span className="mt-2 text-sm text-gray-500">
-                                Cam kết mục đích sử dụng TKTT MB và giới thiệu năng lực hoạt động thiện nguyện
+                                Cam kết giới thiệu năng lực hoạt động thiện nguyện
                             </span>
                         </div>
 
@@ -266,16 +270,16 @@ const PersonalRegistrationForm = () => {
                             <Label htmlFor="role" className="block text-black font-semibold mb-2">
                                 Vai trò của bạn trong CLB/Đội/Nhóm <span className="text-red-600">*</span>
                             </Label>
-                            <div className="flex flex-col space-y-2">
-                                <label className="flex items-center">
-                                    <Radio name="role" value="Sáng lập" className="mr-2" />
-                                    <span>Sáng lập</span>
-                                </label>
-                                <label className="flex items-center">
-                                    <Radio name="role" value="Chủ nhiệm" className="mr-2" />
-                                    <span>Chủ nhiệm</span>
-                                </label>
-                            </div>
+                            <RadioGroup defaultValue="Sáng lập">
+                                <div className="flex items-center space-x-2">
+                                    <RadioGroupItem value="Sáng lập" id="role-founder" />
+                                    <Label htmlFor="role-founder">Sáng lập</Label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                    <RadioGroupItem value="Chủ nhiệm" id="role-leader" />
+                                    <Label htmlFor="role-leader">Chủ nhiệm</Label>
+                                </div>
+                            </RadioGroup>
                         </CardContent>
                     </Card>
 
@@ -334,43 +338,39 @@ const PersonalRegistrationForm = () => {
                                 CLB/Đội/Nhóm của bạn đang trực thuộc hoặc được bảo trợ bởi tổ chức nào?{' '}
                                 <span className="text-red-600">*</span>
                             </Label>
-                            <div className="flex flex-col space-y-2">
-                                <label className="flex items-center">
-                                    <Radio
-                                        name="sponsorship"
-                                        value="Tổ chức chính trị xã hội"
-                                        className="mr-2"
-                                    />
-                                    Tổ chức chính trị xã hội (Công đoàn, thanh niên, phụ nữ, nông dân, cựu chiến binh...)
-                                </label>
-                                <label className="flex items-center">
-                                    <Radio name="sponsorship" value="Tổ chức xã hội" className="mr-2" />
-                                    Tổ chức xã hội (ví dụ Hội Chữ thập đỏ)
-                                </label>
-                                <label className="flex items-center">
-                                    <Radio
-                                        name="sponsorship"
-                                        value="Tổ chức xã hội nghề nghiệp"
-                                        className="mr-2"
-                                    />
-                                    Tổ chức xã hội nghề nghiệp
-                                </label>
-                                <label className="flex items-center">
-                                    <Radio name="sponsorship" value="Tổ chức tôn giáo" className="mr-2" />
-                                    Tổ chức tôn giáo
-                                </label>
-                                <label className="flex items-center">
-                                    <Radio name="sponsorship" value="Tổ chức kinh tế" className="mr-2" />
-                                    Tổ chức kinh tế, Doanh nghiệp
-                                </label>
-                            </div>
+                            <RadioGroup>
+                                <div className="flex items-center space-x-2">
+                                    <RadioGroupItem value="Tổ chức chính trị xã hội" id="sponsorship-political" />
+                                    <Label htmlFor="sponsorship-political">
+                                        Tổ chức chính trị xã hội (Công đoàn, thanh niên, phụ nữ, nông dân, cựu chiến
+                                        binh...)
+                                    </Label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                    <RadioGroupItem value="Tổ chức xã hội" id="sponsorship-social" />
+                                    <Label htmlFor="sponsorship-social">Tổ chức xã hội (ví dụ Hội Chữ thập đỏ)</Label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                    <RadioGroupItem value="Tổ chức xã hội nghề nghiệp" id="sponsorship-professional" />
+                                    <Label htmlFor="sponsorship-professional">Tổ chức xã hội nghề nghiệp</Label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                    <RadioGroupItem value="Tổ chức tôn giáo" id="sponsorship-religious" />
+                                    <Label htmlFor="sponsorship-religious">Tổ chức tôn giáo</Label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                    <RadioGroupItem value="Tổ chức kinh tế" id="sponsorship-economic" />
+                                    <Label htmlFor="sponsorship-economic">Tổ chức kinh tế, Doanh nghiệp</Label>
+                                </div>
+                            </RadioGroup>
                         </CardContent>
                     </Card>
 
                     <Card className="mb-6">
                         <CardContent className="bg-white rounded-md p-4 shadow-sm">
                             <Label htmlFor="socialLinks" className="block text-black font-semibold mb-2">
-                                Đường dẫn/link facebook, website, youtube, instagram, tiktok . . . mô tả, giới thiệu hoạt động, kinh nghiệm, kế hoạch thiện nguyện, cộng đồng đã triển khai{' '}
+                                Đường dẫn/link facebook, website, youtube, instagram, tiktok . . . mô tả, giới thiệu
+                                hoạt động, kinh nghiệm, kế hoạch thiện nguyện, cộng đồng đã triển khai{' '}
                                 <span className="text-red-600">*</span>
                             </Label>
                             <Input
@@ -444,7 +444,7 @@ const PersonalRegistrationForm = () => {
             ) : showCommitmentForm && !showSurveyForm ? (
                 <>
                     <h2 className="text-2xl font-semibold mb-6 text-center text-teal-700">
-                        Đăng ký mở Tài khoản thanh toán minh bạch
+                        Đăng ký mở Tài khoản trở thành Người Bảo Lãnh
                     </h2>
 
                     <div className="flex items-center justify-between mt-8 mb-4 relative">
@@ -464,7 +464,7 @@ const PersonalRegistrationForm = () => {
                                 2
                             </div>
                             <span className="mt-2 text-sm text-black">
-                                Cam kết mục đích sử dụng TKTT MB và giới thiệu năng lực hoạt động thiện nguyện
+                                Cam kết giới thiệu năng lực hoạt động thiện nguyện
                             </span>
                         </div>
 
@@ -478,10 +478,10 @@ const PersonalRegistrationForm = () => {
                         </div>
                     </div>
 
-                    <Card className="my-6">
+                    {/* <Card className="my-6">
                         <CardHeader className="bg-teal-600 text-white p-4 rounded-t-sm">
                             <CardTitle className="text-lg font-bold">
-                                Phần 2: Cam kết mục đích sử dụng Tài khoản thanh toán minh bạch
+                                Phần 2: Cam kết giới thiệu năng lực hoạt động thiện nguyện
                             </CardTitle>
                         </CardHeader>
                         <CardContent className="bg-white rounded-md p-4 shadow-sm">
@@ -491,24 +491,26 @@ const PersonalRegistrationForm = () => {
                             </Label>
                             <div className="flex flex-col space-y-2">
                                 <label className="flex items-center">
-                                    <Checkbox className="mr-2" />
-                                    Vận động, tiếp nhận các nguồn đóng góp tự nguyện
+                                    <Checkbox id="donate" className="mr-2" />
+                                    <span>Vận động, tiếp nhận các nguồn đóng góp tự nguyện</span>
                                 </label>
                                 <label className="flex items-center">
-                                    <Checkbox className="mr-2" />
-                                    Vận động gây quỹ nhằm phát triển, thực hiện các dự án cộng đồng
+                                    <Checkbox id="fundraising" className="mr-2" />
+                                    <span>Vận động gây quỹ nhằm phát triển, thực hiện các dự án cộng đồng</span>
                                 </label>
                                 <label className="flex items-center">
-                                    <Checkbox className="mr-2" />
-                                    Để công khai minh bạch đối với nhà tài trợ, người ủng hộ, người đóng góp
+                                    <Checkbox id="transparency" className="mr-2" />
+                                    <span>
+                                        Để công khai minh bạch đối với nhà tài trợ, người ủng hộ, người đóng góp
+                                    </span>
                                 </label>
                                 <label className="flex items-center">
-                                    <Checkbox className="mr-2" />
-                                    Các mục đích phi lợi nhuận khác
+                                    <Checkbox id="nonProfit" className="mr-2" />
+                                    <span>Các mục đích phi lợi nhuận khác</span>
                                 </label>
                                 <label className="flex items-center">
-                                    <Checkbox className="mr-2" onChange={handleOtherCheckboxChange} />
-                                    Mục khác:
+                                    <Checkbox id="otherPurpose" className="mr-2" onChange={handleOtherCheckboxChange} />
+                                    <span>Mục khác:</span>
                                 </label>
                                 {isOtherChecked && (
                                     <div className="mt-2">
@@ -527,37 +529,42 @@ const PersonalRegistrationForm = () => {
                                 )}
                             </div>
                         </CardContent>
-                    </Card>
+                    </Card> */}
 
-                    <Card className="mb-6">
+                    {/* <Card className="mb-6">
                         <CardContent className="bg-white rounded-md p-4 shadow-sm">
                             <Label htmlFor="disclosure" className="block text-black font-semibold mb-2">
                                 Anh chị/tổ chức có cam kết công bố công khai việc sử dụng TKTT MB trên kênh thông tin
                                 đại chúng các nội dung sau? <span className="text-red-600">*</span>
                             </Label>
-                            <div className="flex flex-col space-y-2">
-                                <label className="flex items-center">
-                                    <Radio value="Đồng ý" name="disclosure" className="mr-2" />
-                                    Đồng ý
-                                </label>
-                                <label className="flex items-center">
-                                    <Radio value="Chưa chắc chắn" name="disclosure" className="mr-2" />
-                                    Chưa chắc chắn
-                                </label>
-                                <label className="flex items-center">
-                                    <Radio value="Không đồng ý" name="disclosure" className="mr-2" />
-                                    Không đồng ý
-                                </label>
-                            </div>
+                            <RadioGroup defaultValue="Đồng ý">
+                                <div className="flex items-center space-x-2">
+                                    <RadioGroupItem value="Đồng ý" id="disclosure-agree" />
+                                    <Label htmlFor="disclosure-agree">Đồng ý</Label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                    <RadioGroupItem value="Chưa chắc chắn" id="disclosure-unsure" />
+                                    <Label htmlFor="disclosure-unsure">Chưa chắc chắn</Label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                    <RadioGroupItem value="Không đồng ý" id="disclosure-disagree" />
+                                    <Label htmlFor="disclosure-disagree">Không đồng ý</Label>
+                                </div>
+                            </RadioGroup>
                         </CardContent>
-                    </Card>
+                    </Card> */}
 
-                    <Card className="mb-6">
-                        <CardContent className="bg-white rounded-md p-4 shadow-sm">
-                            <Label htmlFor="planDescription" className="block text-black font-semibold mb-2">
-                                Mô tả kế hoạch gây quỹ, vận động ủng hộ thông qua TKTT MB và ứng dụng Sponsor Child
-                                trong 3 tháng tới
+                    <Card className="my-6">
+                        <CardHeader className="bg-teal-600 text-white p-4 rounded-t-sm">
+                            <CardTitle className="text-lg font-bold">
+                                Phần 2: Cam kết giới thiệu năng lực hoạt động thiện nguyện
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent className="flex flex-row items-center gap-2 bg-white rounded-md p-4 shadow-sm">
+                            <Label htmlFor="planDescription" className="block text-black font-semibold ">
+                                Mô tả kế hoạch gây quỹ, vận động ủng hộ thông qua website
                             </Label>
+                            <img src={textlogo} alt="Sponsor Child" className="w-32" />
                         </CardContent>
                     </Card>
 
@@ -649,7 +656,7 @@ const PersonalRegistrationForm = () => {
             ) : (
                 <>
                     <h2 className="text-2xl font-semibold mb-6 text-center text-teal-700">
-                        Đăng ký mở Tài khoản thanh toán minh bạch
+                        Đăng ký mở Tài khoản trở thành Người Bảo Lãnh
                     </h2>
 
                     <div className="flex items-center justify-between mt-8 mb-4 relative">
@@ -669,7 +676,7 @@ const PersonalRegistrationForm = () => {
                                 <Check size={16} />
                             </div>
                             <span className="mt-2 text-sm text-black">
-                                Cam kết mục đích sử dụng TKTT MB và giới thiệu năng lực hoạt động thiện nguyện
+                                Cam kết giới thiệu năng lực hoạt động thiện nguyện
                             </span>
                         </div>
 
@@ -708,10 +715,7 @@ const PersonalRegistrationForm = () => {
                                     <Checkbox className="mr-2" />
                                     Kickstarter
                                 </label>
-                                <label className="flex items-center">
-                                    <Checkbox className="mr-2" onChange={handleOtherCheckboxChange} />
-                                    Mục khác:
-                                </label>
+                                
                                 {isOtherChecked && (
                                     <div className="mt-2">
                                         <Input
@@ -769,28 +773,24 @@ const PersonalRegistrationForm = () => {
                                 Anh chị biết đến tài khoản minh bạch và ứng dụng Sponsor Child qua kênh chính nào sau
                                 đây
                             </Label>
-                            <div className="flex flex-col space-y-2">
-                                <label className="flex items-center">
-                                    <Radio
-                                        name="awareness"
-                                        value="Truyền hình, Báo giấy, Báo điện tử"
-                                        className="mr-2"
-                                    />
-                                    Truyền hình, Báo giấy, Báo điện tử
-                                </label>
-                                <label className="flex items-center">
-                                    <Radio name="awareness" value="Công cụ tìm kiếm" className="mr-2" />
-                                    Công cụ tìm kiếm
-                                </label>
-                                <label className="flex items-center">
-                                    <Radio name="awareness" value="Nhân viên MB tư vấn" className="mr-2" />
-                                    Nhân viên MB tư vấn
-                                </label>
-                                <label className="flex items-center">
-                                    <Radio name="awareness" value="Bạn bè giới thiệu" className="mr-2" />
-                                    Bạn bè giới thiệu
-                                </label>
-                            </div>
+                            <RadioGroup>
+                                <div className="flex items-center space-x-2">
+                                    <RadioGroupItem value="Truyền hình, Báo giấy, Báo điện tử" id="awareness-media" />
+                                    <Label htmlFor="awareness-media">Truyền hình, Báo giấy, Báo điện tử</Label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                    <RadioGroupItem value="Công cụ tìm kiếm" id="awareness-search" />
+                                    <Label htmlFor="awareness-search">Công cụ tìm kiếm</Label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                    <RadioGroupItem value="Nhân viên MB tư vấn" id="awareness-staff" />
+                                    <Label htmlFor="awareness-staff">Nhân viên MB tư vấn</Label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                    <RadioGroupItem value="Bạn bè giới thiệu" id="awareness-friends" />
+                                    <Label htmlFor="awareness-friends">Bạn bè giới thiệu</Label>
+                                </div>
+                            </RadioGroup>
                         </CardContent>
                     </Card>
 
@@ -812,13 +812,13 @@ const PersonalRegistrationForm = () => {
 
                     {showConfirmation && (
                         <Dialog open={showConfirmation} onOpenChange={handleCloseModal}>
-                            <DialogContent>
+                            <DialogContent className="max-w-xl">
                                 <DialogHeader>
-                                    <DialogTitle>Xác nhận đăng ký mở tài khoản thanh toán minh bạch?</DialogTitle>
+                                    <DialogTitle>Xác nhận đăng ký mở tài khoản trở thành Người Bảo Lãnh?</DialogTitle>
                                 </DialogHeader>
                                 <p className="mt-2 text-black">
-                                    Bằng việc sử dụng ứng dụng Sponsor Child hay tạo tài khoản tại Sponsor Child, Tài
-                                    khoản sponsor child sẽ đồng hành cùng bạn thực hiện sứ mệnh cộng đồng.
+                                    Bằng việc sử dụng web Sponsor Child hay tạo tài khoản tại Sponsor Child, Tài khoản
+                                    sponsor child sẽ đồng hành cùng bạn thực hiện sứ mệnh cộng đồng.
                                 </p>
                                 <DialogFooter>
                                     <Button
