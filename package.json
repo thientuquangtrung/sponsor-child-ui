@@ -38,6 +38,7 @@
     "date-fns": "^3.6.0",
     "firebase": "^10.13.1",
     "lucide-react": "^0.381.0",
+    "payos-checkout": "^1.0.9",
     "quill": "^2.0.2",
     "react": "^18.2.0",
     "react-datepicker": "^7.3.0",
