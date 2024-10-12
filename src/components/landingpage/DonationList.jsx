@@ -4,7 +4,7 @@ import { Input } from '../ui/input';
 
 const DonationList = ({ donations, currentPage, totalPages, onPageChange }) => {
     const [isLoading, setIsLoading] = useState(false);
-
+  
     const handlePageChange = (page) => {
         if (page !== currentPage) {
             setIsLoading(true);

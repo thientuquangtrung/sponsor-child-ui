@@ -1,14 +1,15 @@
-import React, { useState } from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { cn } from '@/lib/utils';
+import { Check, Copy } from 'lucide-react';
+import { usePayOS } from 'payos-checkout';
 
 import qrcode from '@/assets/images/qrcode.jpg';
 
-import { Check, Copy } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -16,6 +17,7 @@ import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/compone
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useGetCampaignByIdQuery } from '@/redux/campaign/campaignApi';
 import { useCreateDonationMutation, useGetDonationsByCampaignIdQuery } from '@/redux/donation/donationApi';
+import { toast } from 'sonner';
 
 const formSchema = z.object({
     amount: z.string().refine((val) => parseInt(val.replace(/\./g, ''), 10) >= 1, {
@@ -29,11 +31,33 @@ const formSchema = z.object({
 
 const DonationInformation = () => {
     const { id } = useParams();
+    const navigate = useNavigate();
     const { user } = useSelector((state) => state.auth);
 
     const { data: campaign, isLoading, error } = useGetCampaignByIdQuery(id);
     const { data: donation } = useGetDonationsByCampaignIdQuery(id);
     const [createDonation, { isLoading: isCreatingDonation }] = useCreateDonationMutation();
+    const [payOSConfig, setPayOSConfig] = useState({
+        RETURN_URL: window.location.origin, // required
+        ELEMENT_ID: 'payment-container', // required
+        CHECKOUT_URL: null, // required
+        embedded: false, // Nếu dùng giao diện nhúng
+        onSuccess: (event) => {
+            //TODO: Hành động sau khi người dùng thanh toán đơn hàng thành công
+            toast.success('Thanh toán thành công');
+            navigate(-1);
+        },
+        onCancel: (event) => {
+            //TODO: Hành động fail
+            toast.error('Thanh toán thất bại');
+        },
+    });
+    const { open, exit } = usePayOS(payOSConfig);
+    useEffect(() => {
+        if (payOSConfig.CHECKOUT_URL != null) {
+            open();
+        }
+    }, [payOSConfig]);
 
     const [amount, setAmount] = useState('0');
     const [openDialog, setOpenDialog] = useState(false);
@@ -97,14 +121,19 @@ const DonationInformation = () => {
             campaignID: id,
             amount: amountValue,
             isAnonymous: data.anonymous,
-            cancelUrl: 'https://example.com/cancel',
-            returnUrl: 'https://example.com/success',
+            cancelUrl: window.location.origin,
+            returnUrl: window.location.origin,
         };
 
         try {
-            await createDonation(donationData).unwrap();
+            const response = await createDonation(donationData).unwrap();
 
-            setOpenDialog(true);
+            setPayOSConfig((oldConfig) => ({
+                ...oldConfig,
+                CHECKOUT_URL: response.paymentLink.checkoutUrl,
+            }));
+
+            // setOpenDialog(true);
         } catch (error) {
             console.error('Error creating donation:', error);
             console.log('Sending donation data:', donationData);
