@@ -1,42 +1,37 @@
 import React, { useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+
 import { Clock, MapPin, Check, Target } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import CampaignList from './CampaignList';
 import logo from '@/assets/images/logo-short.png';
-import campaign1 from '@/assets/images/campaign_1.jpg';
 import DonationList from './DonationList';
-import { useNavigate } from 'react-router-dom';
+import { useGetCampaignByIdQuery } from '@/redux/campaign/campaignApi';
+import { useGetDonationsByCampaignIdQuery } from '@/redux/donation/donationApi';
 
 const CampaignDetail = () => {
+    const { id } = useParams();
     const [activeTab, setActiveTab] = useState('story');
     const navigate = useNavigate();
+    const { data: campaign, isLoading, error } = useGetCampaignByIdQuery(id);
+    const {
+        data: donations = [],
+        isLoading: donationsLoading,
+        error: donationsError,
+    } = useGetDonationsByCampaignIdQuery(id);
 
     const navigateToInfoDonate = (id) => {
-        navigate(`/donate-target/info-donate/${id}`);
+        navigate(`/donate-target/info-donate/${campaign?.campaignID}`);
     };
 
-    const campaign = {
-        title: 'Ủng hộ các Gia đình chịu ảnh hưởng chất độc da cam/Dioxin',
-        description: 'Thắp sáng tương lai cho các gia đình chịu ảnh hưởng bởi chất độc da cam.',
-        targetAmount: 1000000000,
-        raisedAmount: 675955281,
-        daysLeft: 40,
-        address: '35 Đường Hồ Mễ Trì, Phường Mễ Trì, Quận Nam Từ Liêm, Thành Phố Hà Nội',
-    };
+    if (isLoading) {
+        return <p>Đang tải thông tin chiến dịch...</p>;
+    }
 
-    const donations = [
-        { donor: 'PHAM DUC NAM', amount: '10.000 VND', time: '22:08:17 - 28/08/2024' },
-        { donor: 'VOONG MINH ANH', amount: '50.000 VND', time: '21:42:58 - 28/08/2024' },
-        { donor: 'NGUYEN LE TRUNG THANH', amount: '500.000 VND', time: '21:30:28 - 28/08/2024' },
-        { donor: 'CHUYỂN TIỀN LIÊN NGÂN HÀNG', amount: '50.000 VND', time: '21:21:56 - 28/08/2024' },
-        { donor: 'TRAN NGOC ANH', amount: '200.000 VND', time: '20:25:28 - 28/08/2024' },
-        { donor: 'NGUYEN MINH QUANG', amount: '4.000 VND', time: '20:18:06 - 28/08/2024' },
-        { donor: 'CHUYỂN TIỀN LIÊN NGÂN HÀNG', amount: '20.000 VND', time: '20:06:05 - 28/08/2024' },
-        { donor: 'CHUYỂN TIỀN LIÊN NGÂN HÀNG', amount: '50.000 VND', time: '20:00:44 - 28/08/2024' },
-        { donor: 'PHAM QUANG THANH', amount: '5.000.000 VND', time: '19:00:09 - 28/08/2024' },
-        { donor: 'NGO MANH DUNG', amount: '20.000 VND', time: '18:49:34 - 28/08/2024' },
-    ];
+    if (error) {
+        return <p>Lỗi khi tải thông tin chiến dịch: {error.message}</p>;
+    }
 
     const partners = [
         {
@@ -81,9 +76,13 @@ const CampaignDetail = () => {
         <div className="container mx-auto py-8 px-4">
             <div className="flex flex-col md:flex-row md:space-x-8">
                 <div className="w-full md:w-3/5 bg-white">
-                    <h1 className="text-2xl font-semibold">{campaign.title}</h1>
+                    <h1 className="text-2xl font-semibold">{campaign?.title}</h1>
                     <div className="campaign-image-container relative mb-6">
-                        <img src={campaign1} alt={campaign.title} className="w-full h-auto rounded-lg shadow-xl mt-6" />
+                        <img
+                            src={campaign?.thumbnailUrl || 'https://via.placeholder.com/400x300'}
+                            alt={campaign?.title}
+                            className="w-full h-auto rounded-lg shadow-xl mt-6"
+                        />
                         <img src={logo} alt="Logo" className="absolute top-0 right-0 m-2 w-20 h-20" />
                     </div>
 
@@ -96,22 +95,12 @@ const CampaignDetail = () => {
                                 Hoạt động
                             </TabsTrigger>
                             <TabsTrigger value="donations" className={`relative py-1 px-4 text-md font-medium`}>
-                                Danh sách ủng hộ ({donations.length})
+                                Danh sách ủng hộ
                             </TabsTrigger>
                         </TabsList>
 
                         <TabsContent value="story" className="p-4">
-                            <p>
-                                Cuộc chiến tranh hóa học do Mỹ tiến hành ở Việt Nam từ năm 1961 đến năm 1971 đã làm cho
-                                4,8 triệu người Việt Nam bị phơi nhiễm, hơn 3 triệu người là nạn nhân; nhiều người mắc
-                                bệnh hiểm nghèo, bị dị dạng, dị tật, thiểu năng trí tuệ; di chứng da cam đã truyền sang
-                                thế hệ thứ 4, gây biết bao thảm cảnh cho các thế hệ người Việt Nam. Mặc dù được Đảng,
-                                Nhà nước, các cấp, các ngành quan tâm, ban hành các chính sách hỗ trợ, nhưng hầu hết nạn
-                                nhân và gia đình NNCĐDC vẫn gặp nhiều khó khăn, thiếu thốn cả về vật chất lẫn tinh thần.
-                                Nhiều hoàn cảnh nghèo khó, bệnh tật làm cho gia đình kiệt quệ, do vậy rất cần sự sẻ
-                                chia, giúp đỡ từ cộng đồng, để nạn nhân có cơ hội được chăm sóc sức khỏe, khám chữa
-                                bệnh, cải thiện cuộc sống, vượt khó vươn lên hòa nhập cộng đồng.
-                            </p>
+                            <p>{campaign?.story}</p>
                         </TabsContent>
 
                         <TabsContent value="activities" className="p-4">
@@ -119,7 +108,13 @@ const CampaignDetail = () => {
                         </TabsContent>
 
                         <TabsContent value="donations" className="p-4">
-                            <DonationList donations={donations} />
+                            {donationsLoading ? (
+                                <p>Loading donations...</p>
+                            ) : donationsError ? (
+                                <p>Error loading donations: {donationsError.message}</p>
+                            ) : (
+                                <DonationList donations={donations} />
+                            )}
                         </TabsContent>
                     </Tabs>
                 </div>
@@ -135,7 +130,7 @@ const CampaignDetail = () => {
                                 <span className="text-gray-500">Tiền ủng hộ được chuyển đến</span>
                                 <div className="flex items-center">
                                     <h1 className="w-[80%] text-lg font-bold text-[#69A6B8] truncate max-w-xs mr-2">
-                                        Quỹ nạn nhân chất độc da cam
+                                        {campaign?.guaranteeName || 'Quỹ thiện nguyên'}
                                     </h1>
                                     <div className="bg-[#69A6B8] p-1 rounded-full">
                                         <Check className="text-white" size={10} />
@@ -154,7 +149,7 @@ const CampaignDetail = () => {
                                 <div>
                                     <div className="text-sm font-semibold">Mục tiêu chiến dịch</div>
                                     <div className="text-lg font-bold text-[#69A6B8]">
-                                        {campaign.targetAmount.toLocaleString('vi-VN')} VNĐ
+                                        {campaign?.targetAmount.toLocaleString('vi-VN')} VNĐ
                                     </div>
                                 </div>
                             </div>
@@ -164,14 +159,17 @@ const CampaignDetail = () => {
                                 </div>
                                 <div>
                                     <div className="text-sm font-semibold">Thời gian còn lại</div>
-                                    <div className="text-lg font-bold text-[#69A6B8]">{campaign.daysLeft} ngày</div>
+                                    <div className="text-lg font-bold text-[#69A6B8]">
+                                        {Math.ceil((new Date(campaign?.endDate) - new Date()) / (1000 * 60 * 60 * 24))}{' '}
+                                        ngày
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
                         <div className="flex items-center mt-6">
                             <MapPin className="text-gray-500 mr-2" />
-                            <span className="text-sm text-gray-600">{campaign.address}</span>
+                            <span className="text-sm text-gray-600">{campaign?.address}</span>
                         </div>
 
                         <div className="mt-4">
@@ -179,7 +177,7 @@ const CampaignDetail = () => {
                                 <div
                                     className="h-2.5 rounded-full"
                                     style={{
-                                        width: `${(campaign.raisedAmount / campaign.targetAmount) * 100}%`,
+                                        width: `${(campaign?.raisedAmount / campaign?.targetAmount) * 100}%`,
                                         background: 'linear-gradient(to right, #7EDAD7, #69A6B8)',
                                     }}
                                 ></div>
@@ -188,10 +186,10 @@ const CampaignDetail = () => {
                                 <div>
                                     Đã đạt được:{' '}
                                     <span className="text-[#69A6B8] font-bold">
-                                        {campaign.raisedAmount.toLocaleString('vi-VN')} VNĐ
+                                        {campaign?.raisedAmount.toLocaleString('vi-VN')} VND
                                     </span>
                                 </div>
-                                <p>{Math.round((campaign.raisedAmount / campaign.targetAmount) * 100)}%</p>
+                                <p>{Math.round((campaign?.raisedAmount / campaign?.targetAmount) * 100) || 0}%</p>
                             </div>
                         </div>
 
@@ -199,7 +197,10 @@ const CampaignDetail = () => {
                             <Button variant="outline" className="flex-1 hover:bg-zinc-100">
                                 Đồng hành gây quỹ
                             </Button>
-                            <Button className="flex-1 bg-gradient-to-r from-primary to-secondary text-white" onClick={navigateToInfoDonate}>
+                            <Button
+                                className="flex-1 bg-gradient-to-r from-primary to-secondary text-white"
+                                onClick={navigateToInfoDonate}
+                            >
                                 Ủng hộ
                             </Button>
                         </div>
@@ -238,7 +239,7 @@ const CampaignDetail = () => {
                             <div>
                                 <div className="flex items-center">
                                     <h1 className="w-[80%] text-lg font-bold text-[#69A6B8] truncate max-w-xs mr-2">
-                                        Quỹ nạn nhân chất độc da cam
+                                        {campaign?.guaranteeName || 'Quỹ thiện nguyên'}
                                     </h1>
                                     <div className="bg-[#69A6B8] p-1 rounded-full">
                                         <Check className="text-white" size={10} />
@@ -268,173 +269,9 @@ const CampaignDetail = () => {
 
             <hr className="mt-16 border-2 border-gray-100" />
 
-            <CampaignList />
+            <CampaignList excludeCampaignId={campaign?.campaignID}/>
         </div>
     );
 };
 
 export default CampaignDetail;
-
-// import React, { useState } from 'react';
-// import { useParams } from 'react-router-dom';
-// import { Clock, MapPin, Check, Target } from 'lucide-react';
-// import { Button } from '@/components/ui/button';
-// import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-// import { useGetCampaignByIdQuery } from '@/redux/campaign/campaignApi'; // Import API to get campaign details
-// import { useGetDonationsByCampaignIdQuery } from '@/redux/donation/donationApi'; // Import API to get donations by campaignID
-// import DonationList from './DonationList';
-// import { useNavigate } from 'react-router-dom';
-
-// const CampaignDetail = () => {
-//     const { id } = useParams(); // Get campaignID from the URL
-//     const { data: campaign, isLoading, error } = useGetCampaignByIdQuery(id); // Fetch campaign data using the campaignID
-//     const { data: donations = [], isLoading: donationsLoading, error: donationsError } = useGetDonationsByCampaignIdQuery(id); // Fetch donations by campaignID
-//     const [activeTab, setActiveTab] = useState('story');
-//     const navigate = useNavigate();
-
-//     const navigateToInfoDonate = () => {
-//         navigate(`/donate-target/info-donate/${id}`);
-//     };
-
-//     if (isLoading) {
-//         return <p>Loading campaign details...</p>;
-//     }
-
-//     if (error) {
-//         return <p>Error loading campaign details: {error.message}</p>;
-//     }
-
-//     return (
-//         <div className="container mx-auto py-8 px-4">
-//             <div className="flex flex-col md:flex-row md:space-x-8">
-//                 <div className="w-full md:w-3/5 bg-white">
-//                     <h1 className="text-2xl font-semibold">{campaign.title}</h1>
-//                     <div className="campaign-image-container relative mb-6">
-//                         <img
-//                             src={campaign.thumbnailUrl || 'https://via.placeholder.com/400x300'} // Display campaign image
-//                             alt={campaign.title}
-//                             className="w-full h-auto rounded-lg shadow-xl mt-6"
-//                         />
-//                     </div>
-
-//                     <Tabs value={activeTab} onValueChange={setActiveTab}>
-//                         <TabsList className="flex space-x-2 bg-inherit">
-//                             <TabsTrigger value="story" className={`relative py-1 px-4 text-md font-medium`}>
-//                                 Câu chuyện
-//                             </TabsTrigger>
-//                             <TabsTrigger value="activities" className={`relative py-1 px-4 text-md font-medium`}>
-//                                 Hoạt động
-//                             </TabsTrigger>
-//                             <TabsTrigger value="donations" className={`relative py-1 px-4 text-md font-medium`}>
-//                                 Danh sách ủng hộ
-//                             </TabsTrigger>
-//                         </TabsList>
-
-//                         <TabsContent value="story" className="p-4">
-//                             <p>{campaign.story}</p> {/* Replace static content with dynamic content */}
-//                         </TabsContent>
-
-//                         <TabsContent value="activities" className="p-4">
-//                             <p className="text-gray-400 italic text-center mt-8">Chiến dịch chưa có hoạt động</p>
-//                         </TabsContent>
-
-//                         <TabsContent value="donations" className="p-4">
-//                             {donationsLoading ? (
-//                                 <p>Loading donations...</p>
-//                             ) : donationsError ? (
-//                                 <p>Error loading donations: {donationsError.message}</p>
-//                             ) : (
-//                                 <DonationList donations={donations} />
-//                             )}
-//                         </TabsContent>
-//                     </Tabs>
-//                 </div>
-
-//                 <div className="w-full md:w-2/5 mt-4 md:mt-0 bg-white">
-//                     <div className="shadow-xl p-4 rounded-lg">
-//                         <div className="flex items-center mb-4 space-x-5">
-//                             <div>
-//                                 <span className="text-gray-500">Tiền ủng hộ được chuyển đến</span>
-//                                 <div className="flex items-center">
-//                                     <h1 className="w-[80%] text-lg font-bold text-[#69A6B8] truncate max-w-xs mr-2">
-//                                         {campaign.guaranteeName}
-//                                     </h1>
-//                                     <div className="bg-[#69A6B8] p-1 rounded-full">
-//                                         <Check className="text-white" size={10} />
-//                                     </div>
-//                                 </div>
-//                             </div>
-//                         </div>
-
-//                         <hr className="my-4 border-2 border-gray-100" />
-
-//                         <div className="flex flex-row justify-between">
-//                             <div className="flex items-center mt-2 space-x-3">
-//                                 <div className="bg-amber-300 p-2 rounded-full border border-white">
-//                                     <Target className="text-white" />
-//                                 </div>
-//                                 <div>
-//                                     <div className="text-sm font-semibold">Mục tiêu chiến dịch</div>
-//                                     <div className="text-lg font-bold text-[#69A6B8]">
-//                                         {campaign.targetAmount.toLocaleString('vi-VN')} VNĐ
-//                                     </div>
-//                                 </div>
-//                             </div>
-//                             <div className="flex items-center mt-2 space-x-3">
-//                                 <div className="bg-rose-300 p-2 rounded-full border border-white">
-//                                     <Clock className="text-white" />
-//                                 </div>
-//                                 <div>
-//                                     <div className="text-sm font-semibold">Thời gian còn lại</div>
-//                                     <div className="text-lg font-bold text-[#69A6B8]">
-//                                         {Math.max(0, Math.ceil((new Date(campaign.endDate) - new Date()) / (1000 * 60 * 60 * 24)))} ngày
-//                                     </div>
-//                                 </div>
-//                             </div>
-//                         </div>
-
-//                         <div className="flex items-center mt-6">
-//                             <MapPin className="text-gray-500 mr-2" />
-//                             <span className="text-sm text-gray-600">{campaign.address}</span>
-//                         </div>
-
-//                         <div className="mt-4">
-//                             <div className="w-full bg-gray-200 rounded-full h-2.5">
-//                                 <div
-//                                     className="h-2.5 rounded-full"
-//                                     style={{
-//                                         width: `${(campaign.raisedAmount / campaign.targetAmount) * 100}%`,
-//                                         background: 'linear-gradient(to right, #7EDAD7, #69A6B8)',
-//                                     }}
-//                                 ></div>
-//                             </div>
-//                             <div className="flex justify-between mt-2 text-sm text-gray-600">
-//                                 <div>
-//                                     Đã đạt được:{' '}
-//                                     <span className="text-[#69A6B8] font-bold">
-//                                         {campaign.raisedAmount.toLocaleString('vi-VN')} VNĐ
-//                                     </span>
-//                                 </div>
-//                                 <p>{Math.round((campaign.raisedAmount / campaign.targetAmount) * 100)}%</p>
-//                             </div>
-//                         </div>
-
-//                         <div className="flex mt-4 space-x-2">
-//                             <Button variant="outline" className="flex-1 hover:bg-zinc-100">
-//                                 Đồng hành gây quỹ
-//                             </Button>
-//                             <Button className="flex-1 bg-gradient-to-r from-primary to-secondary text-white" onClick={navigateToInfoDonate}>
-//                                 Ủng hộ
-//                             </Button>
-//                         </div>
-//                     </div>
-//                 </div>
-//             </div>
-
-//             <hr className="mt-16 border-2 border-gray-100" />
-//         </div>
-//     );
-// };
-
-// export default CampaignDetail;
-
