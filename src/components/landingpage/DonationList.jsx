@@ -9,7 +9,7 @@ const DonationList = ({ donations }) => {
 
     // Filter donations based on the search query
     const filteredDonations = donations.filter((donation) =>
-        donation.donor.toLowerCase().includes(searchQuery.toLowerCase()),
+        donation.donorName.toLowerCase().includes(searchQuery.toLowerCase()),
     );
 
     const totalPages = Math.ceil(filteredDonations.length / donationsPerPage);
@@ -92,9 +92,9 @@ const DonationList = ({ donations }) => {
                                     index % 2 ? 'bg-white' : 'bg-zinc-50'
                                 } hover:bg-zinc-100`}
                             >
-                                <td className="py-3 px-4">{donation.donor}</td>
-                                <td className="py-3 px-4">{donation.amount}</td>
-                                <td className="py-3 px-4">{donation.time}</td>
+                                <td className="py-3 px-4">{donation?.donorName}</td>
+                                <td className="py-3 px-4">{donation.amount.toLocaleString()} VND</td>
+                                <td className="py-3 px-4">{new Date(donation.donationDate).toLocaleString()}</td>
                             </tr>
                         ))}
                     </tbody>
