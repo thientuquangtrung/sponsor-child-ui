@@ -16,7 +16,7 @@ const CampaignDetail = () => {
     const navigate = useNavigate();
     const { data: campaign, isLoading, error } = useGetCampaignByIdQuery(id);
     const {
-        data: donations = [],
+        data: donationsResponse,
         isLoading: donationsLoading,
         error: donationsError,
     } = useGetDonationsByCampaignIdQuery(id);
@@ -95,7 +95,7 @@ const CampaignDetail = () => {
                                 Hoạt động
                             </TabsTrigger>
                             <TabsTrigger value="donations" className={`relative py-1 px-4 text-md font-medium`}>
-                                Danh sách ủng hộ
+                                Danh sách ủng hộ ({donationsResponse?.totalItems || 0})
                             </TabsTrigger>
                         </TabsList>
 
@@ -113,7 +113,7 @@ const CampaignDetail = () => {
                             ) : donationsError ? (
                                 <p>Error loading donations: {donationsError.message}</p>
                             ) : (
-                                <DonationList donations={donations} />
+                                <DonationList donations={donationsResponse?.data} />
                             )}
                         </TabsContent>
                     </Tabs>
@@ -269,7 +269,7 @@ const CampaignDetail = () => {
 
             <hr className="mt-16 border-2 border-gray-100" />
 
-            <CampaignList excludeCampaignId={campaign?.campaignID}/>
+            <CampaignList excludeCampaignId={campaign?.campaignID} />
         </div>
     );
 };
