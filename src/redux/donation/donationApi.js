@@ -14,9 +14,15 @@ export const donationApi = baseApi.injectEndpoints({
         
         // Fetch donations by campaign ID
         getDonationsByCampaignId: builder.query({
-            query: (campaignId) => `/donation/campaign/${campaignId}`,
+            query: ({ campaignId, page, rowsPerPage }) => 
+                `/donation/campaign/${campaignId}?page=${page}&rowsPerPage=${rowsPerPage}`,
         }),
-        
+
+        // Fetch total donations by campaign ID
+        getTotalDonationsByCampaignId: builder.query({
+            query: (campaignId) => `/donation/campaign/${campaignId}/total`,
+        }),
+
         // Create a donation
         createDonation: builder.mutation({
             query: (data) => ({
@@ -49,6 +55,7 @@ export const {
     useGetAllDonationsQuery,
     useGetDonationByIdQuery,
     useGetDonationsByCampaignIdQuery,
+    useGetTotalDonationsByCampaignIdQuery,
     useCreateDonationMutation,
     useUpdateDonationMutation,
     useDeleteDonationMutation,

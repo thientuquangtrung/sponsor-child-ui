@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { Clock, MapPin, Check, Target } from 'lucide-react';
@@ -8,20 +8,32 @@ import CampaignList from './CampaignList';
 import logo from '@/assets/images/logo-short.png';
 import DonationList from './DonationList';
 import { useGetCampaignByIdQuery } from '@/redux/campaign/campaignApi';
-import { useGetDonationsByCampaignIdQuery } from '@/redux/donation/donationApi';
+import { useGetDonationsByCampaignIdQuery, useGetTotalDonationsByCampaignIdQuery } from '@/redux/donation/donationApi';
 
 const CampaignDetail = () => {
     const { id } = useParams();
     const [activeTab, setActiveTab] = useState('story');
     const navigate = useNavigate();
+    const [currentPage, setCurrentPage] = useState(1);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
     const { data: campaign, isLoading, error } = useGetCampaignByIdQuery(id);
     const {
-        data: donationsResponse,
+        data: donations = { data: [] },
         isLoading: donationsLoading,
         error: donationsError,
-    } = useGetDonationsByCampaignIdQuery(id);
+    } = useGetDonationsByCampaignIdQuery({ campaignId: id, page: currentPage, rowsPerPage });
 
-    const navigateToInfoDonate = (id) => {
+    const {
+        data: donationsTotal,
+        isLoading: donationsTotalLoading,
+        error: donationsTotalError,
+    } = useGetTotalDonationsByCampaignIdQuery(id);
+
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [id]);
+
+    const navigateToInfoDonate = () => {
         navigate(`/donate-target/info-donate/${campaign?.campaignID}`);
     };
 
@@ -95,7 +107,7 @@ const CampaignDetail = () => {
                                 Hoạt động
                             </TabsTrigger>
                             <TabsTrigger value="donations" className={`relative py-1 px-4 text-md font-medium`}>
-                                Danh sách ủng hộ ({donationsResponse?.totalItems || 0})
+                                Danh sách ủng hộ ({donationsTotal?.totalDonations})
                             </TabsTrigger>
                         </TabsList>
 
@@ -108,12 +120,19 @@ const CampaignDetail = () => {
                         </TabsContent>
 
                         <TabsContent value="donations" className="p-4">
-                            {donationsLoading ? (
+                            {donationsTotal?.totalDonations === 0 ? (
+                                <p className="text-gray-400 italic text-center mt-8">Hiện chiến dịch chưa có người ủng hộ.</p>
+                            ) : donationsLoading ? (
                                 <p>Loading donations...</p>
                             ) : donationsError ? (
                                 <p>Error loading donations: {donationsError.message}</p>
                             ) : (
-                                <DonationList donations={donationsResponse?.data} />
+                                <DonationList
+                                    donations={donations.data}
+                                    currentPage={currentPage}
+                                    totalPages={donations.totalPages}
+                                    onPageChange={setCurrentPage}
+                                />
                             )}
                         </TabsContent>
                     </Tabs>
