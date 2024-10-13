@@ -109,6 +109,7 @@ const OrganizationRegistrationForm = () => {
         setShowConfirmation(false);
     };
 
+
     return (
         <div className="flex flex-col p-8 rounded-lg mx-auto my-8 bg-[#c3e2da]">
             {!showCommitmentForm && !showSurveyForm ? (

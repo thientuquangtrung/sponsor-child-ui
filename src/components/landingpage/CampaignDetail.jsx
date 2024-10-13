@@ -107,7 +107,7 @@ const CampaignDetail = () => {
                                 Hoạt động
                             </TabsTrigger>
                             <TabsTrigger value="donations" className={`relative py-1 px-4 text-md font-medium`}>
-                                Danh sách ủng hộ ({donationsTotal?.totalDonations})
+                                Danh sách ủng hộ ({donationsTotal?.totalDonations || 0})
                             </TabsTrigger>
                         </TabsList>
 
@@ -121,7 +121,9 @@ const CampaignDetail = () => {
 
                         <TabsContent value="donations" className="p-4">
                             {donationsTotal?.totalDonations === 0 ? (
-                                <p className="text-gray-400 italic text-center mt-8">Hiện chiến dịch chưa có người ủng hộ.</p>
+                                <p className="text-gray-400 italic text-center mt-8">
+                                    Hiện chiến dịch chưa có người ủng hộ.
+                                </p>
                             ) : donationsLoading ? (
                                 <p>Loading donations...</p>
                             ) : donationsError ? (
@@ -179,8 +181,12 @@ const CampaignDetail = () => {
                                 <div>
                                     <div className="text-sm font-semibold">Thời gian còn lại</div>
                                     <div className="text-lg font-bold text-[#69A6B8]">
-                                        {Math.ceil((new Date(campaign?.endDate) - new Date()) / (1000 * 60 * 60 * 24))}{' '}
-                                        ngày
+                                        {Math.ceil((new Date(campaign?.endDate) - new Date()) / (1000 * 60 * 60 * 24)) >
+                                        0
+                                            ? `Còn ${Math.ceil(
+                                                  (new Date(campaign?.endDate) - new Date()) / (1000 * 60 * 60 * 24),
+                                              )} ngày`
+                                            : 'Hết hạn'}
                                     </div>
                                 </div>
                             </div>

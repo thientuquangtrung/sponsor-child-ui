@@ -16,7 +16,11 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useGetCampaignByIdQuery } from '@/redux/campaign/campaignApi';
-import { useCreateDonationMutation, useGetDonationsByCampaignIdQuery } from '@/redux/donation/donationApi';
+import {
+    useCancelDonationByOrderCodeMutation,
+    useCreateDonationMutation,
+    useGetDonationsByCampaignIdQuery,
+} from '@/redux/donation/donationApi';
 import { toast } from 'sonner';
 
 const formSchema = z.object({
@@ -37,6 +41,7 @@ const DonationInformation = () => {
     const { data: campaign, isLoading, error } = useGetCampaignByIdQuery(id);
     const { data: donation } = useGetDonationsByCampaignIdQuery(id);
     const [createDonation, { isLoading: isCreatingDonation }] = useCreateDonationMutation();
+    const [cancelDonation, { isLoading: isCancellingDonation }] = useCancelDonationByOrderCodeMutation();
     const [payOSConfig, setPayOSConfig] = useState({
         RETURN_URL: window.location.origin, // required
         ELEMENT_ID: 'payment-container', // required
@@ -47,11 +52,18 @@ const DonationInformation = () => {
             toast.success('Thanh toán thành công');
             navigate(-1);
         },
-        onCancel: (event) => {
+        onCancel: async (event) => {
             //TODO: Hành động fail
-            toast.error('Thanh toán thất bại');
+            try {
+                const orderCode = event.orderCode;
+                await cancelDonation(orderCode).unwrap();
+                toast.error('Thanh toán thất bại');
+            } catch (error) {
+                console.error('Lỗi khi hủy quyên góp:', error);
+            }
         },
     });
+
     const { open, exit } = usePayOS(payOSConfig);
     useEffect(() => {
         if (payOSConfig.CHECKOUT_URL != null) {
@@ -176,7 +188,11 @@ const DonationInformation = () => {
 
                     <div className="relative mb-6">
                         <p className="absolute top-[10px] left-[10px] text-sm text-gray-700 bg-white px-2 py-1 rounded-full">
-                            Còn {Math.ceil((new Date(campaign?.endDate) - new Date()) / (1000 * 60 * 60 * 24))} ngày
+                            {Math.ceil((new Date(campaign?.endDate) - new Date()) / (1000 * 60 * 60 * 24)) > 0
+                                ? `Còn ${Math.ceil(
+                                      (new Date(campaign?.endDate) - new Date()) / (1000 * 60 * 60 * 24),
+                                  )} ngày`
+                                : 'Hết hạn'}
                         </p>
                         <img
                             src={campaign?.thumbnailUrl || 'https://via.placeholder.com/400x300'}
