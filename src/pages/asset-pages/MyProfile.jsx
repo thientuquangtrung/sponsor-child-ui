@@ -1,24 +1,66 @@
-import * as React from "react";
+import * as React from 'react';
 import { useForm } from 'react-hook-form';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { useUpdateUserMutation } from '@/redux/user/userApi';
 
+const profileSchema = z.object({
+    fullname: z.string().min(1, 'Tên tài khoản là bắt buộc'),
+    email: z.string().email('Email không hợp lệ'),
+    dateOfBirth: z.string().optional(),
+    phoneNumber: z.string().min(10, 'Số điện thoại phải có ít nhất 10 số').optional(),
+    address: z.string().min(1, 'Địa chỉ là bắt buộc'), 
+    bio: z.string().min(1, 'Giới thiệu bản thân là bắt buộc'), 
+});
 
 export default function MyProfile() {
     const { user } = useSelector((state) => state.auth);
     const [avatarSrc, setAvatarSrc] = useState('https://via.placeholder.com/150');
     const [dragging, setDragging] = useState(false);
-    const form = useForm();
+    const [updateUser, { isLoading, isError, error }] = useUpdateUserMutation();
 
-    function onSubmit(values) {
-        console.log(values);
+    const form = useForm({
+        resolver: zodResolver(profileSchema),
+        defaultValues: {
+            fullname: user?.fullname || '',
+            email: user?.email || '',
+            dateOfBirth: user?.dateOfBirth || '',
+            address: user?.address || '',
+            bio: user?.bio || '',
+        },
+    });
+
+    async function onSubmit(values) {
+        try {
+            const updateUserProfile = {
+                id: user?.userID,
+                fullname: user?.fullname,
+                dateOfBirth:  user?.dateOfBirth,
+                address: user?.address, 
+                bio: user?.bio, 
+            };
+
+            console.log('Update User Profile Payload:', updateUserProfile);
+
+            const response = await updateUser(updateUserProfile).unwrap();
+            console.log('User updated successfully:', response);
+        } catch (error) {
+            console.error('Failed to update user profile:', error);
+
+            if (error.data && error.data.errors) {
+                console.log('Validation Errors:', error.data.errors);
+            }
+        }
     }
 
-    function handleAvatarChange(event) {
+    // Handle avatar image changes (drag/drop and file input)
+    const handleAvatarChange = (event) => {
         const file = event.target.files[0];
         if (file) {
             const reader = new FileReader();
@@ -27,19 +69,19 @@ export default function MyProfile() {
             };
             reader.readAsDataURL(file);
         }
-    }
+    };
 
-    function handleDragOver(event) {
+    const handleDragOver = (event) => {
         event.preventDefault();
         setDragging(true);
-    }
+    };
 
-    function handleDragLeave(event) {
+    const handleDragLeave = (event) => {
         event.preventDefault();
         setDragging(false);
-    }
+    };
 
-    function handleDrop(event) {
+    const handleDrop = (event) => {
         event.preventDefault();
         setDragging(false);
         const file = event.dataTransfer.files[0];
@@ -50,7 +92,7 @@ export default function MyProfile() {
             };
             reader.readAsDataURL(file);
         }
-    }
+    };
 
     return (
         <div className="container mx-auto px-4 md:px-16 py-12">
@@ -94,7 +136,6 @@ export default function MyProfile() {
                                                 className="text-lg h-14 border-2 border-primary"
                                                 placeholder="Nhập tên tài khoản"
                                                 {...field}
-                                                value={user?.fullname}
                                             />
                                         </FormControl>
                                         <FormMessage />
@@ -109,11 +150,9 @@ export default function MyProfile() {
                                         <FormLabel className="text-xl">Email</FormLabel>
                                         <FormControl>
                                             <Input
-                                                
                                                 className="text-lg h-14 border-2 border-primary"
                                                 placeholder="Nhập email"
                                                 {...field}
-                                                value={user?.email}
                                                 disabled
                                             />
                                         </FormControl>
@@ -124,31 +163,19 @@ export default function MyProfile() {
                             <FormField
                                 control={form.control}
                                 name="dateOfBirth"
-                                render={({ field }) => {
-                                    const formattedDate = user?.dateOfBirth
-                                        ? new Date(user.dateOfBirth).toLocaleDateString('en-GB')
-                                        : '';
-
-                                    return (
-                                        <FormItem>
-                                            <FormLabel className="text-xl">Ngày sinh</FormLabel>
-                                            <FormControl>
-                                                <Input
-                                                    type="text"
-                                                    className="text-lg h-14 border-2 border-primary"
-                                                    {...field}
-                                                    value={formattedDate}
-                                                    onChange={(e) => {
-                                                        const [day, month, year] = e.target.value.split('/');
-                                                        const isoFormattedDate = `${year}-${month}-${day}`;
-                                                        field.onChange(isoFormattedDate);
-                                                    }}
-                                                />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    );
-                                }}
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel className="text-xl">Ngày sinh</FormLabel>
+                                        <FormControl>
+                                            <Input
+                                                type="text"
+                                                className="text-lg h-14 border-2 border-primary"
+                                                {...field}
+                                            />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
                             />
                         </div>
                         <div className="space-y-8">
@@ -157,13 +184,12 @@ export default function MyProfile() {
                                 name="phoneNumber"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className="text-xl">Số điện thoại</FormLabel>
+                                        <FormLabel className="text-xl">Số điện thoại</FormLabel>
                                         <FormControl>
                                             <Input
                                                 className="text-lg h-14 border-2 border-primary"
-                                                placeholder="Nhập số điện thoại"
+                                                placeholder="Nhập số điện thoại"
                                                 {...field}
-                                                value={user?.phone}
                                             />
                                         </FormControl>
                                         <FormMessage />
@@ -181,7 +207,6 @@ export default function MyProfile() {
                                                 className="text-lg h-14 border-2 border-primary"
                                                 placeholder="Nhập địa chỉ"
                                                 {...field}
-                                                value={user?.address}
                                             />
                                         </FormControl>
                                         <FormMessage />
@@ -199,7 +224,6 @@ export default function MyProfile() {
                                                 className="text-lg h-20 border-2 border-primary"
                                                 placeholder="Tối đa 255 ký tự"
                                                 {...field}
-                                                value={user?.bio}
                                             />
                                         </FormControl>
                                         <FormMessage />

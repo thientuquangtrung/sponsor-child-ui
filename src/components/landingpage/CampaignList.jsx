@@ -37,8 +37,11 @@ const CampaignList = ({ excludeCampaignId }) => {
                             />
                             <div className="flex justify-between items-center mt-2">
                                 <span className="absolute top-[10px] left-[10px] bg-white text-rose-400 font-semibold rounded-full px-3 py-1 text-xs">
-                                    Còn {Math.ceil((new Date(campaign?.endDate) - new Date()) / (1000 * 60 * 60 * 24))}{' '}
-                                    ngày
+                                    {Math.ceil((new Date(campaign?.endDate) - new Date()) / (1000 * 60 * 60 * 24)) > 0
+                                        ? `Còn ${Math.ceil(
+                                              (new Date(campaign?.endDate) - new Date()) / (1000 * 60 * 60 * 24),
+                                          )} ngày`
+                                        : 'Hết hạn'}
                                 </span>
                             </div>
                         </div>
