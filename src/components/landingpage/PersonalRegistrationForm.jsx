@@ -14,6 +14,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import CCCDCard from './CCCDCard';
 
 const PersonalRegistrationForm = () => {
     const [startDate, setStartDate] = useState(null);
@@ -232,6 +233,8 @@ const PersonalRegistrationForm = () => {
                             <hr className="w-[50%] border-black border-b-[1px]" />
                         </CardContent>
                     </Card>
+
+                    <CCCDCard />
 
                     <Card className="mb-6">
                         <CardContent className="bg-white rounded-md p-4 shadow-sm">
@@ -478,82 +481,6 @@ const PersonalRegistrationForm = () => {
                         </div>
                     </div>
 
-                    {/* <Card className="my-6">
-                        <CardHeader className="bg-teal-600 text-white p-4 rounded-t-sm">
-                            <CardTitle className="text-lg font-bold">
-                                Phần 2: Cam kết giới thiệu năng lực hoạt động thiện nguyện
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent className="bg-white rounded-md p-4 shadow-sm">
-                            <Label htmlFor="purpose" className="block text-black font-semibold mb-2">
-                                Anh chị/tổ chức cam kết sử dụng TKTT MB cho mục đích nào sau đây?{' '}
-                                <span className="text-red-600">*</span>
-                            </Label>
-                            <div className="flex flex-col space-y-2">
-                                <label className="flex items-center">
-                                    <Checkbox id="donate" className="mr-2" />
-                                    <span>Vận động, tiếp nhận các nguồn đóng góp tự nguyện</span>
-                                </label>
-                                <label className="flex items-center">
-                                    <Checkbox id="fundraising" className="mr-2" />
-                                    <span>Vận động gây quỹ nhằm phát triển, thực hiện các dự án cộng đồng</span>
-                                </label>
-                                <label className="flex items-center">
-                                    <Checkbox id="transparency" className="mr-2" />
-                                    <span>
-                                        Để công khai minh bạch đối với nhà tài trợ, người ủng hộ, người đóng góp
-                                    </span>
-                                </label>
-                                <label className="flex items-center">
-                                    <Checkbox id="nonProfit" className="mr-2" />
-                                    <span>Các mục đích phi lợi nhuận khác</span>
-                                </label>
-                                <label className="flex items-center">
-                                    <Checkbox id="otherPurpose" className="mr-2" onChange={handleOtherCheckboxChange} />
-                                    <span>Mục khác:</span>
-                                </label>
-                                {isOtherChecked && (
-                                    <div className="mt-2">
-                                        <Input
-                                            type="text"
-                                            value={otherPurpose}
-                                            onChange={handleOtherInputChange}
-                                            placeholder="Vui lòng nhập mục đích khác"
-                                            className="w-full border-none"
-                                        />
-                                        <hr className="w-full border-black border-b-[1px]" />
-                                        {otherPurpose === '' && (
-                                            <p className="text-red-600 text-sm">Đây là một câu hỏi bắt buộc</p>
-                                        )}
-                                    </div>
-                                )}
-                            </div>
-                        </CardContent>
-                    </Card> */}
-
-                    {/* <Card className="mb-6">
-                        <CardContent className="bg-white rounded-md p-4 shadow-sm">
-                            <Label htmlFor="disclosure" className="block text-black font-semibold mb-2">
-                                Anh chị/tổ chức có cam kết công bố công khai việc sử dụng TKTT MB trên kênh thông tin
-                                đại chúng các nội dung sau? <span className="text-red-600">*</span>
-                            </Label>
-                            <RadioGroup defaultValue="Đồng ý">
-                                <div className="flex items-center space-x-2">
-                                    <RadioGroupItem value="Đồng ý" id="disclosure-agree" />
-                                    <Label htmlFor="disclosure-agree">Đồng ý</Label>
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                    <RadioGroupItem value="Chưa chắc chắn" id="disclosure-unsure" />
-                                    <Label htmlFor="disclosure-unsure">Chưa chắc chắn</Label>
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                    <RadioGroupItem value="Không đồng ý" id="disclosure-disagree" />
-                                    <Label htmlFor="disclosure-disagree">Không đồng ý</Label>
-                                </div>
-                            </RadioGroup>
-                        </CardContent>
-                    </Card> */}
-
                     <Card className="my-6">
                         <CardHeader className="bg-teal-600 text-white p-4 rounded-t-sm">
                             <CardTitle className="text-lg font-bold">
@@ -715,7 +642,7 @@ const PersonalRegistrationForm = () => {
                                     <Checkbox className="mr-2" />
                                     Kickstarter
                                 </label>
-                                
+
                                 {isOtherChecked && (
                                     <div className="mt-2">
                                         <Input

@@ -25,7 +25,7 @@ const FeaturedCampaign = () => {
                 <CarouselPrevious />
                 <CarouselContent>
                     {campaigns.map((campaign) => (
-                        <CarouselItem key={campaign.campaignID} className="bg-white rounded-lg relative ">
+                        <CarouselItem key={campaign.campaignID} itemsPerView={3} className="bg-white rounded-lg relative ">
                             <Link to={`/campaign-detail/${campaign.campaignID}`}>
                                 <img
                                     src={campaign?.thumbnailUrl || 'https://via.placeholder.com/400x300'}
