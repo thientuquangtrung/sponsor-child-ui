@@ -119,23 +119,23 @@ const CarouselContent = React.forwardRef(({ className, ...props }, ref) => {
 });
 CarouselContent.displayName = 'CarouselContent';
 
-const CarouselItem = React.forwardRef(({ className, ...props }, ref) => {
+const CarouselItem = React.forwardRef(({ className, itemsPerView = 3, ...props }, ref) => {
     const { orientation } = useCarousel();
+
+    const itemWidth = `calc(${100 / itemsPerView}% - 1rem)`;
 
     return (
         <div
             ref={ref}
             role="group"
             aria-roledescription="slide"
-            className={cn(
-                'min-w-0 shrink-0 grow-0 basis-[calc(33.33%_-_1rem)] mx-2', 
-                orientation === 'horizontal' ? '' : 'pt-4',
-                className,
-            )}
+            style={{ flex: `0 0 ${itemWidth}` }}
+            className={cn('min-w-0 shrink-0 grow-0', 'mx-2', orientation === 'horizontal' ? '' : 'pt-4', className)}
             {...props}
         />
-    )
+    );
 });
+
 CarouselItem.displayName = 'CarouselItem';
 
 const CarouselPrevious = React.forwardRef(({ className, variant = 'outline', size = 'icon', ...props }, ref) => {
@@ -147,10 +147,10 @@ const CarouselPrevious = React.forwardRef(({ className, variant = 'outline', siz
             variant={variant}
             size={size}
             className={cn(
-                'absolute h-8 w-8 rounded-full',
+                'absolute h-8 w-8 rounded-full z-10',
                 orientation === 'horizontal'
-                    ? '-left-12 top-1/2 -translate-y-1/2'
-                    : '-top-12 left-1/2 -translate-x-1/2 rotate-90',
+                    ? '-left-4 top-1/2 -translate-y-1/2'
+                    : '-top-4 left-1/2 -translate-x-1/2 rotate-90',
                 className,
             )}
             disabled={!canScrollPrev}
@@ -162,7 +162,6 @@ const CarouselPrevious = React.forwardRef(({ className, variant = 'outline', siz
         </Button>
     );
 });
-CarouselPrevious.displayName = 'CarouselPrevious';
 
 const CarouselNext = React.forwardRef(({ className, variant = 'outline', size = 'icon', ...props }, ref) => {
     const { orientation, scrollNext, canScrollNext } = useCarousel();
@@ -173,10 +172,10 @@ const CarouselNext = React.forwardRef(({ className, variant = 'outline', size = 
             variant={variant}
             size={size}
             className={cn(
-                'absolute h-8 w-8 rounded-full',
+                'absolute h-8 w-8 rounded-full z-10',
                 orientation === 'horizontal'
-                    ? '-right-12 top-1/2 -translate-y-1/2'
-                    : '-bottom-12 left-1/2 -translate-x-1/2 rotate-90',
+                    ? '-right-4 top-1/2 -translate-y-1/2'
+                    : '-bottom-4 left-1/2 -translate-x-1/2 rotate-90',
                 className,
             )}
             disabled={!canScrollNext}
@@ -188,6 +187,7 @@ const CarouselNext = React.forwardRef(({ className, variant = 'outline', size = 
         </Button>
     );
 });
+
 CarouselNext.displayName = 'CarouselNext';
 
 export { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext };
