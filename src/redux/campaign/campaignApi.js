@@ -3,7 +3,13 @@ import baseApi from '../baseApi';
 export const campaignApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
         getAllCampaigns: builder.query({
-            query: () => '/campaign',
+            query: (searchParams) => {
+                if (!searchParams) return '/campaign';
+                return {
+                    url: '/campaign/filter',
+                    params: searchParams,
+                };
+            },
         }),
         getCampaignById: builder.query({
             query: (id) => `/campaign/${id}`,
