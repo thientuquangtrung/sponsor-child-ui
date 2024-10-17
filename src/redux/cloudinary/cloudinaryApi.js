@@ -15,26 +15,22 @@ export const cloudinaryApi = baseApi.injectEndpoints({
                 body: formData,
             }),
         }),
-    }),
-});
-export const { useUploadImageMutation, useUploadPdfMutation } = cloudinaryApi;
         fetchResourcesByFolder: builder.query({
             query: ({ folderName }) => ({
                 url: `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUD_NAME}/resources/image`,
                 method: 'GET',
                 params: {
                     type: 'upload',
-                    prefix: folderName, 
+                    prefix: folderName,
                 },
                 headers: {
                     Authorization: `Basic ${btoa(
-                        `${import.meta.env.VITE_CLOUDINARY_APIKEY}:${import.meta.env.VITE_CLOUDINARY_SECRET}`
-                    )}`,  
+                        `${import.meta.env.VITE_CLOUDINARY_APIKEY}:${import.meta.env.VITE_CLOUDINARY_SECRET}`,
+                    )}`,
                 },
             }),
         }),
     }),
 });
 
-export const { useUploadImageMutation, useFetchResourcesByFolderQuery  } = cloudinaryApi;
-
+export const { useUploadImageMutation, useUploadPdfMutation, useFetchResourcesByFolderQuery } = cloudinaryApi;
