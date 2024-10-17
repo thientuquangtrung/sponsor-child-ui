@@ -48,6 +48,14 @@ export const donationApi = baseApi.injectEndpoints({
                 method: 'DELETE',
             }),
         }),
+
+        // Cancel a donation by order code
+        cancelDonationByOrderCode: builder.mutation({
+            query: (orderCode) => ({
+                url: `/donation/cancel-by-order-code/${orderCode}`,
+                method: 'POST',
+            }),
+        }),
     }),
 });
 
@@ -59,4 +67,5 @@ export const {
     useCreateDonationMutation,
     useUpdateDonationMutation,
     useDeleteDonationMutation,
+    useCancelDonationByOrderCodeMutation,
 } = donationApi;

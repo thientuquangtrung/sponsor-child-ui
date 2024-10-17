@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-
 import { Clock, MapPin, Check, Target } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { Carousel, CarouselPrevious, CarouselNext, CarouselContent, CarouselItem } from '@/components/ui/carousel';
 import CampaignList from './CampaignList';
 import logo from '@/assets/images/logo-short.png';
 import DonationList from './DonationList';
 import { useGetCampaignByIdQuery } from '@/redux/campaign/campaignApi';
 import { useGetDonationsByCampaignIdQuery, useGetTotalDonationsByCampaignIdQuery } from '@/redux/donation/donationApi';
+import { Dialog, DialogClose, DialogContent } from '@/components/ui/dialog';
 
 const CampaignDetail = () => {
     const { id } = useParams();
@@ -16,6 +17,14 @@ const CampaignDetail = () => {
     const navigate = useNavigate();
     const [currentPage, setCurrentPage] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(10);
+    const [selectedImage, setSelectedImage] = useState(null);
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+    const handleImageClick = (imageSrc) => {
+        setSelectedImage(imageSrc);
+        setIsDialogOpen(true);
+    };
+
     const { data: campaign, isLoading, error } = useGetCampaignByIdQuery(id);
     const {
         data: donations = { data: [] },
@@ -44,6 +53,33 @@ const CampaignDetail = () => {
     if (error) {
         return <p>Lỗi khi tải thông tin chiến dịch: {error.message}</p>;
     }
+
+    const images = [
+        {
+            src: 'https://via.placeholder.com/400x300',
+        },
+        {
+            src: 'https://via.placeholder.com/400x300',
+        },
+        {
+            src: 'https://via.placeholder.com/400x300',
+        },
+        {
+            src: 'https://via.placeholder.com/400x300',
+        },
+        {
+            src: 'https://via.placeholder.com/400x300',
+        },
+        {
+            src: 'https://via.placeholder.com/400x300',
+        },
+        {
+            src: 'https://via.placeholder.com/400x300',
+        },
+        {
+            src: 'https://via.placeholder.com/400x300',
+        },
+    ];
 
     const partners = [
         {
@@ -98,6 +134,32 @@ const CampaignDetail = () => {
                         <img src={logo} alt="Logo" className="absolute top-0 right-0 m-2 w-20 h-20" />
                     </div>
 
+                    <Carousel className="my-6" opts={{ loop: true }}>
+                        <CarouselPrevious />
+                        <CarouselContent>
+                            {images.map((image, index) => (
+                                <CarouselItem key={index} itemsPerView={7}>
+                                    <img
+                                        src={image.src}
+                                        alt={`Slide ${index + 1}`}
+                                        className="rounded-lg shadow-md w-[100px] h-[100px] cursor-pointer"
+                                        onClick={() => handleImageClick(image.src)}
+                                    />
+                                </CarouselItem>
+                            ))}
+                        </CarouselContent>
+                        <CarouselNext />
+                    </Carousel>
+
+                    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                        <DialogContent className="w-full h-auto max-w-4xl p-0">
+                            <div className="relative">
+                                <img src={selectedImage} alt="Selected" className="w-full h-auto rounded-lg" />
+                                <DialogClose asChild></DialogClose>
+                            </div>
+                        </DialogContent>
+                    </Dialog>
+
                     <Tabs value={activeTab} onValueChange={setActiveTab}>
                         <TabsList className="flex space-x-2 bg-inherit">
                             <TabsTrigger value="story" className={`relative py-1 px-4 text-md font-medium`}>
@@ -107,7 +169,7 @@ const CampaignDetail = () => {
                                 Hoạt động
                             </TabsTrigger>
                             <TabsTrigger value="donations" className={`relative py-1 px-4 text-md font-medium`}>
-                                Danh sách ủng hộ ({donationsTotal?.totalDonations})
+                                Danh sách ủng hộ ({donationsTotal?.totalDonations || 0})
                             </TabsTrigger>
                         </TabsList>
 
@@ -121,7 +183,9 @@ const CampaignDetail = () => {
 
                         <TabsContent value="donations" className="p-4">
                             {donationsTotal?.totalDonations === 0 ? (
-                                <p className="text-gray-400 italic text-center mt-8">Hiện chiến dịch chưa có người ủng hộ.</p>
+                                <p className="text-gray-400 italic text-center mt-8">
+                                    Hiện chiến dịch chưa có người ủng hộ.
+                                </p>
                             ) : donationsLoading ? (
                                 <p>Loading donations...</p>
                             ) : donationsError ? (
@@ -179,8 +243,12 @@ const CampaignDetail = () => {
                                 <div>
                                     <div className="text-sm font-semibold">Thời gian còn lại</div>
                                     <div className="text-lg font-bold text-[#69A6B8]">
-                                        {Math.ceil((new Date(campaign?.endDate) - new Date()) / (1000 * 60 * 60 * 24))}{' '}
-                                        ngày
+                                        {Math.ceil((new Date(campaign?.endDate) - new Date()) / (1000 * 60 * 60 * 24)) >
+                                        0
+                                            ? `Còn ${Math.ceil(
+                                                  (new Date(campaign?.endDate) - new Date()) / (1000 * 60 * 60 * 24),
+                                              )} ngày`
+                                            : 'Hết hạn'}
                                     </div>
                                 </div>
                             </div>
