@@ -10,6 +10,46 @@ import DonationList from './DonationList';
 import { useGetCampaignByIdQuery } from '@/redux/campaign/campaignApi';
 import { useGetDonationsByCampaignIdQuery, useGetTotalDonationsByCampaignIdQuery } from '@/redux/donation/donationApi';
 import { Dialog, DialogClose, DialogContent } from '@/components/ui/dialog';
+import { getAssetsList } from '@/lib/cloudinary';
+
+const partners = [
+    {
+        name: 'Nguyễn Văn Ngọc',
+        raised: '1.000.000 VND',
+        startDate: '24/08/2024',
+        avatar: 'https://via.placeholder.com/50',
+    },
+    {
+        name: 'phunghiep17042000',
+        raised: '2.000 VND',
+        startDate: '09/08/2024',
+        avatar: 'https://via.placeholder.com/50',
+    },
+    {
+        name: 'Ông chủ Kim 2k',
+        raised: '0 VND',
+        startDate: '10/08/2024',
+        avatar: 'https://via.placeholder.com/50',
+    },
+    {
+        name: 'ZENOR BENEVOLENT SOCIAL ENTERPRISE JSC',
+        raised: '0 VND',
+        startDate: '12/08/2024',
+        avatar: 'https://via.placeholder.com/50',
+    },
+    {
+        name: 'Luce',
+        raised: '0 VND',
+        startDate: '17/08/2024',
+        avatar: 'https://via.placeholder.com/50',
+    },
+    {
+        name: 'Tuan Tranvan',
+        raised: '0 VND',
+        startDate: '17/08/2024',
+        avatar: 'https://via.placeholder.com/50',
+    },
+];
 
 const CampaignDetail = () => {
     const { id } = useParams();
@@ -19,6 +59,7 @@ const CampaignDetail = () => {
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [selectedImage, setSelectedImage] = useState(null);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [images, setImages] = useState([]);
 
     const handleImageClick = (imageSrc) => {
         setSelectedImage(imageSrc);
@@ -42,6 +83,29 @@ const CampaignDetail = () => {
         setCurrentPage(1);
     }, [id]);
 
+    // get resource from cloudinary by tag
+
+    useEffect(() => {
+        // Fetch images by tag from Cloudinary
+        const fetchImages = async () => {
+            try {
+                const resources = await getAssetsList('campaign_1');
+
+                //gen urls
+                const imageUrls = resources.map((resource) => {
+                    return `https://res.cloudinary.com/${import.meta.env.VITE_CLOUD_NAME}/image/${resource.type}/${
+                        resource.public_id
+                    }.${resource.format}`;
+                });
+                setImages(imageUrls);
+            } catch (error) {
+                console.error('Error fetching images:', error);
+            }
+        };
+
+        fetchImages();
+    }, []);
+
     const navigateToInfoDonate = () => {
         navigate(`/donate-target/info-donate/${campaign?.campaignID}`);
     };
@@ -53,72 +117,6 @@ const CampaignDetail = () => {
     if (error) {
         return <p>Lỗi khi tải thông tin chiến dịch: {error.message}</p>;
     }
-
-    const images = [
-        {
-            src: 'https://via.placeholder.com/400x300',
-        },
-        {
-            src: 'https://via.placeholder.com/400x300',
-        },
-        {
-            src: 'https://via.placeholder.com/400x300',
-        },
-        {
-            src: 'https://via.placeholder.com/400x300',
-        },
-        {
-            src: 'https://via.placeholder.com/400x300',
-        },
-        {
-            src: 'https://via.placeholder.com/400x300',
-        },
-        {
-            src: 'https://via.placeholder.com/400x300',
-        },
-        {
-            src: 'https://via.placeholder.com/400x300',
-        },
-    ];
-
-    const partners = [
-        {
-            name: 'Nguyễn Văn Ngọc',
-            raised: '1.000.000 VND',
-            startDate: '24/08/2024',
-            avatar: 'https://via.placeholder.com/50',
-        },
-        {
-            name: 'phunghiep17042000',
-            raised: '2.000 VND',
-            startDate: '09/08/2024',
-            avatar: 'https://via.placeholder.com/50',
-        },
-        {
-            name: 'Ông chủ Kim 2k',
-            raised: '0 VND',
-            startDate: '10/08/2024',
-            avatar: 'https://via.placeholder.com/50',
-        },
-        {
-            name: 'ZENOR BENEVOLENT SOCIAL ENTERPRISE JSC',
-            raised: '0 VND',
-            startDate: '12/08/2024',
-            avatar: 'https://via.placeholder.com/50',
-        },
-        {
-            name: 'Luce',
-            raised: '0 VND',
-            startDate: '17/08/2024',
-            avatar: 'https://via.placeholder.com/50',
-        },
-        {
-            name: 'Tuan Tranvan',
-            raised: '0 VND',
-            startDate: '17/08/2024',
-            avatar: 'https://via.placeholder.com/50',
-        },
-    ];
 
     return (
         <div className="container mx-auto py-8 px-4">
@@ -138,12 +136,12 @@ const CampaignDetail = () => {
                         <CarouselPrevious />
                         <CarouselContent>
                             {images.map((image, index) => (
-                                <CarouselItem key={index} itemsPerView={7}>
+                                <CarouselItem key={index} itemsPerView={6}>
                                     <img
-                                        src={image.src}
+                                        src={image}
                                         alt={`Slide ${index + 1}`}
-                                        className="rounded-lg shadow-md w-[100px] h-[100px] cursor-pointer"
-                                        onClick={() => handleImageClick(image.src)}
+                                        className="rounded-lg shadow-md w-[100px] h-[100px] cursor-pointer object-cover"
+                                        onClick={() => handleImageClick(image)}
                                     />
                                 </CarouselItem>
                             ))}
