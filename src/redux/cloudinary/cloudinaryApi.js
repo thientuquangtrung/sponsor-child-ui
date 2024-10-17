@@ -8,6 +8,16 @@ export const cloudinaryApi = baseApi.injectEndpoints({
                 body: formData,
             }),
         }),
+        uploadPdf: builder.mutation({
+            query: (formData) => ({
+                url: `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUD_NAME}/raw/upload`,
+                method: 'POST',
+                body: formData,
+            }),
+        }),
+    }),
+});
+export const { useUploadImageMutation, useUploadPdfMutation } = cloudinaryApi;
         fetchResourcesByFolder: builder.query({
             query: ({ folderName }) => ({
                 url: `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUD_NAME}/resources/image`,
@@ -27,3 +37,4 @@ export const cloudinaryApi = baseApi.injectEndpoints({
 });
 
 export const { useUploadImageMutation, useFetchResourcesByFolderQuery  } = cloudinaryApi;
+

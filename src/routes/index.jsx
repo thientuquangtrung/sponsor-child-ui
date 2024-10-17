@@ -15,6 +15,7 @@ import PageIntroduction from '@/components/landingpage/PageIntroduction';
 import RegistrationPage from '@/components/landingpage/RegistrationPage';
 import { Info } from 'lucide-react';
 import DonationInformation from '@/components/landingpage/DonationInformation';
+import ContractSignPage from '@/components/guarantee/ContractSignPage';
 
 const Loadable = (Component) => {
     const LoadableComponent = (props) => {
@@ -107,6 +108,10 @@ export default function Router() {
                 {
                     path: 'profile',
                     element: <PageMyProfile />,
+                },
+                {
+                    path: 'contract',
+                    element: <ContractSignPage />,
                 },
                 {
                     path: 'empty',
