@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
+import useDebounce from '@/hooks/useDebounce';
 import banner from '@/assets/images/banner.png';
 import { useGetAllCampaignsQuery } from '@/redux/campaign/campaignApi';
 import {
@@ -19,14 +20,19 @@ const DonateTarget = () => {
     const [URLSearchParams, SetURLSearchParams] = useSearchParams();
     const [searchTerm, setSearchTerm] = useState('');
     const [activeTab, setActiveTab] = useState('all');
+    const debouncedSearchTerm = useDebounce(searchTerm);
 
     // pass all search params to api call
     const { data: campaigns = [], isLoading, error } = useGetAllCampaignsQuery(URLSearchParams.toString());
 
-    // filter campaigns based on search term
-    const filteredCampaigns = campaigns.filter((campaign) =>
-        campaign.title.toLowerCase().includes(searchTerm.toLowerCase()),
-    );
+    useEffect(() => {
+        if (debouncedSearchTerm) {
+            URLSearchParams.set('search', debouncedSearchTerm);
+        } else {
+            URLSearchParams.delete('search');
+        }
+        SetURLSearchParams(URLSearchParams);
+    }, [debouncedSearchTerm]);
 
     const handleTabClick = (tab) => {
         if (tab !== 'all') {
@@ -70,7 +76,7 @@ const DonateTarget = () => {
                 <div className="flex space-x-2 flex-wrap">
                     <Select
                         onValueChange={(value) => handleSelect('status', value)}
-                        value={+URLSearchParams.get('status') || null}
+                        value={URLSearchParams.get('status') ? +URLSearchParams.get('status') : ''}
                     >
                         <SelectTrigger className="w-[150px]">
                             <SelectValue placeholder="Chọn trạng thái" />
@@ -88,7 +94,7 @@ const DonateTarget = () => {
                     </Select>
                     <Select
                         onValueChange={(value) => handleSelect('type', value)}
-                        value={+URLSearchParams.get('type') || null}
+                        value={URLSearchParams.get('type') ? +URLSearchParams.get('type') : ''}
                     >
                         <SelectTrigger className="w-[150px]">
                             <SelectValue placeholder="Chọn loại" />
@@ -106,7 +112,7 @@ const DonateTarget = () => {
                     </Select>
                     <Select
                         onValueChange={(value) => handleSelect('provinceId', value)}
-                        value={URLSearchParams.get('provinceId')}
+                        value={URLSearchParams.get('provinceId') || ''}
                     >
                         <SelectTrigger className="w-[150px]">
                             <SelectValue placeholder="Chọn tỉnh thành" />
@@ -181,8 +187,8 @@ const DonateTarget = () => {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                {filteredCampaigns.length > 0 &&
-                    filteredCampaigns.map((campaign) => (
+                {campaigns.length > 0 &&
+                    campaigns.map((campaign) => (
                         <Link
                             key={campaign.campaignID}
                             to={`/campaign-detail/${campaign.campaignID}`}
@@ -234,7 +240,7 @@ const DonateTarget = () => {
                         </Link>
                     ))}
             </div>
-            {filteredCampaigns.length === 0 && <p className="text-center my-4">Không tìm thấy chiến dịch</p>}
+            {campaigns.length === 0 && <p className="text-center my-4">Không tìm thấy chiến dịch</p>}
         </div>
     );
 };
