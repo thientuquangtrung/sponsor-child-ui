@@ -6,42 +6,31 @@ import { Button } from '@/components/ui/button';
 import { Upload, X } from 'lucide-react';
 import { Form, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
 import { useForm } from 'react-hook-form';
+import { uploadFile } from '@/lib/cloudinary';
 
 const CCCDCard = () => {
-    const [frontCCCD, setFrontCCCD] = useState(null); 
-    const [backCCCD, setBackCCCD] = useState(null); 
+    const [frontCCCD, setFrontCCCD] = useState(null);
+    const [backCCCD, setBackCCCD] = useState(null);
     const [cccdData, setCccdData] = useState({
         id: '',
         name: '',
         dob: '',
         address: '',
         issue_date: '',
-        issue_location: ''
-    }); 
-    const [isScanned, setIsScanned] = useState(false); 
-    const form = useForm(); 
+        issue_location: '',
+    });
+    const [isScanned, setIsScanned] = useState(false);
+    const form = useForm();
 
     const frontCCCDInputRef = useRef(null);
     const backCCCDInputRef = useRef(null);
 
     const uploadToCloudinary = async (file, folder) => {
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('upload_preset', import.meta.env.VITE_UPLOAD_PRESET_NAME);
-        formData.append('folder', folder);
-
         try {
-            const response = await fetch(
-                `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUD_NAME}/image/upload`,
-                {
-                    method: 'POST',
-                    body: formData,
-                },
-            );
-            const result = await response.json();
-            if (!response.ok) {
-                throw new Error(result.error.message);
-            }
+            const result = await uploadFile({
+                file,
+                folder,
+            });
             return result.secure_url;
         } catch (error) {
             console.error('Upload failed:', error);
@@ -57,7 +46,7 @@ const CCCDCard = () => {
             const response = await fetch('https://api.fpt.ai/vision/idr/vnm', {
                 method: 'POST',
                 headers: {
-                    'api-key': 'KRosD34JKZa60M99NSynhncVZH2wELaU', 
+                    'api-key': 'KRosD34JKZa60M99NSynhncVZH2wELaU',
                 },
                 body: formData,
             });
@@ -82,7 +71,6 @@ const CCCDCard = () => {
                     issue_location: data?.data[0]?.issue_loc || '',
                 }));
             }
-
         } catch (error) {
             console.error('Failed to recognize CCCD:', error);
         }
@@ -95,7 +83,7 @@ const CCCDCard = () => {
         if (backCCCD?.file) {
             await uploadCCCDAndRecognize(backCCCD.file, 'back');
         }
-        setIsScanned(true); 
+        setIsScanned(true);
     };
 
     const handleFrontCCCDChange = async (e) => {
@@ -132,8 +120,8 @@ const CCCDCard = () => {
             let frontCCCDUrl = '';
             let backCCCDUrl = '';
 
-            const guaranteeId = Math.floor(Math.random() * 10000); 
-            const dynamicFolder = `guarantees/${guaranteeId}/cccd`; 
+            const guaranteeId = Math.floor(Math.random() * 10000);
+            const dynamicFolder = `guarantees/${guaranteeId}/cccd`;
 
             if (frontCCCD?.file) {
                 frontCCCDUrl = await uploadToCloudinary(frontCCCD.file, `${dynamicFolder}/front`);
@@ -320,7 +308,10 @@ const CCCDCard = () => {
                                             {...form.register('issue_location')}
                                             value={cccdData.issue_location}
                                             onChange={(e) =>
-                                                setCccdData((prevData) => ({ ...prevData, issue_location: e.target.value }))
+                                                setCccdData((prevData) => ({
+                                                    ...prevData,
+                                                    issue_location: e.target.value,
+                                                }))
                                             }
                                         />
                                     </FormControl>
