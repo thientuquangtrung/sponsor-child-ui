@@ -3,7 +3,7 @@ import banner from '@/assets/images/b_personal.png';
 import { useSelector } from 'react-redux';
 import { toast } from 'sonner';
 import { useForm } from 'react-hook-form';
-import { ArrowBigUpDash, Upload, X } from 'lucide-react';
+import { ArrowBigUpDash, CheckCircle, Upload, X } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
     Dialog,
@@ -18,17 +18,17 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Form, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
 import { useCreateIndividualGuaranteeMutation } from '@/redux/guarantee/guaranteeApi';
-import { useGetBankNamesQuery, useGetOrganizationTypesQuery } from '@/redux/guarantee/getEnumApi';
+import { useGetBankNamesQuery } from '@/redux/guarantee/getEnumApi';
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from '@/components/ui/select';
 
-const PersonalRegistrationForm = () => {
+const PersonalRegistrationForm = ({ onSubmit }) => {
     const { user } = useSelector((state) => state.auth);
     const fileInputRef = useRef();
     const form = useForm();
     const frontCIInputRef = useRef(null);
     const backCIInputRef = useRef(null);
-    const [frontCI, setFrontCI] = useState(null); 
-    const [backCI, setBackCI] = useState(null); 
+    const [frontCI, setFrontCI] = useState(null);
+    const [backCI, setBackCI] = useState(null);
     const [cccdData, setCccdData] = useState({
         id: '',
         name: '',
@@ -40,6 +40,13 @@ const PersonalRegistrationForm = () => {
     const [isScanned, setIsScanned] = useState(false);
     const [uploadedFiles, setUploadedFiles] = useState([]);
     const [showConfirmation, setShowConfirmation] = useState(false);
+
+    const steps = [
+        { name: 'Điền đơn đăng ký', status: 'active' },
+        { name: 'Chờ Admin duyệt', status: 'pending' },
+        { name: 'Ký hợp đồng', status: 'pending' },
+        { name: 'Hoàn tất đăng ký', status: 'pending' },
+    ];
 
     const [personalData, setPersonalData] = useState({
         bankAccountNumber: '', // số tài khoản ngân hàng
@@ -55,7 +62,6 @@ const PersonalRegistrationForm = () => {
 
     const [createIndividualGuarantee, { isLoading, isSuccess, isError }] = useCreateIndividualGuaranteeMutation();
     const { data: bankNames, isLoading: isLoadingBanks } = useGetBankNamesQuery();
-    const { data: organizationTypes, isLoading: isLoadingOrganization } = useGetOrganizationTypesQuery();
 
     const uploadToCloudinary = async (file, folder) => {
         const formData = new FormData();
@@ -105,15 +111,15 @@ const PersonalRegistrationForm = () => {
     };
 
     const handleFrontCCCDChange = async (e) => {
-        const file = e.target.files[0]; 
+        const file = e.target.files[0];
         if (file) {
-            const preview = URL.createObjectURL(file); 
-            setFrontCI({ file, preview }); 
+            const preview = URL.createObjectURL(file);
+            setFrontCI({ file, preview });
         }
     };
 
     const handleBackCCCDChange = async (e) => {
-        const file = e.target.files[0]; 
+        const file = e.target.files[0];
         if (file) {
             const preview = URL.createObjectURL(file);
             setBackCI({ file, preview });
@@ -130,23 +136,23 @@ const PersonalRegistrationForm = () => {
             if (uploadedFiles.length > 0) {
                 for (const file of uploadedFiles) {
                     const url = await uploadToCloudinary(file, experienceFolder);
-                    uploadedUrls.push(url); 
+                    uploadedUrls.push(url);
                 }
             }
 
             let frontCIUrl = '';
             if (frontCI?.file) {
                 frontCIUrl = await uploadToCloudinary(frontCI.file, `${cccdFolder}/front`);
-                setPersonalData((prev) => ({ ...prev, frontCIImageUrl: frontCIUrl })); 
+                setPersonalData((prev) => ({ ...prev, frontCIImageUrl: frontCIUrl }));
             }
 
             let backCIUrl = '';
             if (backCI?.file) {
                 backCIUrl = await uploadToCloudinary(backCI.file, `${cccdFolder}/back`);
-                setPersonalData((prev) => ({ ...prev, backCIImageUrl: backCIUrl })); 
+                setPersonalData((prev) => ({ ...prev, backCIImageUrl: backCIUrl }));
             }
 
-            return { uploadedUrls, frontCIUrl, backCIUrl }; 
+            return { uploadedUrls, frontCIUrl, backCIUrl };
         } catch (error) {
             console.error('Lỗi khi lưu ảnh:', error);
             throw error;
@@ -220,10 +226,10 @@ const PersonalRegistrationForm = () => {
 
             const updatedData = {
                 ...personalData,
-                frontCIImageUrl: frontCIUrl, 
-                backCIImageUrl: backCIUrl, 
-                volunteerExperienceFiles: uploadedUrls.join(','), 
-                citizenIdentification: cccdData.id, 
+                frontCIImageUrl: frontCIUrl,
+                backCIImageUrl: backCIUrl,
+                volunteerExperienceFiles: uploadedUrls.join(','),
+                citizenIdentification: cccdData.id,
             };
 
             const payload = {
@@ -246,6 +252,10 @@ const PersonalRegistrationForm = () => {
 
             setShowConfirmation(false);
             toast.success('Đăng ký thành công!');
+
+            if (onSubmit) {
+                onSubmit();
+            }
         } catch (error) {
             console.error('Error while registering:', error);
             if (error.data) {
@@ -268,16 +278,34 @@ const PersonalRegistrationForm = () => {
 
     return (
         <div className="flex flex-col p-8 rounded-lg mx-auto my-8 bg-[#c3e2da]">
-            <h2 className="text-2xl font-semibold mb-6 text-center text-teal-700">
+            <h2 className="text-2xl font-semibold text-center text-teal-700">
                 Đăng ký mở Tài khoản trở thành Người Bảo Lãnh
             </h2>
 
+            <div className="flex justify-between items-center my-10">
+                {steps.map((step, index) => (
+                    <div key={index} className="flex items-center space-x-2">
+                        {step.status === 'active' ? (
+                            <CheckCircle className="text-teal-600" />
+                        ) : (
+                            <div className="w-6 h-6 flex items-center justify-center rounded-full bg-gray-400 text-white">
+                                <span>{index + 1}</span>
+                            </div>
+                        )}
+                        <span className={`${step.status === 'active' ? 'text-teal-600 font-bold' : 'text-gray-400'}`}>
+                            {step.name}
+                        </span>
+                        {index < steps.length - 1 && <div className="w-[200px] border-t border-gray-400"></div>}
+                    </div>
+                ))}
+            </div>
+
             <img src={banner} alt="Banner" className="mx-auto mb-4 rounded-sm" />
 
-            {/* Phần thông tin chung của tổ chức */}
+            {/* Phần thông tin cá nhân */}
             <Card className="my-6">
                 <CardHeader className="bg-teal-600 text-white p-4 rounded-t-sm">
-                    <CardTitle className="text-lg font-bold">Phần 1: Thông tin chung của tổ chức</CardTitle>
+                    <CardTitle className="text-lg font-bold">Phần 1: Thông tin cá nhân</CardTitle>
                 </CardHeader>
                 <CardContent className="bg-white rounded-md p-4 shadow-sm">
                     <Label htmlFor="organizationName" className="block text-black font-semibold mb-1">
@@ -507,36 +535,6 @@ const PersonalRegistrationForm = () => {
                                 </div>
                             </form>
                         </Form>
-                    )}
-                </CardContent>
-            </Card>
-
-            <Card className="mb-6">
-                <CardContent className="bg-white rounded-sm p-4 shadow-sm">
-                    <Label htmlFor="organizationType" className="block text-black font-semibold mb-1">
-                        Lĩnh vực hoạt động chính <span className="text-red-600">*</span>
-                    </Label>
-                    {isLoadingOrganization ? (
-                        <p>Đang tải danh sách lĩnh vực...</p>
-                    ) : (
-                        <Select
-                            onValueChange={(value) =>
-                                setPersonalData({ ...personalData, organizationType: Number(value) })
-                            }
-                        >
-                            <SelectTrigger className="w-full border-none">
-                                <SelectValue placeholder="Chọn lĩnh vực hoạt động" />
-                            </SelectTrigger>
-                            <hr className="w-[50%] border-black border-b-[1px]" />
-                            <SelectContent>
-                                {organizationTypes &&
-                                    Object.entries(organizationTypes).map(([key, type]) => (
-                                        <SelectItem key={key} value={key}>
-                                            {type}
-                                        </SelectItem>
-                                    ))}
-                            </SelectContent>
-                        </Select>
                     )}
                 </CardContent>
             </Card>

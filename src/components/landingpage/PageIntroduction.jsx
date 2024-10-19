@@ -18,7 +18,7 @@ const PageIntroduction = () => {
     const navigate = useNavigate();
 
     const navigateToRegister = () => {
-        navigate('/register');
+        navigate('/register'); //dẫn đến RegistrationPage
     };
 
     return (

@@ -25,6 +25,7 @@ import { LogoutUser } from '@/redux/auth/authActionCreators';
 import { useLogoutMutation } from '@/redux/auth/authApi';
 import SearchIcon from '@/assets/icons/SearchIcon';
 import { Input } from '@/components/ui/input';
+import Notification from '../landingpage/Notification';
 
 export function Header() {
     const [logout] = useLogoutMutation();
@@ -226,6 +227,7 @@ export function Header() {
                 <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
                     <div className="w-full flex-1 md:w-auto md:flex-none">{/* <CommandMenu /> */}</div>
                     <nav className="flex items-center space-x-2">
+                        <Notification />
                         <div className="hidden md:block">
                             <ModeToggle />
                         </div>

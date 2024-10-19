@@ -254,7 +254,7 @@ const CampaignDetail = () => {
 
                         <div className="flex items-center mt-6">
                             <MapPin className="text-gray-500 mr-2" />
-                            <span className="text-sm text-gray-600">{campaign?.address}</span>
+                            <span className="text-sm text-gray-600">{campaign?.provinceName}</span>
                         </div>
 
                         <div className="mt-4">

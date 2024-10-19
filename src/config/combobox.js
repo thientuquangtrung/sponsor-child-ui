@@ -73,3 +73,11 @@ export const provinces = [
     { value: '91DA3186-F8D2-4A47-96DE-FB8B0EFB90C3', label: 'Sóc Trăng' },
     { value: '73842CCA-AE65-45B3-8ACC-FC86793F3A0E', label: 'Quảng Nam' },
 ];
+
+export const organizationTypes = [
+    { value: 0, label: 'Tổ chức chính trị xã hội' },
+    { value: 1, label: 'Tổ chức xã hội' },
+    { value: 2, label: 'Tổ chức xã hội nghề nghiệp' },
+    { value: 3, label: 'Tổ chức tôn giáo' },
+    { value: 4, label: 'Tổ chức kinh tế, Doanh nghiệp' },
+];
