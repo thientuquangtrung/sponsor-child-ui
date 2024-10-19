@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import banner from '@/assets/images/b_organization.png';
 import { useSelector } from 'react-redux';
 import { toast } from 'sonner';
-import { ArrowBigUpDash } from 'lucide-react';
+import { ArrowBigUpDash, CheckCircle, Circle } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
     Dialog,
@@ -16,14 +16,22 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useCreateOrganizationGuaranteeMutation } from '@/redux/guarantee/guaranteeApi';
-import { useGetBankNamesQuery, useGetOrganizationTypesQuery } from '@/redux/guarantee/getEnumApi';
+import { useGetBankNamesQuery } from '@/redux/guarantee/getEnumApi';
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from '@/components/ui/select';
+import { organizationTypes } from '@/config/combobox';
 
-const OrganizationRegistrationForm = () => {
+const OrganizationRegistrationForm = ({ onSubmit }) => {
     const { user } = useSelector((state) => state.auth);
     const fileInputRef = useRef();
     const [uploadedFiles, setUploadedFiles] = useState([]);
     const [showConfirmation, setShowConfirmation] = useState(false);
+
+    const steps = [
+        { name: 'Điền đơn đăng ký', status: 'active' },
+        { name: 'Chờ Admin duyệt', status: 'pending' },
+        { name: 'Ký hợp đồng', status: 'pending' },
+        { name: 'Hoàn tất đăng ký', status: 'pending' },
+    ];
 
     const [organizationData, setOrganizationData] = useState({
         organizationName: '', //tên tổ chức
@@ -40,7 +48,6 @@ const OrganizationRegistrationForm = () => {
 
     const [createOrganizationGuarantee, { isLoading, isSuccess, isError }] = useCreateOrganizationGuaranteeMutation();
     const { data: bankNames, isLoading: isLoadingBanks } = useGetBankNamesQuery();
-    const { data: organizationTypes, isLoading: isLoadingOrganization } = useGetOrganizationTypesQuery();
 
     const uploadToCloudinary = async (file, folder) => {
         const formData = new FormData();
@@ -134,6 +141,9 @@ const OrganizationRegistrationForm = () => {
             console.log('Response from server:', response);
             setShowConfirmation(false);
             toast.success('Đăng ký thành công!');
+            if (onSubmit) {
+                onSubmit();
+            }
         } catch (error) {
             console.error('Error while registering:', error);
             if (error.data) {
@@ -156,9 +166,27 @@ const OrganizationRegistrationForm = () => {
 
     return (
         <div className="flex flex-col p-8 rounded-lg mx-auto my-8 bg-[#c3e2da]">
-            <h2 className="text-2xl font-semibold mb-6 text-center text-teal-700">
+            <h2 className="text-2xl font-semibold text-center text-teal-700">
                 Đăng ký mở Tài khoản trở thành Người Bảo Lãnh
             </h2>
+
+            <div className="flex justify-between items-center my-10">
+                {steps.map((step, index) => (
+                    <div key={index} className="flex items-center space-x-2">
+                        {step.status === 'active' ? (
+                            <CheckCircle className="text-teal-600" />
+                        ) : (
+                            <div className="w-6 h-6 flex items-center justify-center rounded-full bg-gray-400 text-white">
+                                <span>{index + 1}</span>
+                            </div>
+                        )}
+                        <span className={`${step.status === 'active' ? 'text-teal-600 font-bold' : 'text-gray-400'}`}>
+                            {step.name}
+                        </span>
+                        {index < steps.length - 1 && <div className="w-[200px] border-t border-gray-400"></div>}
+                    </div>
+                ))}
+            </div>
 
             <img src={banner} alt="Banner" className="mx-auto mb-4 rounded-sm" />
 
@@ -205,28 +233,24 @@ const OrganizationRegistrationForm = () => {
                     <Label htmlFor="organizationType" className="block text-black font-semibold mb-1">
                         Lĩnh vực hoạt động chính <span className="text-red-600">*</span>
                     </Label>
-                    {isLoadingOrganization ? (
-                        <p>Đang tải danh sách lĩnh vực...</p>
-                    ) : (
-                        <Select
-                            onValueChange={(value) =>
-                                setOrganizationData({ ...organizationData, organizationType: Number(value) })
-                            }
-                        >
-                            <SelectTrigger className="w-full border-none">
-                                <SelectValue placeholder="Chọn lĩnh vực hoạt động" />
-                            </SelectTrigger>
-                            <hr className="w-[50%] border-black border-b-[1px]" />
-                            <SelectContent>
-                                {organizationTypes &&
-                                    Object.entries(organizationTypes).map(([key, type]) => (
-                                        <SelectItem key={key} value={key}>
-                                            {type}
-                                        </SelectItem>
-                                    ))}
-                            </SelectContent>
-                        </Select>
-                    )}
+
+                    <Select
+                        onValueChange={(value) =>
+                            setOrganizationData({ ...organizationData, organizationType: Number(value) })
+                        }
+                    >
+                        <SelectTrigger className="w-full border-none">
+                            <SelectValue placeholder="Chọn lĩnh vực hoạt động" />
+                        </SelectTrigger>
+                        <hr className="w-[50%] border-black border-b-[1px]" />
+                        <SelectContent>
+                            {organizationTypes.map((type) => (
+                                <SelectItem key={type.value} value={type.value}>
+                                    {type.label}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
                 </CardContent>
             </Card>
 
@@ -365,7 +389,9 @@ const OrganizationRegistrationForm = () => {
                         <p>Đang tải danh sách ngân hàng...</p>
                     ) : (
                         <Select
-                            onValueChange={(value) => setOrganizationData({ ...organizationData, bankName: Number(value) })}
+                            onValueChange={(value) =>
+                                setOrganizationData({ ...organizationData, bankName: Number(value) })
+                            }
                         >
                             <SelectTrigger className="w-full border-none">
                                 <SelectValue placeholder="Chọn ngân hàng" />
