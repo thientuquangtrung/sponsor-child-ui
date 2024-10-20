@@ -12,9 +12,9 @@ import { Download, Save, Send, Trash } from 'lucide-react';
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { Toaster, toast } from 'sonner';
+
 import { useUploadPdfMutation } from '@/redux/cloudinary/cloudinaryApi';
-import { Cloudinary } from "@cloudinary/url-gen";
-import { AdvancedImage } from '@cloudinary/react';
 // const formSchema = z.object({
 //     fullName: z.string().min(1, "Vui lòng nhập Họ tên"),
 //     idNumber: z.string().min(1, "Vui lòng nhập Số CMND/CCCD "),
@@ -177,7 +177,7 @@ const ContractContent = ({ partyB, signature }) => (
             <div className="mb-6">
                 <div className="border-t-2 mb-2"></div>
                 <p className='text-center'>
-                    Hợp đồng này được lập thành 03 bản, bên bảo lãnh giữ 01 bản, bên cho bảo lãnh giữ 02 bản và có giá trị pháp lý như nhau.
+                    Hợp đồng này được lập thành 03 bản, bên Bảo lãnh giữ 01 bản, bên Quản trị nền tảng SponsorChild giữ 02 bản và có giá trị pháp lý như nhau.
                 </p>
             </div>
         </div>
@@ -185,7 +185,7 @@ const ContractContent = ({ partyB, signature }) => (
 
 );
 
-const ContractViewAndSign = () => {
+const ContractViewAndSign = ({ onSign, onContractSent }) => {
     const [signature, setSignature] = useState(null);
     const [isSigned, setIsSigned] = useState(false);
     const sigCanvas = useRef({});
@@ -194,11 +194,7 @@ const ContractViewAndSign = () => {
     const [pdfLoading, setPdfLoading] = useState(false);
     const [uploadLoading, setUploadLoading] = useState(false);
     const [uploadPdf] = useUploadPdfMutation();
-    const cld = new Cloudinary({
-        cloud: {
-            cloudName: import.meta.env.VITE_CLOUD_NAME
-        }
-    });
+
     // const form = useForm({
     //     resolver: zodResolver(formSchema),
     //     defaultValues: {
@@ -216,12 +212,18 @@ const ContractViewAndSign = () => {
         sigCanvas.current.clear();
         setSignature(null);
         setIsSigned(false);
+        toast.success('Chữ ký đã được xóa');
+
     };
 
     const handleSave = () => {
         setSignature(sigCanvas.current.toDataURL());
         setIsSigned(true);
+        onSign(sigCanvas.current.toDataURL());
+        toast.success('Chữ ký đã được lưu');
+
     };
+
 
 
     // const onSubmit = (data) => {
@@ -269,65 +271,81 @@ const ContractViewAndSign = () => {
         return pdf;
     };
 
-    const handleDownloadPDF = async () => {
-        setPdfLoading(true);
-        try {
-            const pdf = await generatePDF();
-            pdf.save('register.pdf');
-        } catch (error) {
-            console.error('PDF generation failed:', error);
-        } finally {
-            setPdfLoading(false);
-        }
-    };
+    // const handleDownloadPDF = async () => {
+    //     setPdfLoading(true);
+    //     try {
+    //         const pdf = await generatePDF();
+    //         pdf.save('register.pdf');
+    //     } catch (error) {
+    //         console.error('PDF generation failed:', error);
+    //     } finally {
+    //         setPdfLoading(false);
+    //     }
+    // };
 
     const handleUpload = async () => {
         setUploadLoading(true);
+        toast.promise(
+            async () => {
+                try {
+                    const pdf = await generatePDF();
+                    const pdfBlob = pdf.output('blob');
 
-        try {
-            const pdf = await generatePDF();
-            const pdfBlob = pdf.output('blob');
+                    const userId = 'user_001'; // test with user_001
 
-            const formData = new FormData();
-            formData.append('file', pdfBlob, 'register.pdf');
-            formData.append('upload_preset', import.meta.env.VITE_UPLOAD_PRESET_NAME);
-            formData.append('folder', 'user_001/guarantee/contracts'); // test with user_001
+                    const formData = new FormData();
+                    formData.append('file', pdfBlob, 'register.pdf');
+                    formData.append('upload_preset', import.meta.env.VITE_UPLOAD_PRESET_NAME);
+                    formData.append('folder', `${userId}/guarantee/contracts`);
+                    // formData.append('public_id', `${userId}/guarantee/contracts/register`);
+                    // formData.append('overwrite', 'true'); // "Overwrite parameter is not allowed when using unsigned upload
+                    // const response = await uploadPdf(formData).unwrap();
 
-            // const response = await uploadPdf(formData).unwrap();
+                    const response = await fetch(
+                        `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUD_NAME}/raw/upload`,
+                        {
+                            method: 'POST',
+                            body: formData,
+                        }
+                    );
 
-            const response = await fetch(
-                `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUD_NAME}/raw/upload`,
-                {
-                    method: 'POST',
-                    body: formData,
+                    if (!response.ok) {
+                        const errorBody = await response.text();
+                        console.error('Error response:', errorBody);
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+
+                    const data = await response.json();
+                    // console.log('Upload successful:', data);
+
+                    //  Create URL Cloudinary for PDF upload
+                    const pdfUrl = data.secure_url;
+                    console.log('PDF URL:', pdfUrl);
+                    // Update status  and noti for  component ContractSignPage
+
+                    onSign(data.secure_url);
+                    onContractSent();
+
+                    return 'Hợp đồng đã được gửi thành công';
+                } catch (error) {
+                    console.error('Upload failed:', error);
+                    throw error;
+                } finally {
+                    setUploadLoading(false);
                 }
-            );
-
-            if (!response.ok) {
-                const errorBody = await response.text();
-                console.error('Error response:', errorBody);
-                throw new Error(`HTTP error! status: ${response.status}`);
+            },
+            {
+                loading: 'Đang gửi hợp đồng...',
+                success: (message) => message,
+                error: 'Gửi hợp đồng thất bại. Vui lòng thử lại.',
             }
-
-            const data = await response.json();
-            // console.log('Upload successful:', data);
-
-            //  Create URL Cloudinary for PDF upload
-            const pdfUrl = data.secure_url;
-            console.log('PDF URL:', pdfUrl);
-
-
-        } catch (error) {
-            console.error('Upload failed:', error);
-        } finally {
-            setUploadLoading(false);
-        }
+        );
     };
-
-
 
     return (
         <div className="flex flex-col lg:flex-row min-h-screen bg-gray-100">
+            <Toaster />
+
             <div className="w-full lg:w-2/3 p-4">
                 <ScrollArea className="h-[calc(100vh-2rem)] lg:h-[calc(100vh-2rem)]">
                     <div ref={contractRef}>
@@ -481,22 +499,22 @@ const ContractViewAndSign = () => {
                 </div>
                 <div className="flex flex-wrap gap-2 mb-4">
                     <div className="flex space-x-2 mt-4">
-                        <Button className="flex-1 border-2 bg-[#faa099]  hover:bg-red-600 hover:text-white rounded-lg"
+                        <Button className="flex-1 border-2 bg-red-500  hover:bg-red-600 text-white rounded-lg"
                             type="button" onClick={handleClear}>
                             <Trash className="h-4 w-4 mr-2" /> Xóa
                         </Button>
-                        <Button className="flex-1 border-2 bg-blue-400   hover:bg-blue-600 hover:text-white rounded-lg"
+                        <Button className="flex-1 border-2 bg-blue-500   hover:bg-blue-700 text-white rounded-lg"
                             onClick={handleSave}>
                             <Save className="h-4 w-4 mr-2" /> Lưu
                         </Button>
-                        <Button className="flex-1 border-2 bg-[#f5b642]  hover:bg-yellow-600 hover:text-white"
+                        <Button className="flex-1 border-2 bg-[#f5b642]  hover:bg-yellow-600 text-white"
                             onClick={handleUpload} disabled={!isSigned || uploadLoading}>
                             <Send className="h-4 w-4 mr-2" />
                             {uploadLoading ? 'Đang gửi...' : 'Gửi hợp đồng'}
                         </Button>
                     </div>
 
-                    <div className="bg-white shadow-md rounded-lg p-6">
+                    {/* <div className="bg-white shadow-md rounded-lg p-6">
 
                         <ol className="list-decimal list-inside space-y-2 font-sans text-sm">
                             <li>Tải xuống file PDF hợp đồng bằng cách nhấn nút "Tải PDF" bên dưới.</li>
@@ -516,7 +534,7 @@ const ContractViewAndSign = () => {
                         onClick={handleDownloadPDF} disabled={pdfLoading}>
                         <Download className="h-4 w-4 mr-2" />
                         {pdfLoading ? 'Đang tạo PDF...' : 'Tải PDF'}
-                    </Button>
+                    </Button> */}
 
                 </div>
 
