@@ -11,7 +11,6 @@ import { CustomCalendar } from '@/components/ui/customcalendar';
 import { Upload, X } from 'lucide-react';
 import QuillEditor from '@/components/guarantee/QuillEditor';
 import { toast } from 'sonner'
-import { useUploadImageMutation } from '@/redux/cloudinary/cloudinaryApi';
 // import { useDispatch, useSelector } from 'react-redux';
 // import { setProgress, setIsUploading } from '@/redux/slices/uploadProgressSlice';
 
@@ -49,7 +48,6 @@ const CustomDropzone = ({ onDrop, multiple, children }) => {
 const AddCampaign = () => {
     const [imagesFolder, setImagesFolder] = useState([]);
     const [thumbnail, setThumbnail] = useState(null);
-    const [uploadImage] = useUploadImageMutation();
 
     const form = useForm({
         resolver: zodResolver(addCampaignSchema),
@@ -68,16 +66,26 @@ const AddCampaign = () => {
         formData.append('file', file);
         formData.append('upload_preset', import.meta.env.VITE_UPLOAD_PRESET_NAME);
         formData.append('folder', folder);
-
         try {
-            const result = await uploadImage(formData).unwrap();
-            return result.secure_url;
+            const response = await fetch(
+                `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUD_NAME}/image/upload`,
+                {
+                    method: 'POST',
+                    body: formData,
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            return data.secure_url;
         } catch (error) {
-            console.error('Upload failed:', error);
+            console.error('Error uploading to Cloudinary:', error);
             throw error;
         }
     };
-
     const onDrop = useCallback((acceptedFiles) => {
         const newImagesFolder = acceptedFiles.map(file => Object.assign(file, {
             preview: URL.createObjectURL(file)
@@ -123,9 +131,8 @@ const AddCampaign = () => {
             // Upload thumbnail
             const thumbnailUrl = await uploadToCloudinary(
                 data.thumbnailUrl,
-                `${userFolder}/campaign/${tempCampaignId}/thumbnail`
+                `${userFolder}/campaign/${tempCampaignId}`
             );
-
             // Upload images-supported
             const imageUrls = await Promise.all(
                 data.imagesFolder.map(file =>
