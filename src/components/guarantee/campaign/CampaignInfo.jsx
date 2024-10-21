@@ -106,7 +106,7 @@ const CustomDropzone = ({ onDrop, multiple, children }) => {
     );
 };
 
-const CampaignInfo = ({ prevStep, nextStep }) => {
+const CampaignInfo = ({ }) => {
     const [imagesFolder, setImagesFolder] = useState([]);
     const [thumbnail, setThumbnail] = useState(null);
     const { user } = useSelector((state) => state.auth);
@@ -129,7 +129,6 @@ const CampaignInfo = ({ prevStep, nextStep }) => {
         }
     });
 
-    console.log(user.userID);
 
 
     const { fields, append, remove } = useFieldArray({
@@ -203,7 +202,7 @@ const CampaignInfo = ({ prevStep, nextStep }) => {
 
     const onSubmit = async (data) => {
         try {
-            const userFolder = 'user_001'; // test with user_001
+            const userFolder = `user_${user.userID}`;
             const tempCampaignId = `c_001`; //test with c_001
 
             // Upload thumbnail
@@ -221,7 +220,7 @@ const CampaignInfo = ({ prevStep, nextStep }) => {
             // Prepare the final data object
             const finalData = {
                 guaranteeID: user.userID,
-                childID: "a96fccae-c50f-46f1-bf5a-ffa17db5190f", // Test childID
+                childID: "9ce746e2-ea7c-44fb-9bb4-48122ffa07fc", // Test childID
                 title: data.title,
                 story: data.story,
                 targetAmount: parseFloat(data.targetAmount.replace(/,/g, '')),
@@ -248,7 +247,6 @@ const CampaignInfo = ({ prevStep, nextStep }) => {
             setImagesFolder([]);
 
             toast.success('Campaign created successfully!');
-            nextStep();
         } catch (error) {
             console.error('Submission failed:', error);
             toast.error('Failed to create campaign. Please try again.');
