@@ -12,6 +12,12 @@ import { Download, Save, Send, Trash } from 'lucide-react';
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { useCreateContractMutation, useUpdateContractMutation } from '@/redux/contract/contractApi';
+import { useSelector } from 'react-redux';
+import { format, parseISO } from 'date-fns';
+import { formatInTimeZone } from 'date-fns-tz'
+
+
 import { Toaster, toast } from 'sonner';
 
 import { useUploadPdfMutation } from '@/redux/cloudinary/cloudinaryApi';
@@ -184,17 +190,22 @@ const ContractContent = ({ partyB, signature }) => (
     </div >
 
 );
-
+const signDate = formatInTimeZone(new Date(), 'Asia/Ho_Chi_Minh', "yyyy-MM-dd'T'HH:mm:ss.SSSxxx");
+const formatDate = (dateString) => {
+    if (!dateString) return null;
+    const date = typeof dateString === 'string' ? parseISO(dateString) : dateString;
+    return format(date, 'dd/MM/yyyy');
+};
 const ContractViewAndSign = ({ onSign, onContractSent }) => {
+    const { user } = useSelector((state) => state.auth);
     const [signature, setSignature] = useState(null);
     const [isSigned, setIsSigned] = useState(false);
     const sigCanvas = useRef({});
-    const [partyB, setPartyB] = useState({});
     const contractRef = useRef(null);
     const [pdfLoading, setPdfLoading] = useState(false);
     const [uploadLoading, setUploadLoading] = useState(false);
-    const [uploadPdf] = useUploadPdfMutation();
-
+    const [createContract, { isLoading: isCreatingContract }] = useCreateContractMutation();
+    const [updateContract, { isLoading: isUpdatingContract }] = useUpdateContractMutation();
     // const form = useForm({
     //     resolver: zodResolver(formSchema),
     //     defaultValues: {
@@ -208,11 +219,22 @@ const ContractViewAndSign = ({ onSign, onContractSent }) => {
     //     },
     // });
 
+
+    const partyB = {
+        fullName: user.fullname,
+        idNumber: user.idNumber,
+        phoneNumber: user.phone,
+        birthYear: formatDate(user.dateOfBirth),
+        idIssueDate: formatDate(user.idIssueDate),
+        idIssuePlace: user.idIssuePlace,
+        address: user.address,
+    };
     const handleClear = () => {
         sigCanvas.current.clear();
         setSignature(null);
         setIsSigned(false);
         toast.success('Chữ ký đã được xóa');
+
 
     };
 
@@ -291,12 +313,12 @@ const ContractViewAndSign = ({ onSign, onContractSent }) => {
                     const pdf = await generatePDF();
                     const pdfBlob = pdf.output('blob');
 
-                    const userId = 'user_001'; // test with user_001
+                    const partyBID = user.userID;
 
                     const formData = new FormData();
                     formData.append('file', pdfBlob, 'register.pdf');
                     formData.append('upload_preset', import.meta.env.VITE_UPLOAD_PRESET_NAME);
-                    formData.append('folder', `${userId}/guarantee/contracts`);
+                    formData.append('folder', `user_${partyBID}/guarantee/contracts`);
                     // formData.append('public_id', `${userId}/guarantee/contracts/register`);
                     // formData.append('overwrite', 'true'); // "Overwrite parameter is not allowed when using unsigned upload
                     // const response = await uploadPdf(formData).unwrap();
@@ -310,8 +332,6 @@ const ContractViewAndSign = ({ onSign, onContractSent }) => {
                     );
 
                     if (!response.ok) {
-                        const errorBody = await response.text();
-                        console.error('Error response:', errorBody);
                         throw new Error(`HTTP error! status: ${response.status}`);
                     }
 
@@ -321,9 +341,31 @@ const ContractViewAndSign = ({ onSign, onContractSent }) => {
                     //  Create URL Cloudinary for PDF upload
                     const pdfUrl = data.secure_url;
                     console.log('PDF URL:', pdfUrl);
+
+                    // Create Contract
+                    const result = await createContract(partyBID).unwrap();
+                    console.log(result);
+                    console.log(result.contractID);
+
+
+                    if (result && result.contractID) {
+                        await updateContract({
+                            contractId: result.contractID,
+                            contractType: 0, // Guarantee Contract
+                            partyAType: 0, // Admin
+                            partyAID: "f7b2a26b-75f2-4c43-88b1-df094c8bfb2e", //admin 1
+                            partyBType: 1, // Guarantee
+                            partyBID: user.userID,
+                            signDate: signDate,
+                            status: 0, // pending
+                            softContractUrl: pdfUrl,
+                            hardContractUrl: ""
+                        }).unwrap();
+                    }
+
                     // Update status  and noti for  component ContractSignPage
 
-                    onSign(data.secure_url);
+                    onSign(pdfUrl);
                     onContractSent();
 
                     return 'Hợp đồng đã được gửi thành công';
@@ -507,10 +549,13 @@ const ContractViewAndSign = ({ onSign, onContractSent }) => {
                             onClick={handleSave}>
                             <Save className="h-4 w-4 mr-2" /> Lưu
                         </Button>
-                        <Button className="flex-1 border-2 bg-[#f5b642]  hover:bg-yellow-600 text-white"
-                            onClick={handleUpload} disabled={!isSigned || uploadLoading}>
+                        <Button
+                            className="flex-1 border-2 bg-[#f5b642] hover:bg-yellow-600 text-white"
+                            onClick={handleUpload}
+                            disabled={!isSigned || uploadLoading || isCreatingContract || isUpdatingContract}
+                        >
                             <Send className="h-4 w-4 mr-2" />
-                            {uploadLoading ? 'Đang gửi...' : 'Gửi hợp đồng'}
+                            {uploadLoading || isCreatingContract || isUpdatingContract ? 'Đang gửi...' : 'Gửi hợp đồng'}
                         </Button>
                     </div>
 

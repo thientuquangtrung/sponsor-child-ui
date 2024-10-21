@@ -53,7 +53,8 @@ export default function Router() {
                 { element: <GuaranteeHome />, index: true },
                 { element: <GuaranteeCampaigns />, path: 'campaigns' },
                 { element: <DonationHistory />, path: 'donation-history' },
-                { element: <AddCampaign />, path: 'campaigns/add' },
+                { element: <CampaignCreate />, path: 'create-campaign' },
+
             ],
         },
         {
@@ -144,6 +145,7 @@ const AboutPage = Loadable(lazy(() => import('../pages/AboutPage')));
 
 //guarantee
 const GuaranteeHome = Loadable(lazy(() => import('@/components/guarantee/GuaranteeHome')));
-const GuaranteeCampaigns = Loadable(lazy(() => import('@/components/guarantee/GuaranteeCampaigns')));
+const GuaranteeCampaigns = Loadable(lazy(() => import('@/components/guarantee/campaign/GuaranteeCampaigns')));
 const DonationHistory = Loadable(lazy(() => import('@/components/guarantee/DonationHistory')));
-const AddCampaign = Loadable(lazy(() => import('@/components/guarantee/AddCampaign')));
+const CampaignCreate = Loadable(lazy(() => import('@/components/guarantee/campaign/CampaignCreate')));
+
