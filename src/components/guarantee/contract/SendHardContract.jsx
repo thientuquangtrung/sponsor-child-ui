@@ -4,6 +4,8 @@ import { Download } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useSelector } from 'react-redux';
+import { format, parseISO } from 'date-fns';
 
 const ContractContent = ({ partyB }) => (
     <div className="p-8 bg-white text-black font-serif">
@@ -156,10 +158,24 @@ const ContractContent = ({ partyB }) => (
     </div >
 
 );
-
+const formatDate = (dateString) => {
+    if (!dateString) return null;
+    const date = typeof dateString === 'string' ? parseISO(dateString) : dateString;
+    return format(date, 'dd/MM/yyyy');
+};
 const SendHardContract = () => {
     const contractRef = useRef(null);
     const [isGenerating, setIsGenerating] = useState(false);
+    const { user } = useSelector((state) => state.auth);
+    const partyB = {
+        fullName: user.fullname,
+        idNumber: user.idNumber,
+        phoneNumber: user.phone,
+        birthYear: formatDate(user.dateOfBirth),
+        idIssueDate: formatDate(user.idIssueDate),
+        idIssuePlace: user.idIssuePlace,
+        address: user.address,
+    };
 
     const generatePDF = async () => {
         const element = contractRef.current;
@@ -216,7 +232,7 @@ const SendHardContract = () => {
             <div className="w-full lg:w-2/3 p-4">
                 <ScrollArea className="h-[calc(100vh-2rem)] lg:h-[calc(100vh-2rem)]">
                     <div ref={contractRef}>
-                        <ContractContent partyB={{}} />
+                        <ContractContent partyB={partyB} />
                     </div>
                 </ScrollArea>
             </div>
