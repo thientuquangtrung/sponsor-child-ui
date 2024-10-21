@@ -129,6 +129,9 @@ const CampaignInfo = ({ prevStep, nextStep }) => {
         }
     });
 
+    console.log(user.userID);
+
+
     const { fields, append, remove } = useFieldArray({
         control: form.control,
         name: "disbursementStages"

@@ -15,7 +15,7 @@ import { toast } from 'sonner';
 const schema = z.object({
     name: z.string().min(1, "Bạn vui lòng nhập tên trẻ."),
     age: z.number().int().nonnegative("Tuổi phải là số không âm.").max(16, "Tuổi của trẻ phải nhỏ hơn 17."),
-    gender: z.enum(["Male", "Female"]),
+    gender: z.number().min(0).max(1),
     location: z.string().min(1, "Bạn vui lòng nhập địa chỉ trẻ."),
     imageUrl: z.any().refine((val) => val !== null, "Bạn vui lòng tải lên hình ảnh cho trẻ"),
 });
@@ -51,7 +51,7 @@ const ChildProfile = ({ nextStep }) => {
         defaultValues: {
             name: "",
             age: 0,
-            gender: "Male",
+            gender: 0,
             location: "",
             imageUrl: null,
         },
@@ -106,8 +106,7 @@ const ChildProfile = ({ nextStep }) => {
             const childProfileData = {
                 ...data,
                 imageUrl,
-                userID: user.userID,
-                provinceID: "49dce2fd-31ee-418c-8ed0-8203ab3e7d7c", // test province ID
+                provinceID: "068a06a3-9373-4bdb-9afa-1253d05af783", // test province ID
                 guaranteeRelation: 0, // test with 0
             };
 
@@ -150,8 +149,13 @@ const ChildProfile = ({ nextStep }) => {
                                         min="0"
                                         {...field}
                                         onChange={(e) => {
-                                            const value = parseInt(e.target.value, 10);
-                                            field.onChange(value >= 0 ? value : 0);
+                                            const value = e.target.value;
+                                            if (value === '') {
+                                                field.onChange('');
+                                            } else {
+                                                const numValue = parseInt(value, 10);
+                                                field.onChange(numValue >= 0 ? numValue : 0);
+                                            }
                                         }}
                                         className="border-gray-300 rounded-lg"
                                     />
@@ -160,7 +164,6 @@ const ChildProfile = ({ nextStep }) => {
                             </FormItem>
                         )}
                     />
-
                     <FormField
                         control={form.control}
                         name="gender"
@@ -170,15 +173,15 @@ const ChildProfile = ({ nextStep }) => {
                                 <div className="flex items-center space-x-4">
                                     <div className="flex items-center">
                                         <Checkbox
-                                            checked={field.value === "Male"}
-                                            onCheckedChange={(checked) => checked && field.onChange("Male")}
+                                            checked={field.value === 0}
+                                            onCheckedChange={(checked) => checked && field.onChange(0)}
                                         />
                                         <span className="ml-2 text-sm">Nam</span>
                                     </div>
                                     <div className="flex items-center">
                                         <Checkbox
-                                            checked={field.value === "Female"}
-                                            onCheckedChange={(checked) => checked && field.onChange("Female")}
+                                            checked={field.value === 1}
+                                            onCheckedChange={(checked) => checked && field.onChange(1)}
                                         />
                                         <span className="ml-2 text-sm">Nữ</span>
                                     </div>
