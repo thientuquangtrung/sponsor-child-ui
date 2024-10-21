@@ -23,7 +23,7 @@ const CampaignCreate = () => {
             case 0:
                 return <ChildProfile nextStep={nextStep} />;
             case 1:
-                return <CampaignInfo prevStep={prevStep} />;
+                return <CampaignInfo prevStep={prevStep} nextStep={nextStep} />;
             default:
                 return null;
         }
