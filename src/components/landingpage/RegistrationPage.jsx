@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Progress } from '@/components/ui/progress';
-import { CheckCircle, UserCheck, FileCheck, UserRoundCheck } from 'lucide-react'; 
+import { CheckCircle, UserCheck, FileCheck, UserRoundCheck } from 'lucide-react';
 import register1 from '@/assets/images/register-1.png';
 import register2 from '@/assets/images/register-2.png';
 import OrganizationRegistrationForm from './OrganizationRegistrationForm';
@@ -9,13 +9,14 @@ import PersonalRegistrationForm from './PersonalRegistrationForm';
 const RegistrationPage = () => {
     const [showForm, setShowForm] = useState(false);
     const [formType, setFormType] = useState('');
-    const [registrationComplete, setRegistrationComplete] = useState(false);
-    const [progressStep, setProgressStep] = useState(2); 
+    const [registrationComplete, setRegistrationComplete] = useState(
+        localStorage.getItem('registrationComplete') === 'true' || false,
+    );
+    const [progressStep, setProgressStep] = useState(2);
 
     useEffect(() => {
         // const isRegistered = localStorage.getItem('registrationComplete') === 'true';
         // setRegistrationComplete(isRegistered);
-
         // Lấy bước tiến trình từ localStorage nếu có
         // const savedStep = localStorage.getItem('progressStep');
         // if (savedStep) {
@@ -36,8 +37,8 @@ const RegistrationPage = () => {
     const handleFormSubmit = () => {
         localStorage.setItem('registrationComplete', 'true');
         setRegistrationComplete(true);
-        setProgressStep(2); 
-        localStorage.setItem('progressStep', '1'); 
+        setProgressStep(2);
+        localStorage.setItem('progressStep', '1');
         setShowForm(false);
     };
 
@@ -50,7 +51,7 @@ const RegistrationPage = () => {
     };
 
     const calculateProgressPercentage = () => {
-        return (progressStep / 4) * 100; 
+        return (progressStep / 4) * 100;
     };
 
     return (
@@ -139,28 +140,52 @@ const RegistrationPage = () => {
                                 <CheckCircle
                                     className={`w-8 h-8 ${progressStep >= 1 ? 'text-teal-500' : 'text-gray-300'}`}
                                 />
-                                <p className={`mt-2 text-sm font-semibold ${progressStep >= 1 ? 'text-teal-500' : 'text-gray-400'}`}>Đã gửi đơn đăng ký</p>
+                                <p
+                                    className={`mt-2 text-sm font-semibold ${
+                                        progressStep >= 1 ? 'text-teal-500' : 'text-gray-400'
+                                    }`}
+                                >
+                                    Đã gửi đơn đăng ký
+                                </p>
                             </div>
 
                             <div className="flex flex-col items-center">
                                 <UserCheck
                                     className={`w-8 h-8 ${progressStep >= 2 ? 'text-teal-500' : 'text-gray-300'}`}
                                 />
-                                <p className={`mt-2 text-sm font-semibold ${progressStep >= 2 ? 'text-teal-500' : 'text-gray-400'}`}>Chờ Admin duyệt</p>
+                                <p
+                                    className={`mt-2 text-sm font-semibold ${
+                                        progressStep >= 2 ? 'text-teal-500' : 'text-gray-400'
+                                    }`}
+                                >
+                                    Chờ Admin duyệt
+                                </p>
                             </div>
 
                             <div className="flex flex-col items-center">
                                 <FileCheck
                                     className={`w-8 h-8 ${progressStep >= 3 ? 'text-teal-500' : 'text-gray-400'}`}
                                 />
-                                <p className={`mt-2 text-sm font-semibold ${progressStep >= 3 ? 'text-teal-500' : 'text-gray-400'}`}>Ký hợp đồng</p>
+                                <p
+                                    className={`mt-2 text-sm font-semibold ${
+                                        progressStep >= 3 ? 'text-teal-500' : 'text-gray-400'
+                                    }`}
+                                >
+                                    Ký hợp đồng
+                                </p>
                             </div>
 
                             <div className="flex flex-col items-center">
                                 <UserRoundCheck
                                     className={`w-8 h-8 ${progressStep >= 4 ? 'text-teal-500' : 'text-gray-400'}`}
                                 />
-                                <p className={`mt-2 text-sm font-semibold ${progressStep >= 4 ? 'text-teal-500' : 'text-gray-400'}`}>Hoàn tất đăng ký</p>
+                                <p
+                                    className={`mt-2 text-sm font-semibold ${
+                                        progressStep >= 4 ? 'text-teal-500' : 'text-gray-400'
+                                    }`}
+                                >
+                                    Hoàn tất đăng ký
+                                </p>
                             </div>
                         </div>
 
