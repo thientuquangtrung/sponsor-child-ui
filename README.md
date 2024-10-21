@@ -62,7 +62,7 @@ To run the project on your local machine, follow these steps:
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/your-username/sponsor-child-ui.git
+   git clone [https://github.com/your-username/sponsor-child-ui.git](https://github.com/thientuquangtrung/sponsor-child-ui.git)
    ```
 
 2. Install dependencies:
