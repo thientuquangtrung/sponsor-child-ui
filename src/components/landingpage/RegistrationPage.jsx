@@ -1,28 +1,34 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Progress } from '@/components/ui/progress';
 import { CheckCircle, UserCheck, FileCheck, UserRoundCheck } from 'lucide-react';
 import register1 from '@/assets/images/register-1.png';
 import register2 from '@/assets/images/register-2.png';
 import OrganizationRegistrationForm from './OrganizationRegistrationForm';
 import PersonalRegistrationForm from './PersonalRegistrationForm';
+import { useCheckGuaranteeStatusQuery } from '@/redux/guarantee/guaranteeApi';
+import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
 const RegistrationPage = () => {
+    const { user } = useSelector((state) => state.auth);
+    const navigate = useNavigate();
     const [showForm, setShowForm] = useState(false);
     const [formType, setFormType] = useState('');
-    const [registrationComplete, setRegistrationComplete] = useState(
-        localStorage.getItem('registrationComplete') === 'true' || false,
-    );
-    const [progressStep, setProgressStep] = useState(2);
+    const { data: guaranteeStatus } = useCheckGuaranteeStatusQuery(user.userID);
 
-    useEffect(() => {
-        // const isRegistered = localStorage.getItem('registrationComplete') === 'true';
-        // setRegistrationComplete(isRegistered);
-        // Lấy bước tiến trình từ localStorage nếu có
-        // const savedStep = localStorage.getItem('progressStep');
-        // if (savedStep) {
-        //     setProgressStep(Number(savedStep));
-        // }
-    }, []);
+    const progressStep = useMemo(() => {
+        if (guaranteeStatus) {
+            switch (guaranteeStatus.status) {
+                case 'Pending':
+                    return 2;
+                case 'InContractSigning':
+                    return 3;
+                case 'Approve':
+                    return 4;
+            }
+        }
+        return 0;
+    });
 
     const handleOrganizationClick = () => {
         setFormType('organization');
@@ -35,28 +41,23 @@ const RegistrationPage = () => {
     };
 
     const handleFormSubmit = () => {
-        localStorage.setItem('registrationComplete', 'true');
-        setRegistrationComplete(true);
-        setProgressStep(2);
-        localStorage.setItem('progressStep', '1');
         setShowForm(false);
     };
 
-    const handleNextStep = () => {
-        if (progressStep < 4) {
-            const nextStep = progressStep + 1;
-            setProgressStep(nextStep);
-            localStorage.setItem('progressStep', nextStep.toString());
+    const calculateProgressPercentage = (status) => {
+        switch (status) {
+            case 'Pending':
+                return 40;
+            case 'InContractSigning':
+                return 60;
+            case 'Approve':
+                return 100;
         }
-    };
-
-    const calculateProgressPercentage = () => {
-        return (progressStep / 4) * 100;
     };
 
     return (
         <div className="container mx-auto px-4">
-            {!showForm && !registrationComplete && (
+            {!showForm && !guaranteeStatus && (
                 <div className="flex flex-col bg-[#c3e2da] py-8 rounded-lg shadow-md">
                     <h1 className="text-2xl font-semibold mb-6 text-center">
                         Đăng ký mở Tài khoản trở thành Người Bảo Lãnh
@@ -90,7 +91,7 @@ const RegistrationPage = () => {
             )}
 
             {/* Hiển thị thông báo sau khi đăng ký */}
-            {registrationComplete && (
+            {guaranteeStatus && (
                 <div className="bg-gradient-to-t from-teal-100 to-zinc-50 p-8 rounded-lg text-center shadow-md">
                     <h2 className="text-2xl font-semibold text-teal-700 mb-4">
                         Cảm ơn bạn đã đăng ký trở thành Nhà Bảo Lãnh của Sponsor Child
@@ -102,8 +103,11 @@ const RegistrationPage = () => {
 
                     <div className="mt-16 space-y-4 relative">
                         <div className="relative mb-8">
-                            <Progress value={calculateProgressPercentage()} className="h-2 bg-gray-200" />
-                            <div className="absolute w-full top-[-10px] flex justify-between items-center text-white font-bold px-10">
+                            <Progress
+                                value={calculateProgressPercentage(guaranteeStatus.status)}
+                                className="h-2 bg-gray-200"
+                            />
+                            <div className="absolute w-full top-[-10px] flex justify-evenly items-center text-white font-bold">
                                 <div
                                     className={`w-8 h-8 flex items-center justify-center rounded-full ${
                                         progressStep >= 1 ? 'bg-teal-500' : 'bg-gray-400'
@@ -135,7 +139,7 @@ const RegistrationPage = () => {
                             </div>
                         </div>
 
-                        <div className="relative flex justify-between items-center">
+                        <div className="relative flex justify-evenly items-center">
                             <div className="flex flex-col items-center">
                                 <CheckCircle
                                     className={`w-8 h-8 ${progressStep >= 1 ? 'text-teal-500' : 'text-gray-300'}`}
@@ -190,9 +194,14 @@ const RegistrationPage = () => {
                         </div>
 
                         {/* Để test qua bước tiếp theo */}
-                        {progressStep < 4 && (
-                            <button onClick={handleNextStep} className="bg-teal-500 text-white py-2 px-4 rounded">
-                                Tiếp tục
+                        {progressStep === 2 && (
+                            <button
+                                onClick={() => {
+                                    navigate('/contract');
+                                }}
+                                className="bg-teal-500 text-white py-2 px-4 rounded"
+                            >
+                                Kí hợp đồng
                             </button>
                         )}
                     </div>

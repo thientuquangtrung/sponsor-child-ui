@@ -2,25 +2,21 @@ import React, { useState, useRef } from 'react';
 import SignatureCanvas from 'react-signature-canvas';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
-import { Controller, useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { Controller, useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { Download, Save, Send, Trash } from 'lucide-react';
-import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
+import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import { useCreateContractMutation, useUpdateContractMutation } from '@/redux/contract/contractApi';
 import { useSelector } from 'react-redux';
 import { format, parseISO } from 'date-fns';
-import { formatInTimeZone } from 'date-fns-tz'
-
-
-import { Toaster, toast } from 'sonner';
-
-import { useUploadPdfMutation } from '@/redux/cloudinary/cloudinaryApi';
+import { formatInTimeZone } from 'date-fns-tz';
+import { toast } from 'sonner';
 // const formSchema = z.object({
 //     fullName: z.string().min(1, "Vui lòng nhập Họ tên"),
 //     idNumber: z.string().min(1, "Vui lòng nhập Số CMND/CCCD "),
@@ -43,7 +39,7 @@ const ContractContent = ({ partyB, signature }) => (
         <p className="mb-6 text-center">*****</p>
 
         <h3 className="text-lg font-semibold text-center mb-8">HỢP ĐỒNG THAM GIA BẢO LÃNH </h3>
-        <div className='ml-6 text-sm'>
+        <div className="ml-6 text-sm">
             <p className="mb-4">Số: ..../HĐ-BLCD</p>
             <p className="mb-6">Hôm nay, ngày ...... tháng ...... năm ........., tại ....................</p>
             <p className="font-semibold mb-4">Chúng tôi gồm có:</p>
@@ -52,19 +48,33 @@ const ContractContent = ({ partyB, signature }) => (
                 <h4 className="font-semibold underline mb-2">1. BÊN QUẢN TRỊ NỀN TẢNG SPONSOR CHILD:</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                        <p><span className="inline-block w-36">Họ tên:</span> NGUYỄN VĂN A</p>
-                        <p><span className="inline-block w-36">Số CMND/CCCD:</span> 001234567890</p>
-                        <p><span className="inline-block w-36">Số điện thoại:</span> 0123456789</p>
+                        <p>
+                            <span className="inline-block w-36">Họ tên:</span> NGUYỄN VĂN A
+                        </p>
+                        <p>
+                            <span className="inline-block w-36">Số CMND/CCCD:</span> 001234567890
+                        </p>
+                        <p>
+                            <span className="inline-block w-36">Số điện thoại:</span> 0123456789
+                        </p>
                     </div>
                     <div className="space-y-2">
-                        <p><span className="inline-block w-20">Năm sinh:</span> 20/10/2010</p>
+                        <p>
+                            <span className="inline-block w-20">Năm sinh:</span> 20/10/2010
+                        </p>
                         <div className="flex flex-wrap">
-                            <p className="mr-4 mb-2"><span className="inline-block w-20">Cấp ngày:</span> 01/01/2015</p>
-                            <p><span className="inline-block w-20">Nơi cấp:</span> Bình Định</p>
+                            <p className="mr-4 mb-2">
+                                <span className="inline-block w-20">Cấp ngày:</span> 01/01/2015
+                            </p>
+                            <p>
+                                <span className="inline-block w-20">Nơi cấp:</span> Bình Định
+                            </p>
                         </div>
                     </div>
                 </div>
-                <p className="mt-2"><span className="inline-block w-36">Địa chỉ thường trú:</span> 123 ABC</p>
+                <p className="mt-2">
+                    <span className="inline-block w-36">Địa chỉ thường trú:</span> 123 ABC
+                </p>
                 <p className="font-semibold mt-2">Sau đây gọi là Bên A</p>
             </div>
 
@@ -72,35 +82,58 @@ const ContractContent = ({ partyB, signature }) => (
                 <h4 className="font-semibold underline mb-2">2. BÊN BẢO LÃNH:</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                        <p><span className="inline-block w-36">Họ tên:</span> {partyB.fullName || "......................................................."}</p>
-                        <p><span className="inline-block w-36">Số CMND/CCCD:</span> {partyB.idNumber || "......................................................."}</p>
-                        <p><span className="inline-block w-36">Số điện thoại:</span> {partyB.phoneNumber || "......................................................."}</p>
+                        <p>
+                            <span className="inline-block w-36">Họ tên:</span>{' '}
+                            {partyB.fullName || '.......................................................'}
+                        </p>
+                        <p>
+                            <span className="inline-block w-36">Số CMND/CCCD:</span>{' '}
+                            {partyB.idNumber || '.......................................................'}
+                        </p>
+                        <p>
+                            <span className="inline-block w-36">Số điện thoại:</span>{' '}
+                            {partyB.phoneNumber || '.......................................................'}
+                        </p>
                     </div>
                     <div className="space-y-2">
-                        <p><span className="inline-block w-20">Năm sinh:</span> {partyB.birthYear || ".................."}</p>
+                        <p>
+                            <span className="inline-block w-20">Năm sinh:</span>{' '}
+                            {partyB.birthYear || '..................'}
+                        </p>
                         <div className="flex flex-wrap">
-                            <p className="mr-4 mb-2"><span className="inline-block w-20">Cấp ngày:</span> {partyB.idIssueDate || ".................."}</p>
-                            <p><span className="inline-block w-20">Nơi cấp:</span> {partyB.idIssuePlace || ".................."}</p>
+                            <p className="mr-4 mb-2">
+                                <span className="inline-block w-20">Cấp ngày:</span>{' '}
+                                {partyB.idIssueDate || '..................'}
+                            </p>
+                            <p>
+                                <span className="inline-block w-20">Nơi cấp:</span>{' '}
+                                {partyB.idIssuePlace || '..................'}
+                            </p>
                         </div>
                     </div>
                 </div>
-                <p className="mt-2"><span className="inline-block w-36">Địa chỉ thường trú:</span> {partyB.address ||
-                    "...................................................................................................................................."}</p>
+                <p className="mt-2">
+                    <span className="inline-block w-36">Địa chỉ thường trú:</span>{' '}
+                    {partyB.address ||
+                        '....................................................................................................................................'}
+                </p>
                 <p className="font-semibold mt-2">Sau đây gọi là Bên B</p>
             </div>
 
-            <p className="font-semibold">Cả hai bên cùng thống nhất ký kết hợp đồng tham gia bảo lãnh chiến dịch hỗ trợ trẻ em với các điều khoản như sau:</p>
+            <p className="font-semibold">
+                Cả hai bên cùng thống nhất ký kết hợp đồng tham gia bảo lãnh chiến dịch hỗ trợ trẻ em với các điều khoản
+                như sau:
+            </p>
 
             <div className="mb-6 mt-2">
                 <h4 className="font-semibold">Điều 1: Mục đích hợp đồng </h4>
                 <p>
-                    1.1. Hợp đồng này quy định quyền hạn và trách nhiệm của Bên B  khi tham gia làm bảo lãnh cho các chiến dịch gây quỹ thuộc hệ thống.
+                    1.1. Hợp đồng này quy định quyền hạn và trách nhiệm của Bên B khi tham gia làm bảo lãnh cho các
+                    chiến dịch gây quỹ thuộc hệ thống.
                     <br />
                     1.2. Bên B cam kết tuân thủ các quy định và quy trình của hệ thống gây quỹ SponsorChild.
-
                 </p>
             </div>
-
 
             <div className="mb-6 mt-2">
                 <h4 className="font-semibold">Điều 2: Quyền và trách nhiệm của Bên Bảo Lãnh</h4>
@@ -108,11 +141,12 @@ const ContractContent = ({ partyB, signature }) => (
                     2.1. <strong>Quyền của Bên Bảo Lãnh:</strong> <br />
                     - Nhận tiền gây quỹ theo các điều kiện và cam kết đã ký kết với Bên A. <br />
                     - Được hỗ trợ từ Bên A khi cần thiết trong quá trình thực hiện các chiến dịch gây quỹ.
-                    <br /><br />
+                    <br />
+                    <br />
                     2.2. <strong>Trách nhiệm của Bên Bảo Lãnh:</strong> <br />
                     - Cam kết sử dụng nguồn quỹ đúng mục đích theo từng chiến dịch cụ thể. <br />
-                    - Nộp báo cáo tiến độ đúng thời gian và đầy đủ chứng từ minh bạch cho từng đợt giải ngân. <br />
-                    - Chịu trách nhiệm hoàn toàn về việc sử dụng quỹ và thông tin cung cấp trong báo cáo.
+                    - Nộp báo cáo tiến độ đúng thời gian và đầy đủ chứng từ minh bạch cho từng đợt giải ngân. <br />-
+                    Chịu trách nhiệm hoàn toàn về việc sử dụng quỹ và thông tin cung cấp trong báo cáo.
                 </p>
             </div>
 
@@ -121,9 +155,10 @@ const ContractContent = ({ partyB, signature }) => (
                 <p>
                     3.1. <strong>Hỗ trợ Bên Bảo Lãnh:</strong> <br />
                     - Bên A có trách nhiệm cung cấp các hướng dẫn, quy trình và hỗ trợ cho Bên Bảo Lãnh khi cần thiết.
-                    <br /><br />
-                    3.2. <strong>Quản lý và kiểm tra:</strong> <br />
-                    - Bên A sẽ giám sát và kiểm tra việc sử dụng quỹ, đảm bảo rằng quỹ được sử dụng đúng mục đích và theo quy định.
+                    <br />
+                    <br />
+                    3.2. <strong>Quản lý và kiểm tra:</strong> <br />- Bên A sẽ giám sát và kiểm tra việc sử dụng quỹ,
+                    đảm bảo rằng quỹ được sử dụng đúng mục đích và theo quy định.
                 </p>
             </div>
 
@@ -131,10 +166,12 @@ const ContractContent = ({ partyB, signature }) => (
                 <h4 className="font-semibold">Điều 4: Điều kiện và quy trình hủy bỏ tư cách Bên Bảo Lãnh</h4>
                 <p>
                     4.1. <strong>Hủy bỏ tư cách Bên Bảo Lãnh:</strong> <br />
-                    - Trong trường hợp Bên Bảo Lãnh không tuân thủ các quy định của hệ thống hoặc vi phạm các cam kết, Bên A có quyền hủy bỏ tư cách này.
-                    <br /><br />
-                    4.2. <strong>Hình phạt:</strong> <br />
-                    - Nếu có sai phạm liên quan đến việc sử dụng quỹ, Bên Bảo Lãnh phải hoàn trả toàn bộ số tiền đã nhận nhưng chưa sử dụng đúng cam kết.
+                    - Trong trường hợp Bên Bảo Lãnh không tuân thủ các quy định của hệ thống hoặc vi phạm các cam kết,
+                    Bên A có quyền hủy bỏ tư cách này.
+                    <br />
+                    <br />
+                    4.2. <strong>Hình phạt:</strong> <br />- Nếu có sai phạm liên quan đến việc sử dụng quỹ, Bên Bảo
+                    Lãnh phải hoàn trả toàn bộ số tiền đã nhận nhưng chưa sử dụng đúng cam kết.
                 </p>
             </div>
 
@@ -142,28 +179,31 @@ const ContractContent = ({ partyB, signature }) => (
                 <h4 className="font-semibold">Điều 5: Thông tin tài khoản và giao dịch</h4>
                 <p>
                     5.1. <strong>Cung cấp thông tin chính xác:</strong> <br />
-                    - Bên Bảo Lãnh phải cung cấp chính xác thông tin tài khoản ngân hàng để nhận quỹ. Mọi thay đổi phải được thông báo kịp thời và cập nhật trong hệ thống.
-                    <br /><br />
-                    5.2. <strong>Bảo mật thông tin:</strong> <br />
-                    - Bên Bảo Lãnh cam kết bảo mật các thông tin liên quan đến tài khoản và dự án.
+                    - Bên Bảo Lãnh phải cung cấp chính xác thông tin tài khoản ngân hàng để nhận quỹ. Mọi thay đổi phải
+                    được thông báo kịp thời và cập nhật trong hệ thống.
+                    <br />
+                    <br />
+                    5.2. <strong>Bảo mật thông tin:</strong> <br />- Bên Bảo Lãnh cam kết bảo mật các thông tin liên
+                    quan đến tài khoản và dự án.
                 </p>
             </div>
 
             <div className="mb-6 mt-2">
                 <h4 className="font-semibold">Điều 6: Xử lý tranh chấp</h4>
                 <p>
-                    6.1. <strong>Giải quyết tranh chấp:</strong> <br />
-                    - Mọi tranh chấp phát sinh từ việc thực hiện hợp đồng này sẽ được giải quyết thông qua thương lượng giữa hai bên. Nếu không thể đạt được thỏa thuận, vụ việc sẽ được đưa ra tòa án có thẩm quyền.
+                    6.1. <strong>Giải quyết tranh chấp:</strong> <br />- Mọi tranh chấp phát sinh từ việc thực hiện hợp
+                    đồng này sẽ được giải quyết thông qua thương lượng giữa hai bên. Nếu không thể đạt được thỏa thuận,
+                    vụ việc sẽ được đưa ra tòa án có thẩm quyền.
                 </p>
             </div>
 
             <div className="mb-6">
                 <h4 className="font-semibold">Điều 7: Cam kết chung</h4>
-                <p>Cả Bên A và Bên B đều xác nhận rằng tất cả thông tin trong hợp đồng là chính xác và hợp pháp. Cả hai bên cam kết thực hiện đầy đủ các điều khoản đã thỏa thuận.</p>
+                <p>
+                    Cả Bên A và Bên B đều xác nhận rằng tất cả thông tin trong hợp đồng là chính xác và hợp pháp. Cả hai
+                    bên cam kết thực hiện đầy đủ các điều khoản đã thỏa thuận.
+                </p>
             </div>
-
-
-
 
             <div className="flex justify-between mt-12 mb-40">
                 <div className="text-center">
@@ -173,36 +213,35 @@ const ContractContent = ({ partyB, signature }) => (
                 <div className="text-center">
                     <p className="font-semibold">Đại diện Bên B</p>
                     <p>(Ký, ghi rõ họ tên)</p>
-                    {signature && (
-                        <img src={signature} alt="Chữ ký Bên B" className="mt-4" />
-                    )}
+                    {signature && <img src={signature} alt="Chữ ký Bên B" className="mt-4" />}
                     <p className="mt-2">{partyB.fullName}</p>
-
                 </div>
             </div>
             <div className="mb-6">
                 <div className="border-t-2 mb-2"></div>
-                <p className='text-center'>
-                    Hợp đồng này được lập thành 03 bản, bên Bảo lãnh giữ 01 bản, bên Quản trị nền tảng SponsorChild giữ 02 bản và có giá trị pháp lý như nhau.
+                <p className="text-center">
+                    Hợp đồng này được lập thành 03 bản, bên Bảo lãnh giữ 01 bản, bên Quản trị nền tảng SponsorChild giữ
+                    02 bản và có giá trị pháp lý như nhau.
                 </p>
             </div>
         </div>
-    </div >
-
+    </div>
 );
+
 const signDate = formatInTimeZone(new Date(), 'Asia/Ho_Chi_Minh', "yyyy-MM-dd'T'HH:mm:ss.SSSxxx");
+
 const formatDate = (dateString) => {
     if (!dateString) return null;
     const date = typeof dateString === 'string' ? parseISO(dateString) : dateString;
     return format(date, 'dd/MM/yyyy');
 };
+
 const ContractViewAndSign = ({ onSign, onContractSent }) => {
     const { user } = useSelector((state) => state.auth);
     const [signature, setSignature] = useState(null);
     const [isSigned, setIsSigned] = useState(false);
     const sigCanvas = useRef({});
     const contractRef = useRef(null);
-    const [pdfLoading, setPdfLoading] = useState(false);
     const [uploadLoading, setUploadLoading] = useState(false);
     const [createContract, { isLoading: isCreatingContract }] = useCreateContractMutation();
     const [updateContract, { isLoading: isUpdatingContract }] = useUpdateContractMutation();
@@ -219,7 +258,6 @@ const ContractViewAndSign = ({ onSign, onContractSent }) => {
     //     },
     // });
 
-
     const partyB = {
         fullName: user.fullname,
         idNumber: user.idNumber,
@@ -233,20 +271,13 @@ const ContractViewAndSign = ({ onSign, onContractSent }) => {
         sigCanvas.current.clear();
         setSignature(null);
         setIsSigned(false);
-        toast.success('Chữ ký đã được xóa');
-
-
     };
 
     const handleSave = () => {
         setSignature(sigCanvas.current.toDataURL());
         setIsSigned(true);
         onSign(sigCanvas.current.toDataURL());
-        toast.success('Chữ ký đã được lưu');
-
     };
-
-
 
     // const onSubmit = (data) => {
     //     const formattedData = {
@@ -263,7 +294,7 @@ const ContractViewAndSign = ({ onSign, onContractSent }) => {
             scale: 2,
             logging: false,
             useCORS: true,
-            scrollY: -window.scrollY
+            scrollY: -window.scrollY,
         });
 
         const imgData = canvas.toDataURL('image/png');
@@ -271,7 +302,7 @@ const ContractViewAndSign = ({ onSign, onContractSent }) => {
             orientation: 'portrait',
             unit: 'mm',
             format: 'a4',
-            compress: true
+            compress: true,
         });
 
         const imgProps = pdf.getImageProperties(imgData);
@@ -292,18 +323,6 @@ const ContractViewAndSign = ({ onSign, onContractSent }) => {
 
         return pdf;
     };
-
-    // const handleDownloadPDF = async () => {
-    //     setPdfLoading(true);
-    //     try {
-    //         const pdf = await generatePDF();
-    //         pdf.save('register.pdf');
-    //     } catch (error) {
-    //         console.error('PDF generation failed:', error);
-    //     } finally {
-    //         setPdfLoading(false);
-    //     }
-    // };
 
     const handleUpload = async () => {
         setUploadLoading(true);
@@ -328,7 +347,7 @@ const ContractViewAndSign = ({ onSign, onContractSent }) => {
                         {
                             method: 'POST',
                             body: formData,
-                        }
+                        },
                     );
 
                     if (!response.ok) {
@@ -347,19 +366,18 @@ const ContractViewAndSign = ({ onSign, onContractSent }) => {
                     console.log(result);
                     console.log(result.contractID);
 
-
                     if (result && result.contractID) {
                         await updateContract({
                             contractId: result.contractID,
                             contractType: 0, // Guarantee Contract
                             partyAType: 0, // Admin
-                            partyAID: "f7b2a26b-75f2-4c43-88b1-df094c8bfb2e", //admin 1
+                            partyAID: 'f7b2a26b-75f2-4c43-88b1-df094c8bfb2e', //admin 1
                             partyBType: 1, // Guarantee
                             partyBID: user.userID,
                             signDate: signDate,
                             status: 0, // pending
                             softContractUrl: pdfUrl,
-                            hardContractUrl: ""
+                            hardContractUrl: '',
                         }).unwrap();
                     }
 
@@ -380,14 +398,12 @@ const ContractViewAndSign = ({ onSign, onContractSent }) => {
                 loading: 'Đang gửi hợp đồng...',
                 success: (message) => message,
                 error: 'Gửi hợp đồng thất bại. Vui lòng thử lại.',
-            }
+            },
         );
     };
 
     return (
         <div className="flex flex-col lg:flex-row min-h-screen bg-gray-100">
-            <Toaster />
-
             <div className="w-full lg:w-2/3 p-4">
                 <ScrollArea className="h-[calc(100vh-2rem)] lg:h-[calc(100vh-2rem)]">
                     <div ref={contractRef}>
@@ -533,21 +549,23 @@ const ContractViewAndSign = ({ onSign, onContractSent }) => {
                             )}
                         /> */}
                 <h2 className="font-semibold mb-2">Ký tên</h2>
-                <div className="border-2 border-gray-300 rounded-lg mb-4">
-                    <SignatureCanvas
-                        ref={sigCanvas}
-                        canvasProps={{ width: 300, height: 150 }}
-                    />
+                <div className="border-2 border-gray-300 rounded-lg mb-4 w-fit">
+                    <SignatureCanvas ref={sigCanvas} canvasProps={{ width: 350, height: 150 }} />
                 </div>
                 <div className="flex flex-wrap gap-2 mb-4">
                     <div className="flex space-x-2 mt-4">
-                        <Button className="flex-1 border-2 bg-red-500  hover:bg-red-600 text-white rounded-lg"
-                            type="button" onClick={handleClear}>
-                            <Trash className="h-4 w-4 mr-2" /> Xóa
+                        <Button
+                            className="flex-1 border-2 bg-red-500  hover:bg-red-600 text-white rounded-lg"
+                            type="button"
+                            onClick={handleClear}
+                        >
+                            <Trash className="h-4 w-4 mr-2" /> Kí lại
                         </Button>
-                        <Button className="flex-1 border-2 bg-blue-500   hover:bg-blue-700 text-white rounded-lg"
-                            onClick={handleSave}>
-                            <Save className="h-4 w-4 mr-2" /> Lưu
+                        <Button
+                            className="flex-1 border-2 bg-blue-500   hover:bg-blue-700 text-white rounded-lg"
+                            onClick={handleSave}
+                        >
+                            <Save className="h-4 w-4 mr-2" /> Xác nhận
                         </Button>
                         <Button
                             className="flex-1 border-2 bg-[#f5b642] hover:bg-yellow-600 text-white"
@@ -558,35 +576,9 @@ const ContractViewAndSign = ({ onSign, onContractSent }) => {
                             {uploadLoading || isCreatingContract || isUpdatingContract ? 'Đang gửi...' : 'Gửi hợp đồng'}
                         </Button>
                     </div>
-
-                    {/* <div className="bg-white shadow-md rounded-lg p-6">
-
-                        <ol className="list-decimal list-inside space-y-2 font-sans text-sm">
-                            <li>Tải xuống file PDF hợp đồng bằng cách nhấn nút "Tải PDF" bên dưới.</li>
-                            <li>In hợp đồng ra giấy.</li>
-                            <li>Đọc kỹ nội dung và ký tên vào các vị trí được đánh dấu trong hợp đồng.</li>
-                            <li>Gửi hợp đồng đã ký qua chuyển phát đến địa chỉ:</li>
-                        </ol>
-                        <p className="mt-4 font-semibold">
-                            Công ty ABC<br />
-                            123 Đường D, Quận 1<br />
-                            Thành phố Hồ Chí Minh, Việt Nam
-                        </p>
-
-                    </div>
-
-                    <Button className="flex-1 border-2 border-[#44887d] text-[#44887d] bg-white hover:bg-green-600 hover:text-white rounded-lg"
-                        onClick={handleDownloadPDF} disabled={pdfLoading}>
-                        <Download className="h-4 w-4 mr-2" />
-                        {pdfLoading ? 'Đang tạo PDF...' : 'Tải PDF'}
-                    </Button> */}
-
                 </div>
-
-                {/* </form>
-        </Form> */}
-            </div >
-        </div >
+            </div>
+        </div>
     );
 };
 
