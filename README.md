@@ -1,6 +1,4 @@
-Here’s a suggested `README.md` file with markdown language and icons for your project:
 
-```markdown
 # 🌟 SponsorChild Frontend Project 🌟
 
 Welcome to the **SponsorChild** Frontend project! This is a web-based application built using the **ReactJS Framework** as part of our graduation thesis. The goal of this project is to create an intuitive and responsive interface for a fundraising campaign platform dedicated to helping children in need. 🎯
