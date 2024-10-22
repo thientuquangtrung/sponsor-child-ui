@@ -11,19 +11,32 @@ const steps = [
 
 const CampaignCreate = () => {
     const [currentStep, setCurrentStep] = useState(0);
+    const [childID, setChildID] = useState(null);
+    const [isChildProfileCreated, setIsChildProfileCreated] = useState(false);
 
     const nextStep = () => {
         setCurrentStep((prev) => Math.min(prev + 1, steps.length - 1));
     };
 
-    const prevStep = () => setCurrentStep((prev) => Math.max(prev - 1, 0));
+    const prevStep = () => {
+        setCurrentStep((prev) => Math.max(prev - 1, 0));
+    };
+
+    const handleChildProfileSuccess = (createdChildID) => {
+        console.log('Child profile created with ID:', createdChildID);
+        setChildID(createdChildID);
+        setIsChildProfileCreated(true);
+    };
 
     const renderStep = () => {
         switch (currentStep) {
             case 0:
-                return <ChildProfile nextStep={nextStep} />;
+                return <ChildProfile
+                    onSuccess={handleChildProfileSuccess}
+                    nextStep={nextStep}
+                />;
             case 1:
-                return <CampaignInfo prevStep={prevStep} nextStep={nextStep} />;
+                return childID ? <CampaignInfo childID={childID} /> : null;
             default:
                 return null;
         }
@@ -52,21 +65,27 @@ const CampaignCreate = () => {
             </div>
 
             <div className="w-full flex justify-between">
-                <Button
-                    className="bg-gradient-to-b from-teal-400 to-teal-600 text-white px-3 py-1 md:px-6 md:py-2 rounded-lg shadow text-xs md:text-sm"
-                    onClick={prevStep}
-                    disabled={currentStep === 0}
-                >
-                    <ArrowLeft className="mr-1 md:mr-2 h-3 w-3 md:h-4 md:w-4" /> Quay lại
-                </Button>
-                {currentStep < steps.length - 1 && (
-                    <Button
-                        className="bg-gradient-to-b from-teal-400 to-teal-600 text-white px-3 py-1 md:px-6 md:py-2 rounded-lg shadow text-xs md:text-sm"
-                        onClick={nextStep}
-                    >
-                        Tiếp theo <ArrowRight className="ml-1 md:ml-2 h-3 w-3 md:h-4 md:w-4" />
-                    </Button>
-                )}
+                <div>
+                    {currentStep > 0 && (
+                        <Button
+                            className="bg-gradient-to-b from-teal-400 to-teal-600 text-white px-3 py-1 md:px-6 md:py-2 rounded-lg shadow text-xs md:text-sm"
+                            onClick={prevStep}
+                        >
+                            <ArrowLeft className="mr-1 md:mr-2 h-3 w-3 md:h-4 md:w-4" /> Quay lại
+                        </Button>
+                    )}
+                </div>
+                <div>
+                    {currentStep < steps.length - 1 && (
+                        <Button
+                            className="bg-gradient-to-b from-teal-400 to-teal-600 text-white px-3 py-1 md:px-6 md:py-2 rounded-lg shadow text-xs md:text-sm"
+                            onClick={nextStep}
+                            disabled={!isChildProfileCreated}
+                        >
+                            Tiếp theo <ArrowRight className="ml-1 md:ml-2 h-3 w-3 md:h-4 md:w-4" />
+                        </Button>
+                    )}
+                </div>
             </div>
         </div>
     );

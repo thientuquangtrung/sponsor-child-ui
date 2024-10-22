@@ -11,14 +11,20 @@ import { useCreateChildProfileMutation } from '@/redux/childProfile/childProfile
 import { useDropzone } from 'react-dropzone';
 import { Upload, X } from 'lucide-react';
 import { toast } from 'sonner';
+import { provinces, guaranteeRelation } from '@/config/combobox';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const schema = z.object({
-    name: z.string().min(1, "Bạn vui lòng nhập tên trẻ."),
+    name: z.string().min(1, "Vui lòng nhập tên trẻ."),
     age: z.number().int().nonnegative("Tuổi phải là số không âm.").max(16, "Tuổi của trẻ phải nhỏ hơn 17."),
     gender: z.number().min(0).max(1),
-    location: z.string().min(1, "Bạn vui lòng nhập địa chỉ trẻ."),
-    imageUrl: z.any().refine((val) => val !== null, "Bạn vui lòng tải lên hình ảnh cho trẻ"),
+    location: z.string().min(1, "Vui lòng nhập địa chỉ trẻ."),
+    imageUrl: z.any().refine((val) => val !== null, "Vui lòng tải lên hình ảnh cho trẻ"),
+    provinceID: z.string().uuid("Vui lòng chọn tỉnh/thành phố"),
+    guaranteeRelation: z.number().min(0).max(6, "Vui lòng chọn mối quan hệ")
 });
+
+
 
 const useCustomDropzone = (onDrop) => {
     return useDropzone({
@@ -41,7 +47,7 @@ const CustomDropzone = ({ onDrop, children }) => {
     );
 };
 
-const ChildProfile = ({ nextStep }) => {
+const ChildProfile = ({ nextStep, onSuccess }) => {
     const { user } = useSelector((state) => state.auth);
     const [createChildProfile] = useCreateChildProfileMutation();
     const [image, setImage] = useState(null);
@@ -54,6 +60,8 @@ const ChildProfile = ({ nextStep }) => {
             gender: 0,
             location: "",
             imageUrl: null,
+            provinceID: "",
+            guaranteeRelation: 0
         },
     });
 
@@ -104,18 +112,28 @@ const ChildProfile = ({ nextStep }) => {
             const imageUrl = await uploadToCloudinary(data.imageUrl);
 
             const childProfileData = {
-                ...data,
+                name: data.name,
+                age: Number(data.age),
+                gender: Number(data.gender),
+                location: data.location,
                 imageUrl,
-                provinceID: "068a06a3-9373-4bdb-9afa-1253d05af783", // test province ID
-                guaranteeRelation: 0, // test with 0
+                provinceID: data.provinceID,
+                guaranteeRelation: Number(data.guaranteeRelation)
             };
 
-            await createChildProfile(childProfileData).unwrap();
-            toast.success('Hồ sơ trẻ em đã được tạo thành công!');
-            nextStep();
+            const result = await createChildProfile(childProfileData).unwrap();
+            console.log(result);
+
+            console.log(result.childProfile.childID);
+
+            if (result) {
+                toast.success('Hồ sơ trẻ em đã được tạo thành công!');
+                onSuccess(result.childProfile.childID);
+                nextStep();
+            }
         } catch (error) {
             console.error("Lỗi khi tạo hồ sơ trẻ em:", error);
-            toast.error('Không thể tạo hồ sơ trẻ em. Vui lòng thử lại.');
+            toast.error(error.data?.message || 'Không thể tạo hồ sơ trẻ em. Vui lòng thử lại.');
         }
     };
 
@@ -199,6 +217,67 @@ const ChildProfile = ({ nextStep }) => {
                                 <FormControl>
                                     <Input placeholder="Nhập địa chỉ" {...field} className="border-gray-300 rounded-lg" />
                                 </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="provinceID"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Tỉnh/Thành phố</FormLabel>
+                                <Select
+                                    onValueChange={field.onChange}
+                                    defaultValue={field.value}
+                                >
+                                    <FormControl>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Chọn tỉnh/thành phố" />
+                                        </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                        {provinces.map((province) => (
+                                            <SelectItem
+                                                key={province.value}
+                                                value={province.value}
+                                            >
+                                                {province.label}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+
+                    <FormField
+                        control={form.control}
+                        name="guaranteeRelation"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Mối quan hệ với trẻ</FormLabel>
+                                <Select
+                                    onValueChange={(value) => field.onChange(parseInt(value))}
+                                    defaultValue={field.value?.toString()}
+                                >
+                                    <FormControl>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Chọn mối quan hệ" />
+                                        </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                        {guaranteeRelation.map((relation) => (
+                                            <SelectItem
+                                                key={relation.value}
+                                                value={relation.value.toString()}
+                                            >
+                                                {relation.label}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
                                 <FormMessage />
                             </FormItem>
                         )}
