@@ -29,7 +29,7 @@ const addCampaignSchema = z.object({
         required_error: "Vui lòng chọn ngày kết thúc",
     }).nullable(),
     thumbnailUrl: z.any().refine((val) => val !== null, "Bạn vui lòng tải lên hình ảnh cho chiến dịch"),
-    imagesFolder: z.array(z.any()).optional(),
+    imagesFolderUrl: z.array(z.any()).optional(),
     campaignType: z.number({
         required_error: "Vui lòng chọn loại chiến dịch",
     }), plannedStartDate: z.date({
@@ -107,7 +107,7 @@ const CustomDropzone = ({ onDrop, multiple, children }) => {
 };
 
 const CampaignInfo = ({ childID }) => {
-    const [imagesFolder, setImagesFolder] = useState([]);
+    const [imagesFolderUrl, setImagesFolderUrl] = useState([]);
     const [thumbnail, setThumbnail] = useState(null);
     const { user } = useSelector((state) => state.auth);
     const [createCampaign] = useCreateCampaignMutation();
@@ -128,7 +128,7 @@ const CampaignInfo = ({ childID }) => {
             startDate: new Date(),
             endDate: null,
             thumbnailUrl: null,
-            imagesFolder: [],
+            imagesFolderUrl: [],
             campaignType: 0,
             plannedStartDate: new Date(),
             plannedEndDate: new Date(new Date().setMonth(new Date().getMonth() + 1)),
@@ -173,14 +173,14 @@ const CampaignInfo = ({ childID }) => {
     };
 
     const onDrop = useCallback((acceptedFiles) => {
-        const newImagesFolder = acceptedFiles.map(file => Object.assign(file, {
+        const newImagesFolderUrl = acceptedFiles.map(file => Object.assign(file, {
             preview: URL.createObjectURL(file)
         }));
 
-        setImagesFolder(prevImagesFolder => {
-            const updatedImagesFolder = [...prevImagesFolder, ...newImagesFolder];
-            form.setValue('imagesFolder', updatedImagesFolder);
-            return updatedImagesFolder;
+        setImagesFolderUrl(prevImagesFolderUrl => {
+            const updatedImagesFolderUrl = [...prevImagesFolderUrl, ...newImagesFolderUrl];
+            form.setValue('imagesFolderUrl', updatedImagesFolderUrl);
+            return updatedImagesFolderUrl;
         });
     }, [form]);
 
@@ -194,11 +194,11 @@ const CampaignInfo = ({ childID }) => {
     }, [form]);
 
     const removeImageFolder = (index) => {
-        const newImagesFolder = [...imagesFolder];
-        URL.revokeObjectURL(newImagesFolder[index].preview);
-        newImagesFolder.splice(index, 1);
-        setImagesFolder(newImagesFolder);
-        form.setValue('imagesFolder', newImagesFolder);
+        const newImagesFolderUrl = [...imagesFolderUrl];
+        URL.revokeObjectURL(newImagesFolderUrl[index].preview);
+        newImagesFolderUrl.splice(index, 1);
+        setImagesFolderUrl(newImagesFolderUrl);
+        form.setValue('imagesFolderUrl', newImagesFolderUrl);
     };
 
     const removeThumbnail = () => {
@@ -218,7 +218,7 @@ const CampaignInfo = ({ childID }) => {
             );
             // Upload images-supported
             const imageUrls = await Promise.all(
-                data.imagesFolder.map(file =>
+                data.imagesFolderUrl.map(file =>
                     uploadToCloudinary(file, `${userFolder}/campaign/${tempCampaignId}/images-supported`)
                 )
             );
@@ -235,7 +235,7 @@ const CampaignInfo = ({ childID }) => {
                 status: 0,
                 campaignType: data.campaignType,
                 thumbnailUrl,
-                imagesFolder: imageUrls.join(','),
+                imagesFolderUrl: imageUrls.join(','),
                 plannedStartDate: data.plannedStartDate.toISOString(),
                 plannedEndDate: data.plannedEndDate.toISOString(),
                 disbursementStages: data.disbursementStages.map(stage => ({
@@ -250,7 +250,7 @@ const CampaignInfo = ({ childID }) => {
             // Reset form or navigate to a success page
             form.reset();
             setThumbnail(null);
-            setImagesFolder([]);
+            setImagesFolderUrl([]);
 
             toast.success('Campaign created successfully!');
         } catch (error) {
@@ -401,7 +401,7 @@ const CampaignInfo = ({ childID }) => {
                             />
                             <FormField
                                 control={form.control}
-                                name="imagesFolder"
+                                name="imagesFolderUrl"
                                 render={() => (
                                     <FormItem>
                                         <FormLabel>Ảnh Phụ (Không bắt buộc)</FormLabel>
@@ -419,10 +419,10 @@ const CampaignInfo = ({ childID }) => {
                                 )}
                             />
 
-                            {imagesFolder.length > 0 && (
+                            {imagesFolderUrl.length > 0 && (
                                 <div className="mt-4 border rounded-lg p-4">
                                     <div className="grid grid-cols-7 gap-4">
-                                        {imagesFolder.map((file, index) => (
+                                        {imagesFolderUrl.map((file, index) => (
                                             <div key={index} className="relative aspect-square">
                                                 <img
                                                     src={file.preview}
