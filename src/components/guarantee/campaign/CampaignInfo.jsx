@@ -106,12 +106,19 @@ const CustomDropzone = ({ onDrop, multiple, children }) => {
     );
 };
 
-const CampaignInfo = ({ }) => {
+const CampaignInfo = ({ childID }) => {
     const [imagesFolder, setImagesFolder] = useState([]);
     const [thumbnail, setThumbnail] = useState(null);
     const { user } = useSelector((state) => state.auth);
     const [createCampaign] = useCreateCampaignMutation();
 
+    if (!childID) {
+        return (
+            <div className="text-center p-4">
+                <p className="text-red-500">Vui lòng tạo hồ sơ trẻ trước khi tạo chiến dịch</p>
+            </div>
+        );
+    }
     const form = useForm({
         resolver: zodResolver(addCampaignSchema),
         defaultValues: {
@@ -203,8 +210,7 @@ const CampaignInfo = ({ }) => {
     const onSubmit = async (data) => {
         try {
             const userFolder = `user_${user.userID}`;
-            const tempCampaignId = `c_001`; //test with c_001
-
+            const tempCampaignId = `c_${Date.now()}`; //timestamp
             // Upload thumbnail
             const thumbnailUrl = await uploadToCloudinary(
                 data.thumbnailUrl,
@@ -220,7 +226,7 @@ const CampaignInfo = ({ }) => {
             // Prepare the final data object
             const finalData = {
                 guaranteeID: user.userID,
-                childID: "9ce746e2-ea7c-44fb-9bb4-48122ffa07fc", // Test childID
+                childID: childID,
                 title: data.title,
                 story: data.story,
                 targetAmount: parseFloat(data.targetAmount.replace(/,/g, '')),

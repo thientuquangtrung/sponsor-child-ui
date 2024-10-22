@@ -81,3 +81,15 @@ export const organizationTypes = [
     { value: 3, label: 'Tổ chức tôn giáo' },
     { value: 4, label: 'Tổ chức kinh tế, Doanh nghiệp' },
 ];
+
+//child profile
+export const guaranteeRelation = [
+    { value: 0, label: 'Cha mẹ' },
+    { value: 1, label: 'Chú' },
+    { value: 2, label: 'Anh/chị họ' },
+    { value: 3, label: 'Chị' },
+    { value: 4, label: 'Anh' },
+    { value: 5, label: 'Dì' },
+    { value: 6, label: 'Ông bà' },
+
+];
