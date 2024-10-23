@@ -16,6 +16,7 @@ import RegistrationPage from '@/components/landingpage/RegistrationPage';
 import { Info } from 'lucide-react';
 import DonationInformation from '@/components/landingpage/DonationInformation';
 import ContractSignPage from '@/components/guarantee/ContractSignPage';
+import CampaignsNoGuarantee from '@/components/landingpage/CampaignsNoGuarantee';
 
 const Loadable = (Component) => {
     const LoadableComponent = (props) => {
@@ -67,6 +68,10 @@ export default function Router() {
                 {
                     path: 'campaign-detail/:id',
                     element: <CampaignDetail />,
+                },
+                {
+                    path: 'campaigns-no-guarantee',
+                    element: <CampaignsNoGuarantee />
                 },
                 {
                     path: 'donate-target',

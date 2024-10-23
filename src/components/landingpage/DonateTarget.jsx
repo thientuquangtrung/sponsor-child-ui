@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/select';
 import { campaignStatus, campaignTypes, provinces } from '@/config/combobox';
 import { Button } from '../ui/button';
-import { X } from 'lucide-react';
+import { BellRing, X } from 'lucide-react';
 
 const DonateTarget = () => {
     const [URLSearchParams, SetURLSearchParams] = useSearchParams();
@@ -66,10 +66,21 @@ const DonateTarget = () => {
                 <img src={banner} alt="banner" className="w-full object-cover rounded-lg shadow-md" />
             </div>
 
-            <div className="flex items-center justify-center my-8">
+            <div className="flex items-center justify-center mt-8 mb-4">
                 <div className="border-t-2 border-teal-500 w-16"></div>
                 <h1 className="text-2xl font-semibold mx-4">Chiến dịch gây quỹ nổi bật</h1>
                 <div className="border-t-2 border-teal-500 w-16"></div>
+            </div>
+
+            <div className="flex justify-center mb-8">
+                <Link to="/campaigns-no-guarantee">
+                    <div className="h-auto w-auto bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 p-[2px] rounded-md">
+                        <Button className="bg-white text-black font-semibold px-6 py-2 rounded-md flex items-center space-x-2 h-full w-full hover:bg-normal">
+                            <BellRing className="w-6 h-6 text-rose-600 animate-shake" />
+                            <span className='text-rose-600'>Chiến dịch chưa có Người bảo lãnh</span>
+                        </Button>
+                    </div>
+                </Link>
             </div>
 
             <div className="flex justify-between items-center mb-4 flex-wrap">
