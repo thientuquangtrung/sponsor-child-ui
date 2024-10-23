@@ -17,6 +17,7 @@ import { useCreateCampaignMutation } from '@/redux/campaign/campaignApi';
 import { campaignTypes } from '@/config/combobox';
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Textarea } from '@/components/ui/textarea';
 
 const addCampaignSchema = z.object({
     title: z.string().min(1, "Bạn vui lòng nhập Tiêu Đề chiến dịch"),
@@ -42,7 +43,8 @@ const addCampaignSchema = z.object({
         disbursementAmount: z.number().min(1, "Số tiền phải lớn hơn 0"),
         scheduledDate: z.date({
             required_error: "Vui lòng chọn ngày giải ngân",
-        })
+        }),
+        activity: z.string().min(1, "Vui lòng nhập hoạt động giải ngân"),
     }))
 }).refine((data) => data.plannedEndDate > data.plannedStartDate, {
     message: "Ngày kết thúc dự kiến phải sau ngày bắt đầu dự kiến",
@@ -110,7 +112,7 @@ const CampaignInfo = ({ childID }) => {
     const [imagesFolderUrl, setImagesFolderUrl] = useState([]);
     const [thumbnail, setThumbnail] = useState(null);
     const { user } = useSelector((state) => state.auth);
-    const [createCampaign] = useCreateCampaignMutation();
+    const [createCampaign, { isLoading: isCreatingCampaign }] = useCreateCampaignMutation();
 
     if (!childID) {
         return (
@@ -132,7 +134,11 @@ const CampaignInfo = ({ childID }) => {
             campaignType: 0,
             plannedStartDate: new Date(),
             plannedEndDate: new Date(new Date().setMonth(new Date().getMonth() + 1)),
-            disbursementStages: [{ disbursementAmount: 0, scheduledDate: new Date() }]
+            disbursementStages: [{
+                disbursementAmount: 0,
+                scheduledDate: new Date(),
+                activity: ''
+            }]
         }
     });
 
@@ -247,15 +253,14 @@ const CampaignInfo = ({ childID }) => {
             console.log('Final data to be sent to backend:', finalData);
             const response = await createCampaign(finalData).unwrap();
             console.log('Campaign created:', response);
-            // Reset form or navigate to a success page
             form.reset();
             setThumbnail(null);
             setImagesFolderUrl([]);
 
-            toast.success('Campaign created successfully!');
+            toast.success('Chiến dịch được tạo thành công!');
         } catch (error) {
-            console.error('Submission failed:', error);
-            toast.error('Failed to create campaign. Please try again.');
+            console.error('failed:', error);
+            toast.error('Đã xảy ra lỗi! Vui lòng thử lại.');
         }
     };
 
@@ -265,7 +270,7 @@ const CampaignInfo = ({ childID }) => {
 
     return (
         <div className='relative font-sans'>
-            <Card className="w-full max-w-7xl mx-auto rounded-lg border-2">
+            <Card className="w-full max-w-6xl mx-auto rounded-lg border-2">
                 <CardHeader>
                     <CardTitle className="text-center text-3xl">Tạo thông tin chiến dịch</CardTitle>
                 </CardHeader>
@@ -532,6 +537,8 @@ const CampaignInfo = ({ childID }) => {
                                             <TableHead className="border border-slate-300 font-semibold">Giải ngân giai đoạn</TableHead>
                                             <TableHead className="border border-slate-300 font-semibold">Số tiền cần giải ngân</TableHead>
                                             <TableHead className="border border-slate-300 font-semibold">Ngày dự kiến giải ngân</TableHead>
+                                            <TableHead className="border border-slate-300 font-semibold">Hoạt động giải ngân</TableHead>
+
                                             <TableHead className="border border-slate-300"></TableHead>
                                         </TableRow>
                                     </TableHeader>
@@ -601,6 +608,22 @@ const CampaignInfo = ({ childID }) => {
                                                         )}
                                                     />
                                                 </TableCell>
+                                                <FormField
+                                                    control={form.control}
+                                                    name={`disbursementStages.${index}.activity`}
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormControl>
+                                                                <Textarea
+                                                                    placeholder="Nhập hoạt động giải ngân"
+                                                                    className="min-h-[60px]"
+                                                                    {...field}
+                                                                />
+                                                            </FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
                                                 <TableCell className="border border-slate-300">
                                                     {index > 0 && (
                                                         <Button
@@ -627,7 +650,11 @@ const CampaignInfo = ({ childID }) => {
                                     const lastStage = fields[fields.length - 1];
                                     const newDate = new Date(lastStage.scheduledDate);
                                     newDate.setDate(newDate.getDate() + 1);
-                                    append({ disbursementAmount: 0, scheduledDate: newDate });
+                                    append({
+                                        disbursementAmount: 0,
+                                        scheduledDate: newDate,
+                                        activity: ''
+                                    });
                                 }}
                             >
                                 <Plus className="mr-2 h-4 w-4" /> Thêm Giai Đoạn
@@ -636,7 +663,13 @@ const CampaignInfo = ({ childID }) => {
 
 
                             <div className="flex justify-center">
-                                <Button type="submit" className="w-1/2  bg-[#2fabab] hover:bg-[#287176] text-white py-2 rounded-lg">Tạo Chiến Dịch</Button>
+                                <Button
+                                    type="submit"
+                                    className={`w-1/2 ${isCreatingCampaign ? 'bg-gray-400' : 'bg-[#2fabab]'} hover:bg-[#287176] text-white py-2 rounded-lg`}
+                                    disabled={isCreatingCampaign}
+                                >
+                                    {isCreatingCampaign ? 'Đang Tạo Chiến Dịch...' : 'Tạo Chiến Dịch'}
+                                </Button>
                             </div>
                         </form>
                     </Form>

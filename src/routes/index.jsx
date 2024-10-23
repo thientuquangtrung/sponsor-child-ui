@@ -18,6 +18,7 @@ import DonationInformation from '@/components/landingpage/DonationInformation';
 import ContractSignPage from '@/components/guarantee/ContractSignPage';
 import CampaignsNoGuarantee from '@/components/landingpage/CampaignsNoGuarantee';
 import ContractSignPage from '@/components/guarantee/contract/ContractSignPage';
+import ContractCampaign from '@/components/guarantee/contract/ContractCampaign';
 
 const Loadable = (Component) => {
     const LoadableComponent = (props) => {
@@ -119,6 +120,10 @@ export default function Router() {
                 {
                     path: 'contract',
                     element: <ContractSignPage />,
+                },
+                {
+                    path: 'contract-campaign',
+                    element: <ContractCampaign />,
                 },
                 {
                     path: 'empty',

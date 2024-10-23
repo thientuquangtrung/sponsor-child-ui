@@ -3,9 +3,11 @@ import baseApi from '@/redux/baseApi';
 export const contractApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
         createContract: builder.mutation({
-            query: (partyBID) => ({
-                url: `/Contract/create/${partyBID}`,
+            query: (data) => ({
+                url: `/Contract/create`,
                 method: 'POST',
+                body: data,
+
             }),
         }),
         getContractById: builder.query({

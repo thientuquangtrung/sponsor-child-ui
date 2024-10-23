@@ -49,7 +49,7 @@ const CustomDropzone = ({ onDrop, children }) => {
 
 const ChildProfile = ({ nextStep, onSuccess }) => {
     const { user } = useSelector((state) => state.auth);
-    const [createChildProfile] = useCreateChildProfileMutation();
+    const [createChildProfile, { isLoading: isCreatingChildProfile }] = useCreateChildProfileMutation();
     const [image, setImage] = useState(null);
 
     const form = useForm({
@@ -138,10 +138,11 @@ const ChildProfile = ({ nextStep, onSuccess }) => {
     };
 
     return (
-        <div className="bg-white p-8 rounded-lg shadow-md max-w-lg mx-auto">
+
+        <div className="bg-white p-8  shadow-md w-full max-w-6xl mx-auto rounded-lg border-2">
             <h2 className="text-2xl font-bold text-center mb-6">Thông Tin Trẻ Em</h2>
             <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 mx-32">
                     <FormField
                         control={form.control}
                         name="name"
@@ -325,9 +326,15 @@ const ChildProfile = ({ nextStep, onSuccess }) => {
                             </FormItem>
                         )}
                     />
-                    <Button type="submit" className="w-full bg-[#2fabab] hover:bg-[#287176] text-white py-2 rounded-lg">
-                        Tạo Hồ Sơ
-                    </Button>
+                    <div className="flex justify-center">
+                        <Button
+                            type="submit"
+                            className={`w-1/2 ${isCreatingChildProfile ? 'bg-gray-400' : 'bg-[#2fabab]'} hover:bg-[#287176] text-white py-2 rounded-lg`}
+                            disabled={isCreatingChildProfile}
+                        >
+                            {isCreatingChildProfile ? 'Đang Tạo Hồ Sơ...' : 'Tạo Hồ Sơ'}
+                        </Button>
+                    </div>
                 </form>
             </Form>
         </div>
