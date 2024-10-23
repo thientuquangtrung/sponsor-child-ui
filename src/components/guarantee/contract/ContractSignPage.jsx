@@ -6,7 +6,7 @@ import ContractSentConfirmation from '@/components/guarantee/contract/ContractSe
 import { Button } from "@/components/ui/button";
 import { ArrowBigRight, ArrowLeft, ArrowRight } from 'lucide-react';
 
-const steps = ['Hướng dẫn', 'Xem lại và Ký hợp đồng', 'Gửi bản cứng hợp đồng', 'Xác nhận'];
+const steps = ['Hướng dẫn', 'Xem và Ký hợp đồng', 'Gửi bản cứng hợp đồng', 'Xác nhận'];
 
 const ContractSignPage = () => {
     const [currentStep, setCurrentStep] = useState(0);

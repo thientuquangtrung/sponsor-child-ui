@@ -11,6 +11,7 @@ export const campaignApi = baseApi.injectEndpoints({
                 };
             },
         }),
+
         getCampaignById: builder.query({
             query: (id) => `/campaign/${id}`,
         }),
@@ -34,6 +35,12 @@ export const campaignApi = baseApi.injectEndpoints({
                 method: 'DELETE',
             }),
         }),
+        fetchAllCampaigns: builder.query({
+            query: () => '/campaign',
+        }),
+        getDisbursementDetails: builder.query({
+            query: (id) => `/campaign/campaigns/${id}/disbursement-details`,
+        }),
     }),
 });
 
@@ -43,4 +50,6 @@ export const {
     useCreateCampaignMutation,
     useUpdateCampaignMutation,
     useDeleteCampaignMutation,
+    useFetchAllCampaignsQuery,
+    useGetDisbursementDetailsQuery,
 } = campaignApi;

@@ -20,6 +20,7 @@ import { formatInTimeZone } from 'date-fns-tz'
 
 import { Toaster, toast } from 'sonner';
 
+import { useUploadPdfMutation } from '@/redux/cloudinary/cloudinaryApi';
 // const formSchema = z.object({
 //     fullName: z.string().min(1, "Vui lòng nhập Họ tên"),
 //     idNumber: z.string().min(1, "Vui lòng nhập Số CMND/CCCD "),
@@ -195,12 +196,13 @@ const formatDate = (dateString) => {
     const date = typeof dateString === 'string' ? parseISO(dateString) : dateString;
     return format(date, 'dd/MM/yyyy');
 };
-const ContractViewAndSign = ({ onSign, onContractSent }) => {
+const ContractSignCampaign = ({ onSign, onContractSent }) => {
     const { user } = useSelector((state) => state.auth);
     const [signature, setSignature] = useState(null);
     const [isSigned, setIsSigned] = useState(false);
     const sigCanvas = useRef({});
     const contractRef = useRef(null);
+    const [pdfLoading, setPdfLoading] = useState(false);
     const [uploadLoading, setUploadLoading] = useState(false);
     const [createContract, { isLoading: isCreatingContract }] = useCreateContractMutation();
     const [updateContract, { isLoading: isUpdatingContract }] = useUpdateContractMutation();
@@ -591,4 +593,4 @@ const ContractViewAndSign = ({ onSign, onContractSent }) => {
     );
 };
 
-export default ContractViewAndSign;
+export default ContractSignCampaign;

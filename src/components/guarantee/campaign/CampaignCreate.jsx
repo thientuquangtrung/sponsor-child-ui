@@ -5,8 +5,8 @@ import ChildProfile from '@/components/guarantee/campaign/ChildProfile';
 import CampaignInfo from '@/components/guarantee/campaign/CampaignInfo';
 
 const steps = [
-    'Tạo Hồ Sơ Trẻ Em',
-    'Tạo Thông Tin Chiến Dịch',
+    'Hồ Sơ Trẻ Em',
+    'Thông Tin Chiến Dịch',
 ];
 
 const CampaignCreate = () => {
