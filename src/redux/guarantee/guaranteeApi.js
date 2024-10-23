@@ -10,6 +10,12 @@ export const guaranteeApi = baseApi.injectEndpoints({
             query: (id) => `/guarantee/${id}`,
         }),
 
+        checkGuaranteeStatus: builder.query({
+            query: (id) => ({
+                url: '/guarantee/checkguaranteestatus/' + id,
+            }),
+        }),
+
         createIndividualGuarantee: builder.mutation({
             query: (data) => ({
                 url: '/guarantee/register-individual',
@@ -59,4 +65,5 @@ export const {
     useUpdateIndividualGuaranteeMutation,
     useUpdateOrganizationGuaranteeMutation,
     useDeleteGuaranteeMutation,
+    useCheckGuaranteeStatusQuery,
 } = guaranteeApi;
