@@ -13,7 +13,6 @@ import CampaignDetail from '@/components/landingpage/CampaignDetail';
 import DonateTarget from '@/components/landingpage/DonateTarget';
 import PageIntroduction from '@/components/landingpage/PageIntroduction';
 import RegistrationPage from '@/components/landingpage/RegistrationPage';
-import { Info } from 'lucide-react';
 import DonationInformation from '@/components/landingpage/DonationInformation';
 import CampaignsNoGuarantee from '@/components/landingpage/CampaignsNoGuarantee';
 import ContractSignPage from '@/components/guarantee/contract/ContractSignPage';
