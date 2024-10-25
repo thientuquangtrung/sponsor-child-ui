@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import ContractCampaignSign from '@/components/guarantee/contract/ContractCampaignSign';
-import SendHardContract from '@/components/guarantee/contract/SendHardContract';
 import ContractSentConfirmation from '@/components/guarantee/contract/ContractSentConfirmation';
 import { Button } from "@/components/ui/button";
 import { ArrowBigRight, ArrowLeft, ArrowRight, Check } from 'lucide-react';
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { useFetchAllCampaignsQuery } from '@/redux/campaign/campaignApi';
+import SendHardContractCampaign from '@/components/guarantee/contract/SendHardContractCampaign';
 
 const steps = ['Chọn chiến dịch', 'Xem và Ký hợp đồng', 'Gửi bản cứng hợp đồng', 'Xác nhận'];
 
@@ -17,6 +17,7 @@ const ContractCampaign = () => {
     const [campaignData, setCampaignData] = useState(null);
 
     const { data: campaigns, isLoading, error } = useFetchAllCampaignsQuery();
+
 
     useEffect(() => {
         if (selectedCampaign && campaigns) {
@@ -38,6 +39,24 @@ const ContractCampaign = () => {
             setContractSent(false);
         }
     };
+    const handleContractSubmissionSuccess = () => {
+        setContractSent(true);
+        setCurrentStep((prev) => Math.min(prev + 1, steps.length - 1));
+    };
+    const prevStep = () => {
+        const newStep = Math.max(currentStep - 1, 0);
+        setCurrentStep(newStep);
+        resetStepData(newStep);
+    };
+
+    const handleContractSign = (signedData) => {
+        setSignedContract(signedData);
+    };
+
+    const handleCampaignSelect = (campaignId) => {
+        setSelectedCampaign(campaignId);
+        setCurrentStep(1);
+    };
 
     const nextStep = () => {
         if (currentStep === 0 && !selectedCampaign) {
@@ -51,23 +70,6 @@ const ContractCampaign = () => {
         setCurrentStep((prev) => Math.min(prev + 1, steps.length - 1));
     };
 
-    const prevStep = () => {
-        const newStep = Math.max(currentStep - 1, 0);
-        setCurrentStep(newStep);
-        resetStepData(newStep);
-    };
-
-    const handleContractSign = (signedData) => {
-        setSignedContract(signedData);
-    };
-
-    const handleContractSent = () => {
-        setContractSent(true);
-    };
-
-    const handleCampaignSelect = (campaignId) => {
-        setSelectedCampaign(campaignId);
-    };
 
     const CampaignSelection = () => {
         if (isLoading) return <div className="text-center">Đang tải danh sách chiến dịch...</div>;
@@ -124,16 +126,17 @@ const ContractCampaign = () => {
                 return (
                     <ContractCampaignSign
                         onSign={handleContractSign}
-                        onContractSent={handleContractSent}
+                        onContractSent={handleContractSubmissionSuccess}
                         campaignId={selectedCampaign}
                         campaignData={campaignData}
                     />
                 );
             case 2:
                 return (
-                    <SendHardContract
-                        signedContract={signedContract}
+                    <SendHardContractCampaign
+                        campaignId={selectedCampaign}
                         campaignData={campaignData}
+                        signedContract={signedContract}
                     />
                 );
             case 3:
@@ -142,6 +145,7 @@ const ContractCampaign = () => {
                 return null;
         }
     };
+
 
     return (
         <div className="flex flex-col items-center w-full max-w-7xl mx-auto my-4 p-4 md:p-8 bg-[#c3e2da] rounded-lg">
@@ -165,7 +169,6 @@ const ContractCampaign = () => {
             <div className="w-full mb-4 md:mb-8">
                 {renderStep()}
             </div>
-
             <div className="w-full flex justify-between">
                 <Button
                     className="bg-gradient-to-b from-teal-400 to-teal-600 text-white px-3 py-1 md:px-6 md:py-2 rounded-lg shadow text-xs md:text-sm"

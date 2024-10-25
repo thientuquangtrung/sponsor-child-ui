@@ -3,11 +3,11 @@ import SidebarGuarantee from '@/components/navigation/SidebarGuarantee';
 
 export function GuaranteeLayout() {
     return (
-        <div className="flex">
+        <div className="flex flex-1 overflow-hidden">
             <SidebarGuarantee />
-            <div className="flex-grow">
+            <main className="flex-1 overflow-y-auto bg-[#f3f4f6] dark:bg-gray-700 p-6">
                 <Outlet />
-            </div>
+            </main>
         </div>
     );
 }

@@ -9,7 +9,7 @@ import {
 } from '@tanstack/react-table';
 import { useNavigate } from 'react-router-dom';
 
-import { MoreHorizontal, Plus } from 'lucide-react';
+import { BadgePlus, MoreHorizontal } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -204,11 +204,16 @@ export function SponsorCampaigns() {
 
     return (
         <div className="w-full space-y-4 mx-3">
-            <div className="flex items-center justify-between">
-                <h1 className="text-2xl font-bold ml-6 mt-6">Quản lý Chiến dịch</h1>
-                <Button className="mr-2 mt-3" onClick={() => navigate('/guarantee/create-campaign')}>
+            <h1 className="text-2xl font-bold ml-6 mt-6">Quản lý Chiến dịch</h1>
+
+
+            <div className="flex justify-end items-center mb-6">
+                <Button
+                    className="bg-teal-600 hover:bg-teal-700 text-white"
+                    onClick={() => navigate('/guarantee/create-campaign')}
+                >
+                    <BadgePlus className="w-4 h-4 mr-2" />
                     Tạo Chiến dịch
-                    <Plus className="ml-2 h-4 w-4" />
                 </Button>
             </div>
             <DataTableToolbar table={table} />
