@@ -109,7 +109,7 @@ const ContractContent = ({ partyB, signature, campaignDetails }) => {
                                 <br />
                                 - Ngày dự kiến: {formatDate(stage.scheduledDate)}
                                 <br />
-                                - Mô tả: {stage.description || "......................"}
+                                - Hoạt động: {stage.description || "......................"}
                             </React.Fragment>
                         ))}
                     </p>
