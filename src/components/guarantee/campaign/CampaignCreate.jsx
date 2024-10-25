@@ -43,7 +43,7 @@ const CampaignCreate = () => {
     };
 
     return (
-        <div className="flex flex-col items-center w-full max-w-7xl mx-auto my-4 p-4 md:p-8 bg-[#c3e2da] rounded-lg font-sans">
+        <div className="flex flex-col items-center w-full max-w-6xl mx-auto my-4 p-4 md:p-8 bg-[#c3e2da] rounded-lg font-sans">
             <div className="w-full mb-4 md:mb-8 overflow-x-auto">
                 <ol className="flex items-center w-full p-2 md:p-3 space-x-2 text-xs md:text-sm font-medium text-center text-gray-500 bg-white border border-gray-200 rounded-lg shadow-sm dark:text-gray-400 sm:text-base dark:bg-gray-800 dark:border-gray-700 sm:p-4 sm:space-x-4">
                     {steps.map((step, index) => (

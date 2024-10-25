@@ -324,7 +324,26 @@ const ContractViewAndSign = ({ onSign, onContractSent }) => {
 
         return pdf;
     };
+    const uploadToCloudinary = async (file, folder) => {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('upload_preset', import.meta.env.VITE_UPLOAD_PRESET_NAME);
+        formData.append('folder', folder);
 
+        const response = await fetch(
+            `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUD_NAME}/raw/upload`,
+            {
+                method: 'POST',
+                body: formData,
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error(`Upload failed: ${response.statusText}`);
+        }
+
+        return response.json();
+    };
     const handleUpload = async () => {
         setUploadLoading(true);
         toast.promise(
@@ -332,43 +351,28 @@ const ContractViewAndSign = ({ onSign, onContractSent }) => {
                 try {
                     const pdf = await generatePDF();
                     const pdfBlob = pdf.output('blob');
-
                     const partyBID = user.userID;
 
-                    const formData = new FormData();
-                    formData.append('file', pdfBlob, 'register.pdf');
-                    formData.append('upload_preset', import.meta.env.VITE_UPLOAD_PRESET_NAME);
-                    formData.append('folder', `user_${partyBID}/guarantee/contracts`);
-                    // formData.append('public_id', `${userId}/guarantee/contracts/register`);
-                    // formData.append('overwrite', 'true'); // "Overwrite parameter is not allowed when using unsigned upload
-                    // const response = await uploadPdf(formData).unwrap();
-
-                    const response = await fetch(
-                        `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUD_NAME}/raw/upload`,
-                        {
-                            method: 'POST',
-                            body: formData,
-                        },
+                    // Upload signature
+                    const signatureBlob = await (await fetch(signature)).blob();
+                    const signatureData = await uploadToCloudinary(
+                        signatureBlob,
+                        `user_${partyBID}/guarantee/signatures_guaranteed`
                     );
+                    const signatureUrl = signatureData.secure_url;
 
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-
-                    const data = await response.json();
-                    // console.log('Upload successful:', data);
-
-                    //  Create URL Cloudinary for PDF upload
-                    const pdfUrl = data.secure_url;
-                    console.log('PDF URL:', pdfUrl);
+                    // Upload PDF
+                    const pdfData = await uploadToCloudinary(
+                        pdfBlob,
+                        `user_${partyBID}/guarantee/contracts_guaranteed`
+                    );
+                    const pdfUrl = pdfData.secure_url;
 
                     // Create Contract
                     const result = await createContract({
                         partyBID: partyBID,
                         contractType: 0
                     }).unwrap();
-                    console.log(result);
-                    console.log(result.contractID);
 
                     if (result && result.contractID) {
                         await updateContract({
@@ -379,9 +383,10 @@ const ContractViewAndSign = ({ onSign, onContractSent }) => {
                             partyBType: 1, // Guarantee
                             partyBID: user.userID,
                             signDate: signDate,
-                            status: 0, // pending
+                            status: 1, // pending Admin sign
                             softContractUrl: pdfUrl,
                             hardContractUrl: '',
+                            partyBSignatureUrl: signatureUrl
                         }).unwrap();
                     }
 

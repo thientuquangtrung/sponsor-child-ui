@@ -15,8 +15,10 @@ import PageIntroduction from '@/components/landingpage/PageIntroduction';
 import RegistrationPage from '@/components/landingpage/RegistrationPage';
 import DonationInformation from '@/components/landingpage/DonationInformation';
 import CampaignsNoGuarantee from '@/components/landingpage/CampaignsNoGuarantee';
-import ContractSignPage from '@/components/guarantee/contract/ContractSignPage';
 import ContractCampaign from '@/components/guarantee/contract/ContractCampaign';
+import ContractPage from '@/components/guarantee/contract/ContractPage';
+import ContractDetail from '@/components/guarantee/contract/ContractDetail';
+import ContractGuarantee from '@/components/guarantee/contract/ContractGuarantee';
 
 const Loadable = (Component) => {
     const LoadableComponent = (props) => {
@@ -55,7 +57,9 @@ export default function Router() {
                 { element: <GuaranteeCampaigns />, path: 'campaigns' },
                 { element: <DonationHistory />, path: 'donation-history' },
                 { element: <CampaignCreate />, path: 'create-campaign' },
-
+                { element: <ContractPage />, path: 'contracts' },
+                { element: <ContractCampaign />, path: 'create-contract-campaign' },
+                { element: <ContractDetail />, path: 'contract/:id' },
             ],
         },
         {
@@ -117,12 +121,9 @@ export default function Router() {
                 },
                 {
                     path: 'contract',
-                    element: <ContractSignPage />,
+                    element: <ContractGuarantee />,
                 },
-                {
-                    path: 'contract-campaign',
-                    element: <ContractCampaign />,
-                },
+
                 {
                     path: 'empty',
                     element: <PageEmpty />,

@@ -18,8 +18,6 @@ const formatDate = (dateString) => {
 const ContractContent = ({ partyB, signature, campaignDetails }) => {
     const disbursementPlan = campaignDetails?.disbursementPlans?.[0] || {};
     const stages = disbursementPlan?.stages || [];
-    console.log(campaignDetails);
-
     const today = new Date();
     const formattedToday = format(today, "dd' tháng 'MM' năm 'yyyy");
 
@@ -77,9 +75,9 @@ const ContractContent = ({ partyB, signature, campaignDetails }) => {
                 <div className="mb-4 mt-4">
                     <h4 className="font-semibold">ĐIỀU 2: THÔNG TIN CHIẾN DỊCH</h4>
                     <p>
-                        2.1. Tên chiến dịch: {campaignDetails.title || "[Chưa có thông tin]"}
+                        2.1. Tên chiến dịch: {campaignDetails.title || ".........................."}
                         <br />
-                        2.2. Số tiền cam kết bảo lãnh: {formatCurrency(campaignDetails.targetAmount) || "[Chưa có thông tin]"}
+                        2.2. Số tiền cam kết bảo lãnh: {formatCurrency(campaignDetails.targetAmount) || "................."}
                         <br />
                         2.3. Thời gian thực hiện:
                         <br />
@@ -87,7 +85,6 @@ const ContractContent = ({ partyB, signature, campaignDetails }) => {
                         <br />
                         - Ngày kết thúc: {formatDate(campaignDetails.endDate)}
                         <br />
-                        2.4. Mô tả chiến dịch: {campaignDetails.story || "[Chưa có thông tin]"}
                     </p>
                 </div>
 
@@ -100,7 +97,7 @@ const ContractContent = ({ partyB, signature, campaignDetails }) => {
                         <br />
                         - Ngày kết thúc dự kiến: {formatDate(disbursementPlan.plannedEndDate)}
                         <br />
-                        3.2. Tổng số tiền giải ngân: {formatCurrency(disbursementPlan.totalPlannedAmount)}
+                        3.2. Tổng số tiền giải ngân: {formatCurrency(disbursementPlan.totalPlannedAmount) || "................."}
                         <br />
                         3.3. Các giai đoạn giải ngân:
                         {stages.map((stage, index) => (
@@ -108,7 +105,7 @@ const ContractContent = ({ partyB, signature, campaignDetails }) => {
                                 <br />
                                 Giai đoạn {index + 1}:
                                 <br />
-                                - Số tiền: {formatCurrency(stage.amount) || "........................"}
+                                - Số tiền: {formatCurrency(stage.disbursementAmount) || "........................"}
                                 <br />
                                 - Ngày dự kiến: {formatDate(stage.scheduledDate)}
                                 <br />
@@ -152,6 +149,9 @@ const ContractContent = ({ partyB, signature, campaignDetails }) => {
                         5.2. Mọi thay đổi trong kế hoạch giải ngân phải được sự đồng ý của cả hai bên
                         <br />
                         5.3. Trường hợp có tranh chấp, hai bên sẽ giải quyết trên tinh thần hợp tác
+                        <br />
+                        5.4. Hợp đồng này được lập thành 03 bản, bên Bảo lãnh giữ 01 bản, bên Quản trị nền tảng SponsorChild giữ 02 bản và có giá trị pháp lý như nhau.
+
                     </p>
                 </div>
 
@@ -168,13 +168,6 @@ const ContractContent = ({ partyB, signature, campaignDetails }) => {
                         )}
                         <p className="mt-2">{partyB.fullName}</p>
                     </div>
-                </div>
-
-                <div className="mb-6">
-                    <div className="border-t-2 mb-2"></div>
-                    <p className="text-center">
-                        Hợp đồng này được lập thành 03 bản, bên Bảo lãnh giữ 01 bản, bên Quản trị nền tảng SponsorChild giữ 02 bản và có giá trị pháp lý như nhau.
-                    </p>
                 </div>
             </div>
         </div>
