@@ -3,97 +3,121 @@ import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { useDropzone } from 'react-dropzone';
-import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Button } from '@/components/ui/button';
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Upload, X, Plus, Trash2 } from 'lucide-react';
 import QuillEditor from '@/components/guarantee/QuillEditor';
 import { toast } from 'sonner';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
 import { useSelector } from 'react-redux';
 import { useCreateCampaignMutation } from '@/redux/campaign/campaignApi';
 import { campaignTypes } from '@/config/combobox';
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Textarea } from '@/components/ui/textarea';
+import { DatePicker } from '@/components/ui/date-picker';
 
-const addCampaignSchema = z.object({
-    title: z.string().min(1, "Bạn vui lòng nhập Tiêu Đề chiến dịch"),
-    story: z.string().min(1, "Bạn vui lòng nhập thông tin chi tiết về chiến dịch"),
-    targetAmount: z.string().min(1, "Bạn vui lòng nhập số tiền mục tiêu lớn hơn 0"),
-    startDate: z.date({
-        required_error: "Vui lòng chọn ngày bắt đầu",
-    }),
-    endDate: z.date({
-        required_error: "Vui lòng chọn ngày kết thúc",
-    }).nullable(),
-    thumbnailUrl: z.any().refine((val) => val !== null, "Bạn vui lòng tải lên hình ảnh cho chiến dịch"),
-    imagesFolderUrl: z.array(z.any()).optional(),
-    campaignType: z.number({
-        required_error: "Vui lòng chọn loại chiến dịch",
-    }), plannedStartDate: z.date({
-        required_error: "Vui lòng chọn ngày bắt đầu dự kiến",
-    }),
-    plannedEndDate: z.date({
-        required_error: "Vui lòng chọn ngày kết thúc dự kiến",
-    }),
-    disbursementStages: z.array(z.object({
-        disbursementAmount: z.number().min(1, "Số tiền phải lớn hơn 0"),
-        scheduledDate: z.date({
-            required_error: "Vui lòng chọn ngày giải ngân",
+const addCampaignSchema = z
+    .object({
+        title: z.string().min(1, 'Bạn vui lòng nhập Tiêu Đề chiến dịch'),
+        story: z.string().min(1, 'Bạn vui lòng nhập thông tin chi tiết về chiến dịch'),
+        targetAmount: z.string().min(1, 'Bạn vui lòng nhập số tiền mục tiêu lớn hơn 0'),
+        startDate: z.date({
+            required_error: 'Vui lòng chọn ngày bắt đầu',
         }),
-        activity: z.string().min(1, "Vui lòng nhập hoạt động giải ngân"),
-    }))
-}).refine((data) => data.plannedEndDate > data.plannedStartDate, {
-    message: "Ngày kết thúc dự kiến phải sau ngày bắt đầu dự kiến",
-    path: ["plannedEndDate"],
-}).refine((data) => data.plannedStartDate > data.endDate, {
-    message: "Ngày bắt đầu dự kiến phải sau ngày kết thúc chiến dịch",
-    path: ["plannedStartDate"],
-}).refine((data) => data.endDate > data.startDate, {
-    message: "Ngày kết thúc phải sau ngày bắt đầu",
-    path: ["endDate"],
-}).refine((data) => {
-    const targetAmount = parseFloat(data.targetAmount.replace(/,/g, ''));
-    const totalDisbursement = data.disbursementStages.reduce((sum, stage) => sum + stage.disbursementAmount, 0);
-    return totalDisbursement <= targetAmount;
-}, {
-    message: "Tổng số tiền giải ngân không được vượt quá số tiền mục tiêu",
-    path: ["disbursementStages"]
-}).refine((data) => {
-    const targetAmount = parseFloat(data.targetAmount.replace(/,/g, ''));
-    return data.disbursementStages.every(stage => stage.disbursementAmount <= targetAmount * 0.4);
-}, {
-    message: "Mỗi giai đoạn giải ngân không được vượt quá 40% số tiền mục tiêu",
-    path: ["disbursementStages"]
-}).refine((data) => {
-    for (let i = 1; i < data.disbursementStages.length; i++) {
-        if (data.disbursementStages[i].scheduledDate <= data.disbursementStages[i - 1].scheduledDate) {
-            return false;
-        }
-    }
-    return true;
-}, {
-    message: "Ngày giải ngân của giai đoạn sau phải lớn hơn giai đoạn trước",
-    path: ["disbursementStages"]
-}).refine((data) => {
-    return data.disbursementStages.every(stage =>
-        stage.scheduledDate >= data.plannedStartDate && stage.scheduledDate <= data.plannedEndDate
+        endDate: z
+            .date({
+                required_error: 'Vui lòng chọn ngày kết thúc',
+            })
+            .nullable(),
+        thumbnailUrl: z.any().refine((val) => val !== null, 'Bạn vui lòng tải lên hình ảnh cho chiến dịch'),
+        imagesFolderUrl: z.array(z.any()).optional(),
+        campaignType: z.number({
+            required_error: 'Vui lòng chọn loại chiến dịch',
+        }),
+        plannedStartDate: z.date({
+            required_error: 'Vui lòng chọn ngày bắt đầu dự kiến',
+        }),
+        plannedEndDate: z.date({
+            required_error: 'Vui lòng chọn ngày kết thúc dự kiến',
+        }),
+        disbursementStages: z.array(
+            z.object({
+                disbursementAmount: z.number().min(1, 'Số tiền phải lớn hơn 0'),
+                scheduledDate: z.date({
+                    required_error: 'Vui lòng chọn ngày giải ngân',
+                }),
+                activity: z.string().min(1, 'Vui lòng nhập hoạt động giải ngân'),
+            }),
+        ),
+    })
+    .refine((data) => data.plannedEndDate > data.plannedStartDate, {
+        message: 'Ngày kết thúc dự kiến phải sau ngày bắt đầu dự kiến',
+        path: ['plannedEndDate'],
+    })
+    .refine((data) => data.plannedStartDate > data.endDate, {
+        message: 'Ngày bắt đầu dự kiến phải sau ngày kết thúc chiến dịch',
+        path: ['plannedStartDate'],
+    })
+    .refine((data) => data.endDate > data.startDate, {
+        message: 'Ngày kết thúc phải sau ngày bắt đầu',
+        path: ['endDate'],
+    })
+    .refine(
+        (data) => {
+            const targetAmount = parseFloat(data.targetAmount.replace(/,/g, ''));
+            const totalDisbursement = data.disbursementStages.reduce((sum, stage) => sum + stage.disbursementAmount, 0);
+            return totalDisbursement <= targetAmount;
+        },
+        {
+            message: 'Tổng số tiền giải ngân không được vượt quá số tiền mục tiêu',
+            path: ['disbursementStages'],
+        },
+    )
+    .refine(
+        (data) => {
+            const targetAmount = parseFloat(data.targetAmount.replace(/,/g, ''));
+            return data.disbursementStages.every((stage) => stage.disbursementAmount <= targetAmount * 0.4);
+        },
+        {
+            message: 'Mỗi giai đoạn giải ngân không được vượt quá 40% số tiền mục tiêu',
+            path: ['disbursementStages'],
+        },
+    )
+    .refine(
+        (data) => {
+            for (let i = 1; i < data.disbursementStages.length; i++) {
+                if (data.disbursementStages[i].scheduledDate <= data.disbursementStages[i - 1].scheduledDate) {
+                    return false;
+                }
+            }
+            return true;
+        },
+        {
+            message: 'Ngày giải ngân của giai đoạn sau phải lớn hơn giai đoạn trước',
+            path: ['disbursementStages'],
+        },
+    )
+    .refine(
+        (data) => {
+            return data.disbursementStages.every(
+                (stage) => stage.scheduledDate >= data.plannedStartDate && stage.scheduledDate <= data.plannedEndDate,
+            );
+        },
+        {
+            message: 'Ngày giải ngân phải nằm trong khoảng từ ngày bắt đầu đến ngày kết thúc dự kiến',
+            path: ['disbursementStages'],
+        },
     );
-}, {
-    message: "Ngày giải ngân phải nằm trong khoảng từ ngày bắt đầu đến ngày kết thúc dự kiến",
-    path: ["disbursementStages"]
-});
 
 const useCustomDropzone = (onDrop, isMultiple) => {
     return useDropzone({
         onDrop,
         accept: {
-            'image/*': ['.jpeg', '.jpg', '.png', '.gif', '.bmp', '.webp']
+            'image/*': ['.jpeg', '.jpg', '.png', '.gif', '.bmp', '.webp'],
         },
-        multiple: isMultiple
+        multiple: isMultiple,
     });
 };
 
@@ -134,19 +158,19 @@ const CampaignInfo = ({ childID }) => {
             campaignType: 0,
             plannedStartDate: new Date(),
             plannedEndDate: new Date(new Date().setMonth(new Date().getMonth() + 1)),
-            disbursementStages: [{
-                disbursementAmount: 0,
-                scheduledDate: new Date(),
-                activity: ''
-            }]
-        }
+            disbursementStages: [
+                {
+                    disbursementAmount: 0,
+                    scheduledDate: new Date(),
+                    activity: '',
+                },
+            ],
+        },
     });
-
-
 
     const { fields, append, remove } = useFieldArray({
         control: form.control,
-        name: "disbursementStages"
+        name: 'disbursementStages',
     });
     useEffect(() => {
         const plannedStartDate = form.getValues('plannedStartDate');
@@ -163,7 +187,7 @@ const CampaignInfo = ({ childID }) => {
                 {
                     method: 'POST',
                     body: formData,
-                }
+                },
             );
 
             if (!response.ok) {
@@ -178,26 +202,36 @@ const CampaignInfo = ({ childID }) => {
         }
     };
 
-    const onDrop = useCallback((acceptedFiles) => {
-        const newImagesFolderUrl = acceptedFiles.map(file => Object.assign(file, {
-            preview: URL.createObjectURL(file)
-        }));
+    const onDrop = useCallback(
+        (acceptedFiles) => {
+            const newImagesFolderUrl = acceptedFiles.map((file) =>
+                Object.assign(file, {
+                    preview: URL.createObjectURL(file),
+                }),
+            );
 
-        setImagesFolderUrl(prevImagesFolderUrl => {
-            const updatedImagesFolderUrl = [...prevImagesFolderUrl, ...newImagesFolderUrl];
-            form.setValue('imagesFolderUrl', updatedImagesFolderUrl);
-            return updatedImagesFolderUrl;
-        });
-    }, [form]);
+            setImagesFolderUrl((prevImagesFolderUrl) => {
+                const updatedImagesFolderUrl = [...prevImagesFolderUrl, ...newImagesFolderUrl];
+                form.setValue('imagesFolderUrl', updatedImagesFolderUrl);
+                return updatedImagesFolderUrl;
+            });
+        },
+        [form],
+    );
 
-    const onDropThumbnail = useCallback((acceptedFiles) => {
-        const file = acceptedFiles[0];
-        setThumbnail(Object.assign(file, {
-            preview: URL.createObjectURL(file)
-        }));
-        form.setValue('thumbnailUrl', file);
-        form.clearErrors('thumbnailUrl');
-    }, [form]);
+    const onDropThumbnail = useCallback(
+        (acceptedFiles) => {
+            const file = acceptedFiles[0];
+            setThumbnail(
+                Object.assign(file, {
+                    preview: URL.createObjectURL(file),
+                }),
+            );
+            form.setValue('thumbnailUrl', file);
+            form.clearErrors('thumbnailUrl');
+        },
+        [form],
+    );
 
     const removeImageFolder = (index) => {
         const newImagesFolderUrl = [...imagesFolderUrl];
@@ -220,13 +254,13 @@ const CampaignInfo = ({ childID }) => {
             // Upload thumbnail
             const thumbnailUrl = await uploadToCloudinary(
                 data.thumbnailUrl,
-                `${userFolder}/campaign/${tempCampaignId}`
+                `${userFolder}/campaign/${tempCampaignId}`,
             );
             // Upload images-supported
             const imageUrls = await Promise.all(
-                data.imagesFolderUrl.map(file =>
-                    uploadToCloudinary(file, `${userFolder}/campaign/${tempCampaignId}/images-supported`)
-                )
+                data.imagesFolderUrl.map((file) =>
+                    uploadToCloudinary(file, `${userFolder}/campaign/${tempCampaignId}/images-supported`),
+                ),
             );
 
             // Prepare the final data object
@@ -244,10 +278,10 @@ const CampaignInfo = ({ childID }) => {
                 imagesFolderUrl: imageUrls.join(','),
                 plannedStartDate: data.plannedStartDate.toISOString(),
                 plannedEndDate: data.plannedEndDate.toISOString(),
-                disbursementStages: data.disbursementStages.map(stage => ({
+                disbursementStages: data.disbursementStages.map((stage) => ({
                     disbursementAmount: stage.disbursementAmount,
-                    scheduledDate: stage.scheduledDate.toISOString()
-                }))
+                    scheduledDate: stage.scheduledDate.toISOString(),
+                })),
             };
 
             console.log('Final data to be sent to backend:', finalData);
@@ -265,11 +299,11 @@ const CampaignInfo = ({ childID }) => {
     };
 
     const formatNumber = (value) => {
-        return value.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        return value.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
     };
 
     return (
-        <div className='relative font-sans'>
+        <div className="relative font-sans">
             <Card className="w-full max-w-6xl mx-auto rounded-lg border-2">
                 <CardHeader>
                     <CardTitle className="text-center text-3xl">Tạo thông tin chiến dịch</CardTitle>
@@ -303,13 +337,14 @@ const CampaignInfo = ({ childID }) => {
                                                 className="flex flex-col space-y-1"
                                             >
                                                 {campaignTypes.map((type) => (
-                                                    <FormItem className="flex items-center space-x-3 space-y-0" key={type.value}>
+                                                    <FormItem
+                                                        className="flex items-center space-x-3 space-y-0"
+                                                        key={type.value}
+                                                    >
                                                         <FormControl>
                                                             <RadioGroupItem value={type.value.toString()} />
                                                         </FormControl>
-                                                        <FormLabel className="font-normal">
-                                                            {type.label}
-                                                        </FormLabel>
+                                                        <FormLabel className="font-normal">{type.label}</FormLabel>
                                                     </FormItem>
                                                 ))}
                                             </RadioGroup>
@@ -419,7 +454,10 @@ const CampaignInfo = ({ childID }) => {
                                                 </CustomDropzone>
                                             </div>
                                         </FormControl>
-                                        <FormDescription>Tải lên một hoặc nhiều ảnh phụ cho chiến dịch của bạn (JPEG, PNG, GIF, BMP, WebP)</FormDescription>
+                                        <FormDescription>
+                                            Tải lên một hoặc nhiều ảnh phụ cho chiến dịch của bạn (JPEG, PNG, GIF, BMP,
+                                            WebP)
+                                        </FormDescription>
                                     </FormItem>
                                 )}
                             />
@@ -456,10 +494,10 @@ const CampaignInfo = ({ childID }) => {
                                             <FormLabel>Ngày Bắt Đầu</FormLabel>
                                             <FormControl>
                                                 <DatePicker
-                                                    selected={field.value}
-                                                    onChange={(date) => field.onChange(date)}
-                                                    dateFormat="dd/MM/yyyy"
-                                                    className="ml-10 w-3/4 border-2 border-input p-2 rounded"
+                                                    date={field.value}
+                                                    onDateSelect={(date) => field.onChange(date)}
+                                                    variant="outline"
+                                                    className="ml-2"
                                                 />
                                             </FormControl>
                                             <FormMessage />
@@ -475,23 +513,19 @@ const CampaignInfo = ({ childID }) => {
                                             <FormLabel>Ngày Kết Thúc</FormLabel>
                                             <FormControl>
                                                 <DatePicker
-                                                    selected={field.value}
-                                                    onChange={(date) => field.onChange(date)}
-                                                    dateFormat="dd/MM/yyyy"
-                                                    className="w-3/4 border-2 border-input p-2 rounded"
-                                                    placeholderText="Chọn ngày kết thúc"
-                                                    isClearable
+                                                    date={field.value}
+                                                    onDateSelect={(date) => field.onChange(date)}
+                                                    variant="outline"
+                                                    className="ml-2"
                                                 />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
                                     )}
                                 />
-
                             </div>
                             <h3 className="font-semibold mb-2 text-2xl text-center">Giai Đoạn Giải Ngân</h3>
                             <div className="flex justify-between">
-
                                 <FormField
                                     control={form.control}
                                     name="plannedStartDate"
@@ -500,10 +534,10 @@ const CampaignInfo = ({ childID }) => {
                                             <FormLabel>Ngày Bắt Đầu Dự Kiến Giải Ngân</FormLabel>
                                             <FormControl>
                                                 <DatePicker
-                                                    selected={field.value}
-                                                    onChange={(date) => field.onChange(date)}
-                                                    dateFormat="dd/MM/yyyy"
-                                                    className="ml-10 w-3/4 border-2 border-input p-2 rounded"
+                                                    date={field.value}
+                                                    onDateSelect={(date) => field.onChange(date)}
+                                                    variant="outline"
+                                                    className="ml-2"
                                                 />
                                             </FormControl>
                                             <FormMessage />
@@ -519,10 +553,10 @@ const CampaignInfo = ({ childID }) => {
                                             <FormLabel>Ngày Kết Thúc Dự Kiến Giải Ngân</FormLabel>
                                             <FormControl>
                                                 <DatePicker
-                                                    selected={field.value}
-                                                    onChange={(date) => field.onChange(date)}
-                                                    dateFormat="dd/MM/yyyy"
-                                                    className="w-3/4 border-2 border-input p-2 rounded"
+                                                    date={field.value}
+                                                    onDateSelect={(date) => field.onChange(date)}
+                                                    variant="outline"
+                                                    className="ml-2"
                                                 />
                                             </FormControl>
                                             <FormMessage />
@@ -534,10 +568,18 @@ const CampaignInfo = ({ childID }) => {
                                 <Table className="border-collapse border border-slate-400">
                                     <TableHeader>
                                         <TableRow>
-                                            <TableHead className="border border-slate-300 font-semibold">Giải ngân giai đoạn</TableHead>
-                                            <TableHead className="border border-slate-300 font-semibold">Số tiền cần giải ngân</TableHead>
-                                            <TableHead className="border border-slate-300 font-semibold">Ngày dự kiến giải ngân</TableHead>
-                                            <TableHead className="border border-slate-300 font-semibold">Hoạt động giải ngân</TableHead>
+                                            <TableHead className="border border-slate-300 font-semibold">
+                                                Giải ngân giai đoạn
+                                            </TableHead>
+                                            <TableHead className="border border-slate-300 font-semibold">
+                                                Số tiền cần giải ngân
+                                            </TableHead>
+                                            <TableHead className="border border-slate-300 font-semibold">
+                                                Ngày dự kiến giải ngân
+                                            </TableHead>
+                                            <TableHead className="border border-slate-300 font-semibold">
+                                                Hoạt động giải ngân
+                                            </TableHead>
 
                                             <TableHead className="border border-slate-300"></TableHead>
                                         </TableRow>
@@ -558,7 +600,10 @@ const CampaignInfo = ({ childID }) => {
                                                                         placeholder="Số tiền giải ngân"
                                                                         {...field}
                                                                         onChange={(e) => {
-                                                                            const value = e.target.value.replace(/[^\d]/g, '');
+                                                                            const value = e.target.value.replace(
+                                                                                /[^\d]/g,
+                                                                                '',
+                                                                            );
                                                                             field.onChange(parseFloat(value) || 0);
                                                                         }}
                                                                     />
@@ -575,33 +620,11 @@ const CampaignInfo = ({ childID }) => {
                                                         render={({ field }) => (
                                                             <FormItem>
                                                                 <FormControl>
-                                                                    <div className="relative">
-                                                                        <DatePicker
-                                                                            selected={field.value}
-                                                                            onChange={(date) => field.onChange(date)}
-                                                                            dateFormat="dd/MM/yyyy"
-                                                                            minDate={form.getValues('plannedStartDate')}
-                                                                            maxDate={form.getValues('plannedEndDate')}
-                                                                            className="w-full border-2 border-input p-2 rounded"
-                                                                            popperPlacement="bottom-start"
-                                                                            popperModifiers={[
-                                                                                {
-                                                                                    name: 'offset',
-                                                                                    options: {
-                                                                                        offset: [0, 8],
-                                                                                    },
-                                                                                },
-                                                                                {
-                                                                                    name: 'preventOverflow',
-                                                                                    options: {
-                                                                                        rootBoundary: 'viewport',
-                                                                                        tether: false,
-                                                                                        altAxis: true,
-                                                                                    },
-                                                                                },
-                                                                            ]}
-                                                                        />
-                                                                    </div>
+                                                                    <DatePicker
+                                                                        date={field.value}
+                                                                        onDateSelect={(date) => field.onChange(date)}
+                                                                        variant="outline"
+                                                                    />
                                                                 </FormControl>
                                                                 <FormMessage />
                                                             </FormItem>
@@ -653,19 +676,19 @@ const CampaignInfo = ({ childID }) => {
                                     append({
                                         disbursementAmount: 0,
                                         scheduledDate: newDate,
-                                        activity: ''
+                                        activity: '',
                                     });
                                 }}
                             >
                                 <Plus className="mr-2 h-4 w-4" /> Thêm Giai Đoạn
                             </Button>
 
-
-
                             <div className="flex justify-center">
                                 <Button
                                     type="submit"
-                                    className={`w-1/2 ${isCreatingCampaign ? 'bg-gray-400' : 'bg-[#2fabab]'} hover:bg-[#287176] text-white py-2 rounded-lg`}
+                                    className={`w-1/2 ${
+                                        isCreatingCampaign ? 'bg-gray-400' : 'bg-[#2fabab]'
+                                    } hover:bg-[#287176] text-white py-2 rounded-lg`}
                                     disabled={isCreatingCampaign}
                                 >
                                     {isCreatingCampaign ? 'Đang Tạo Chiến Dịch...' : 'Tạo Chiến Dịch'}

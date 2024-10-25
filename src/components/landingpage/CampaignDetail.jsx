@@ -172,7 +172,23 @@ const CampaignDetail = () => {
                         </TabsList>
 
                         <TabsContent value="story" className="p-4">
-                            <p>{campaign?.story}</p>
+                            <h3 className="text-xl font-bold text-gray-800">Thông tin của trẻ</h3>
+                            <p className="text-lg text-gray-700 mt-2">
+                                <strong>Tên:</strong> {campaign?.childProfile.name}
+                            </p>
+                            <div className="flex space-x-24">
+                                <p className="text-lg text-gray-700 mt-2">
+                                    <strong>Tuổi:</strong> {campaign?.childProfile.age}
+                                </p>
+                                <p className="text-lg text-gray-700 mt-2">
+                                    <strong>Giới tính:</strong> {campaign?.childProfile.gender === 1 ? 'Nam' : 'Nữ'}
+                                </p>
+                            </div>
+                            <p className="text-lg text-gray-700 mt-2">
+                                <strong>Địa chỉ:</strong>{' '}
+                                {`${campaign?.childProfile.location}, ${campaign?.childProfile.ward}, ${campaign?.childProfile.district}, ${campaign?.childProfile.province}`}
+                            </p>
+                            <p className="text-lg text-gray-700 mt-2">{campaign?.story}</p>
                         </TabsContent>
 
                         <TabsContent value="activities" className="p-4">
@@ -254,7 +270,7 @@ const CampaignDetail = () => {
 
                         <div className="flex items-center mt-6">
                             <MapPin className="text-gray-500 mr-2" />
-                            <span className="text-sm text-gray-600">{campaign?.provinceName}</span>
+                            <span className="text-sm text-gray-600">{`${campaign?.childProfile.location}, ${campaign?.childProfile.ward}, ${campaign?.childProfile.district}, ${campaign?.childProfile.province}`}</span>
                         </div>
 
                         <div className="mt-4">

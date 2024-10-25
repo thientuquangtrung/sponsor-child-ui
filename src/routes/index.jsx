@@ -18,6 +18,7 @@ import DonationInformation from '@/components/landingpage/DonationInformation';
 import CampaignsNoGuarantee from '@/components/landingpage/CampaignsNoGuarantee';
 import ContractSignPage from '@/components/guarantee/contract/ContractSignPage';
 import ContractCampaign from '@/components/guarantee/contract/ContractCampaign';
+import CampaignOverview from '@/components/landingpage/CampaignOverview';
 
 const Loadable = (Component) => {
     const LoadableComponent = (props) => {
@@ -74,6 +75,10 @@ export default function Router() {
                 {
                     path: 'campaigns-no-guarantee',
                     element: <CampaignsNoGuarantee />
+                },
+                {
+                    path: 'campaigns-no-guarantee-detail/:id',
+                    element: <CampaignOverview />
                 },
                 {
                     path: 'donate-target',

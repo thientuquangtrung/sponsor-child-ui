@@ -33,7 +33,7 @@ const Notification = () => {
                 <Bell className="text-black cursor-pointer" onClick={toggleDialog} size={26} />
                 {notificationCount > 0 && (
                     <Badge
-                        className="absolute -top-2 -right-2 bg-red-500 text-white text-xs h-5 w-5 flex items-center justify-center"
+                        className="absolute -top-2 -right-2 bg-red-500 text-white text-xs h-5 w-5 flex items-center justify-center hover:bg-normal"
                     >
                         {notificationCount}
                     </Badge>

@@ -1,13 +1,10 @@
 import React, { useState } from 'react';
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import ChildProfile from '@/components/guarantee/campaign/ChildProfile';
 import CampaignInfo from '@/components/guarantee/campaign/CampaignInfo';
 
-const steps = [
-    'Hồ Sơ Trẻ Em',
-    'Thông Tin Chiến Dịch',
-];
+const steps = ['Hồ Sơ Trẻ Em', 'Thông Tin Chiến Dịch'];
 
 const CampaignCreate = () => {
     const [currentStep, setCurrentStep] = useState(0);
@@ -31,10 +28,7 @@ const CampaignCreate = () => {
     const renderStep = () => {
         switch (currentStep) {
             case 0:
-                return <ChildProfile
-                    onSuccess={handleChildProfileSuccess}
-                    nextStep={nextStep}
-                />;
+                return <ChildProfile onSuccess={handleChildProfileSuccess} nextStep={nextStep} />;
             case 1:
                 return childID ? <CampaignInfo childID={childID} /> : null;
             default:
@@ -47,22 +41,29 @@ const CampaignCreate = () => {
             <div className="w-full mb-4 md:mb-8 overflow-x-auto">
                 <ol className="flex items-center w-full p-2 md:p-3 space-x-2 text-xs md:text-sm font-medium text-center text-gray-500 bg-white border border-gray-200 rounded-lg shadow-sm dark:text-gray-400 sm:text-base dark:bg-gray-800 dark:border-gray-700 sm:p-4 sm:space-x-4">
                     {steps.map((step, index) => (
-                        <li key={index} className={`flex items-center font-bold ${currentStep === index ? 'text-green-500 dark:text-green-500' : ''}`}>
-                            <span className={`flex items-center justify-center w-5 h-5 mr-2 border ${currentStep === index ? 'border-green-600 dark:border-green-500' : 'border-gray-500 dark:border-gray-400'} rounded-full shrink-0`}>
+                        <li
+                            key={index}
+                            className={`flex items-center font-bold ${
+                                currentStep === index ? 'text-green-500 dark:text-green-500' : ''
+                            }`}
+                        >
+                            <span
+                                className={`flex items-center justify-center w-5 h-5 mr-2 border ${
+                                    currentStep === index
+                                        ? 'border-green-600 dark:border-green-500'
+                                        : 'border-gray-500 dark:border-gray-400'
+                                } rounded-full shrink-0`}
+                            >
                                 {index + 1}
                             </span>
                             <span className="hidden sm:inline">{step}</span>
-                            {index < steps.length - 1 && (
-                                <ArrowRight className="w-5 h-5 ml-2 sm:ml-4" />
-                            )}
+                            {index < steps.length - 1 && <ArrowRight className="w-5 h-5 ml-2 sm:ml-4" />}
                         </li>
                     ))}
                 </ol>
             </div>
 
-            <div className="w-full mb-4 md:mb-8">
-                {renderStep()}
-            </div>
+            <div className="w-full mb-4 md:mb-8">{renderStep()}</div>
 
             <div className="w-full flex justify-between">
                 <div>
