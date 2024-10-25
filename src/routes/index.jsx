@@ -16,6 +16,7 @@ import RegistrationPage from '@/components/landingpage/RegistrationPage';
 import DonationInformation from '@/components/landingpage/DonationInformation';
 import CampaignsNoGuarantee from '@/components/landingpage/CampaignsNoGuarantee';
 import ContractCampaign from '@/components/guarantee/contract/ContractCampaign';
+import CampaignOverview from '@/components/landingpage/CampaignOverview';
 import ContractPage from '@/components/guarantee/contract/ContractPage';
 import ContractDetail from '@/components/guarantee/contract/ContractDetail';
 import ContractGuarantee from '@/components/guarantee/contract/ContractGuarantee';
@@ -77,6 +78,10 @@ export default function Router() {
                 {
                     path: 'campaigns-no-guarantee',
                     element: <CampaignsNoGuarantee />
+                },
+                {
+                    path: 'campaigns-no-guarantee-detail/:id',
+                    element: <CampaignOverview />
                 },
                 {
                     path: 'donate-target',

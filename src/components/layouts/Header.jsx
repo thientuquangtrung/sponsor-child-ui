@@ -247,9 +247,11 @@ export function Header() {
                                         <p className="text-xs leading-none text-muted-foreground">{user?.email}</p>
                                     </div>
                                 </DropdownMenuLabel>
-                                <NavLink to="/guarantee">
-                                    <DropdownMenuItem>Nhà bảo lãnh</DropdownMenuItem>
-                                </NavLink>
+                                {user?.role === 'Guarantee' && (
+                                    <NavLink to="/guarantee">
+                                        <DropdownMenuItem>Nhà bảo lãnh</DropdownMenuItem>
+                                    </NavLink>
+                                )}
                                 <NavLink to="/profile">
                                     <DropdownMenuItem>Xem thông tin cá nhân</DropdownMenuItem>
                                 </NavLink>

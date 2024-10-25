@@ -36,6 +36,7 @@ const Login = () => {
                     .unwrap()
                     .then((res) => {
                         dispatch(UpdateAuthentication(res));
+                        
                         toast.success('Logged in successfully!');
                     })
                     .catch((err) => {

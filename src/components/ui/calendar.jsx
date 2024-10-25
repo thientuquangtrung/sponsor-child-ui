@@ -1,63 +1,100 @@
-import * as React from "react"
-import { ChevronLeft, ChevronRight } from "lucide-react"
-import { DayPicker } from "react-day-picker"
-import { cn } from "@/lib/utils"
-import { buttonVariants } from "@/components/ui/button"
-import 'react-day-picker/dist/style.css';
-function Calendar({
-    className,
-    classNames,
-    showOutsideDays = true,
-    ...props
-}) {
-    return (
-        <DayPicker
-            showOutsideDays={showOutsideDays}
-            className={cn("p-3", className)}
-            classNames={{
-                months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
-                month: "space-y-4",
-                caption: "flex justify-center pt-1 relative items-center",
-                caption_label: "text-sm font-medium",
-                nav: "space-x-1 flex items-center",
-                nav_button: cn(
-                    buttonVariants({ variant: "outline" }),
-                    "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100"
-                ),
-                nav_button_previous: "absolute left-1",
-                nav_button_next: "absolute right-1",
-                table: "w-full border-collapse space-y-1",
-                head_row: "flex",
-                head_cell:
-                    "text-muted-foreground rounded-md w-9 font-normal text-[0.8rem]",
-                row: "flex w-full mt-2",
-                cell: "h-9 w-9 text-center text-sm p-0 relative [&:has([aria-selected].day-range-end)]:rounded-r-md [&:has([aria-selected].day-outside)]:bg-accent/50 [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
-                day: cn(
-                    // buttonVariants({ variant: "ghost" }),
-                    "h-9 w-9 p-0 font-normal aria-selected:opacity-100"
-                ),
-                day_range_end: "day-range-end",
-                day_selected:
-                    "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
-                day_today: "bg-accent text-accent-foreground",
-                day_outside:
-                    "day-outside text-muted-foreground opacity-50 aria-selected:bg-accent/50 aria-selected:text-muted-foreground aria-selected:opacity-30",
-                day_disabled: "text-muted-foreground opacity-50",
-                day_range_middle:
-                    "aria-selected:bg-accent aria-selected:text-accent-foreground",
-                day_hidden: "invisible",
-                ...classNames,
-            }}
-            components={{
-                IconLeft: () => <ChevronLeft className="h-4 w-4" />,
-                IconRight: () => <ChevronRight className="h-4 w-4" />,
+import React, { useState } from 'react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
-            }}
-            {...props}
-        />
-    )
+function Calendar() {
+    const today = new Date();
+    const [currentMonth, setCurrentMonth] = useState(today.getMonth());
+    const [currentYear, setCurrentYear] = useState(today.getFullYear());
+
+    const daysInMonth = (month, year) => {
+        return new Date(year, month + 1, 0).getDate();
+    };
+
+    const getFirstDayOfMonth = (month, year) => {
+        return new Date(year, month, 1).getDay();
+    };
+
+    const handlePreviousMonth = () => {
+        if (currentMonth === 0) {
+            setCurrentMonth(11);
+            setCurrentYear(currentYear - 1);
+        } else {
+            setCurrentMonth(currentMonth - 1);
+        }
+    };
+
+    const handleNextMonth = () => {
+        if (currentMonth === 11) {
+            setCurrentMonth(0);
+            setCurrentYear(currentYear + 1);
+        } else {
+            setCurrentMonth(currentMonth + 1);
+        }
+    };
+
+    const monthNames = [
+        'Tháng Một', 'Tháng Hai', 'Tháng Ba', 'Tháng Tư', 'Tháng Năm', 'Tháng Sáu', 
+        'Tháng Bảy', 'Tháng Tám', 'Tháng Chín', 'Tháng Mười', 'Tháng Mười Một', 'Tháng Mười Hai'
+    ];
+
+    const weekDays = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
+
+    const totalDays = daysInMonth(currentMonth, currentYear);
+    const firstDay = getFirstDayOfMonth(currentMonth, currentYear);
+
+    // Tạo các ô rỗng trước khi tháng bắt đầu
+    const blankDays = Array(firstDay).fill(null);
+
+    // Tạo danh sách các ngày trong tháng
+    const daysArray = [...Array(totalDays).keys()].map((i) => i + 1);
+
+    return (
+        <div className="max-w-xs mx-auto bg-white p-4 rounded-lg shadow-lg">
+            <div className="flex justify-between items-center mb-4">
+                <button onClick={handlePreviousMonth}>
+                    <ChevronLeft size={24} className="text-gray-600 hover:text-black" />
+                </button>
+                {/* Thêm khoảng cách giữa tháng và năm */}
+                <span className="text-lg font-medium space-x-2">
+                    <span>{monthNames[currentMonth]}</span> 
+                    <span>{currentYear}</span>
+                </span>
+                <button onClick={handleNextMonth}>
+                    <ChevronRight size={24} className="text-gray-600 hover:text-black" />
+                </button>
+            </div>
+
+            <div className="grid grid-cols-7 gap-2">
+                {/* Hiển thị các ngày trong tuần */}
+                {weekDays.map((day, index) => (
+                    <div key={index} className="text-center text-sm font-medium text-gray-500">
+                        {day}
+                    </div>
+                ))}
+
+                {/* Hiển thị các ô trống trước ngày đầu tháng */}
+                {blankDays.map((_, index) => (
+                    <div key={index} className="h-10"></div>
+                ))}
+
+                {/* Hiển thị các ngày của tháng */}
+                {daysArray.map((day) => (
+                    <div
+                        key={day}
+                        className={`h-10 w-10 flex items-center justify-center rounded-lg cursor-pointer ${
+                            day === today.getDate() &&
+                            currentMonth === today.getMonth() &&
+                            currentYear === today.getFullYear()
+                                ? 'bg-teal-500 text-white'
+                                : 'bg-normal text-black'
+                        } hover:bg-blue-100`}
+                    >
+                        {day}
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
 }
 
-Calendar.displayName = "Calendar"
-
-export { Calendar }
+export { Calendar };
