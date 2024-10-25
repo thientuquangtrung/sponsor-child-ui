@@ -20,8 +20,9 @@ export const contractApi = baseApi.injectEndpoints({
             query: (status) => `/Contract/status/${status}`,
         }),
         getContractsByUserId: builder.query({
-            query: (userId) => `/Contract/user/${userId}`,
+            query: (userId) => `/Contract/user/${userId}/contracts`,
         }),
+
         updateContract: builder.mutation({
             query: ({ contractId, ...data }) => ({
                 url: `/Contract/update/${contractId}`,

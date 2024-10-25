@@ -2,7 +2,6 @@ import { Toaster } from 'sonner';
 import { BrowserRouter } from 'react-router-dom';
 import { Provider as ReduxProvider } from 'react-redux';
 
-import UploadTracker from './components/common/UploadTracker';
 import { ThemeProvider } from './contexts/ThemeContext';
 import Router from './routes';
 import { store } from './redux/store';
@@ -14,7 +13,6 @@ export default function App() {
                 <BrowserRouter>
                     <Router />
                     <Toaster richColors />
-                    <UploadTracker />
                 </BrowserRouter>
             </ThemeProvider>
         </ReduxProvider>

@@ -93,3 +93,21 @@ export const guaranteeRelation = [
     { value: 6, label: 'Ông bà' },
 
 ];
+//contract
+export const contractStatus = [
+    { label: 'Đang chờ', value: 0 },
+    { label: 'Đang chờ quản trị viên', value: 1 },
+    { label: 'Đã duyệt', value: 2 },
+    { label: 'Từ chối bởi bảo lãnh', value: 3 },
+    { label: 'Từ chối bởi quản trị viên', value: 4 },
+    { label: 'Đã hủy', value: 5 },
+];
+export const contractPartyType = [
+    { label: 'Quản trị viên', value: 0 },
+    { label: 'Bảo lãnh', value: 1 },
+];
+
+export const contractType = [
+    { label: 'Đăng ký Bảo lãnh', value: 0 },
+    { label: 'Chiến dịch gây quỹ', value: 1 },
+];

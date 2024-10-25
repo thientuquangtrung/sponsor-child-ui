@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
-import ContractView from '@/components/guarantee/contract/ContractSigningGuide';
-import ContractSign from '@/components/guarantee/contract/ContractViewAndSign';
 import SendHardContract from '@/components/guarantee/contract/SendHardContract';
 import ContractSentConfirmation from '@/components/guarantee/contract/ContractSentConfirmation';
 import { Button } from "@/components/ui/button";
 import { ArrowBigRight, ArrowLeft, ArrowRight } from 'lucide-react';
+import ContractSigningGuide from '@/components/guarantee/contract/ContractSigningGuide';
+import ContractViewAndSign from '@/components/guarantee/contract/ContractViewAndSign';
 
 const steps = ['Hướng dẫn', 'Xem và Ký hợp đồng', 'Gửi bản cứng hợp đồng', 'Xác nhận'];
 
-const ContractSignPage = () => {
+const ContractGuarantee = () => {
     const [currentStep, setCurrentStep] = useState(0);
     const [signedContract, setSignedContract] = useState(null);
     const [contractSent, setContractSent] = useState(false);
@@ -34,9 +34,9 @@ const ContractSignPage = () => {
     const renderStep = () => {
         switch (currentStep) {
             case 0:
-                return <ContractView />;
+                return <ContractSigningGuide />;
             case 1:
-                return <ContractSign onSign={handleContractSign} onContractSent={handleContractSent} />;
+                return <ContractViewAndSign onSign={handleContractSign} onContractSent={handleContractSent} />;
             case 2:
                 return <SendHardContract signedContract={signedContract} />;
             case 3:
@@ -90,4 +90,4 @@ const ContractSignPage = () => {
     );
 };
 
-export default ContractSignPage;
+export default ContractGuarantee;
