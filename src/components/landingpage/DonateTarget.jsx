@@ -12,7 +12,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import { campaignStatus, campaignTypes } from '@/config/combobox';
+import { campaignStatusUser, campaignTypes } from '@/config/combobox';
 import { Button } from '../ui/button';
 import { BellRing, X } from 'lucide-react';
 import useLocationVN from '@/hooks/useLocationVN';
@@ -25,7 +25,11 @@ const DonateTarget = () => {
     const debouncedSearchTerm = useDebounce(searchTerm);
 
     // pass all search params to api call
-    const { data: campaigns = [], isLoading, error } = useGetAllCampaignsQuery(URLSearchParams.toString());
+    const {
+        data: campaigns = [],
+        isLoading,
+        error,
+    } = useGetAllCampaignsQuery({ searchParams: URLSearchParams.toString(), hasGuarantee: true });
 
     useEffect(() => {
         if (debouncedSearchTerm) {
@@ -97,7 +101,7 @@ const DonateTarget = () => {
                         <SelectContent>
                             <SelectGroup>
                                 <SelectLabel>Trạng thái</SelectLabel>
-                                {campaignStatus.map((status) => (
+                                {campaignStatusUser.map((status) => (
                                     <SelectItem key={status.value} value={status.value}>
                                         {status.label}
                                     </SelectItem>
@@ -124,8 +128,8 @@ const DonateTarget = () => {
                         </SelectContent>
                     </Select>
                     <Select
-                        onValueChange={(value) => handleSelect('province', encodeURIComponent(value))}
-                        value={decodeURIComponent(URLSearchParams.get('province') || '')}
+                        onValueChange={(value) => handleSelect('province', value)}
+                        value={URLSearchParams.get('province') || ''}
                     >
                         <SelectTrigger className="w-[150px]">
                             <SelectValue placeholder="Chọn tỉnh thành" />
