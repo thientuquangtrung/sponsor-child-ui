@@ -3,11 +3,11 @@ import baseApi from '@/redux/baseApi';
 export const campaignApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
         getAllCampaigns: builder.query({
-            query: (searchParams) => {
-                if (!searchParams) return '/campaign';
+            query: ({ searchParams, hasGuarantee = true }) => {
+                // if (!searchParams) return '/campaign';
                 return {
                     url: '/campaign/filter',
-                    params: searchParams,
+                    params: searchParams + `&hasGuarantee=${hasGuarantee}`,
                 };
             },
         }),

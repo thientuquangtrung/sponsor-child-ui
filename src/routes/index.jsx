@@ -61,6 +61,8 @@ export default function Router() {
                 { element: <ContractPage />, path: 'contracts' },
                 { element: <ContractCampaign />, path: 'create-contract-campaign' },
                 { element: <ContractDetail />, path: 'contract/:id' },
+                { element: <Page404 />, path: '404' },
+                { path: '*', element: <Navigate to="404" replace /> },
             ],
         },
         {
@@ -77,11 +79,11 @@ export default function Router() {
                 },
                 {
                     path: 'campaigns-no-guarantee',
-                    element: <CampaignsNoGuarantee />
+                    element: <CampaignsNoGuarantee />,
                 },
                 {
                     path: 'campaigns-no-guarantee-detail/:id',
-                    element: <CampaignOverview />
+                    element: <CampaignOverview />,
                 },
                 {
                     path: 'donate-target',
@@ -163,4 +165,3 @@ const GuaranteeHome = Loadable(lazy(() => import('@/components/guarantee/Guarant
 const GuaranteeCampaigns = Loadable(lazy(() => import('@/components/guarantee/campaign/GuaranteeCampaigns')));
 const DonationHistory = Loadable(lazy(() => import('@/components/guarantee/DonationHistory')));
 const CampaignCreate = Loadable(lazy(() => import('@/components/guarantee/campaign/CampaignCreate')));
-

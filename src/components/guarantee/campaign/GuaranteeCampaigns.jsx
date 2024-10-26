@@ -209,7 +209,7 @@ export function SponsorCampaigns() {
 
             <div className="flex justify-end items-center mb-6">
                 <Button
-                    className="bg-teal-600 hover:bg-teal-700 text-white"
+                    className="bg-gradient-to-l from-secondary to-primary text-white"
                     onClick={() => navigate('/guarantee/create-campaign')}
                 >
                     <BadgePlus className="w-4 h-4 mr-2" />
