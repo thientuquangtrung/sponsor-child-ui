@@ -125,6 +125,26 @@ const ContractDetail = () => {
                                     <TableCell>{new Date(contract.startDate).toLocaleDateString('vi-VN')}</TableCell>
                                     <TableHead className="font-semibold">Ngày kết thúc</TableHead>
                                     <TableCell>{new Date(contract.endDate).toLocaleDateString('vi-VN')}</TableCell>
+                                    {(contract.status === 0 || contract.status === 1) && (
+                                        <TableCell>
+                                            <div className="flex justify-center">
+                                                <Button
+                                                    onClick={() => setShowConfirmDialog(true)}
+                                                    className="bg-red-400 hover:bg-red-500 text-white py-2 px-4 rounded-lg"
+                                                    disabled={isRejecting}
+                                                >
+                                                    {isRejecting ? (
+                                                        <>
+                                                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                                            Đang xử lý...
+                                                        </>
+                                                    ) : (
+                                                        'Từ chối hợp đồng'
+                                                    )}
+                                                </Button>
+                                            </div>
+                                        </TableCell>
+                                    )}
                                 </TableRow>
                             </TableBody>
                         </Table>
@@ -134,7 +154,7 @@ const ContractDetail = () => {
                 <div className={`flex ${contract.status === 1 ? 'gap-6' : ''}`}>
                     <Card className={contract.status === 1 ? "w-2/3" : "w-2/3"}>
                         <CardHeader className="bg-teal-600 text-white">
-                            <CardTitle className="text-2xl">Nội dung hợp đồng</CardTitle>
+                            <CardTitle className="text-2xl">Ảnh hợp đồng</CardTitle>
                         </CardHeader>
                         <CardContent>
                             <ScrollArea className="h-[800px] w-full rounded-md border p-4 bg-white">
@@ -158,24 +178,7 @@ const ContractDetail = () => {
                         </CardContent>
                     </Card>
 
-                    {(contract.status === 0 || contract.status === 1) && (
-                        <div className="fixed bottom-8 right-8">
-                            <Button
-                                onClick={() => setShowConfirmDialog(true)}
-                                className="bg-red-500 hover:bg-red-600 text-white"
-                                disabled={isRejecting}
-                            >
-                                {isRejecting ? (
-                                    <>
-                                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                                        Đang xử lý...
-                                    </>
-                                ) : (
-                                    'Từ chối hợp đồng'
-                                )}
-                            </Button>
-                        </div>
-                    )}
+
                 </div>
             </div>
 

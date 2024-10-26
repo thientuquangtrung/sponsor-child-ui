@@ -29,7 +29,8 @@ const addCampaignSchema = z.object({
     }),
     endDate: z.date({
         required_error: "Vui lòng chọn ngày kết thúc",
-    }).nullable(),
+        invalid_type_error: "Vui lòng chọn ngày kết thúc",
+    }),
     thumbnailUrl: z.any().refine((val) => val !== null, "Bạn vui lòng tải lên hình ảnh cho chiến dịch"),
     imagesFolderUrl: z.array(z.any()).optional(),
     campaignType: z.number({
@@ -40,6 +41,8 @@ const addCampaignSchema = z.object({
     }),
     plannedEndDate: z.date({
         required_error: "Vui lòng chọn ngày kết thúc dự kiến",
+        invalid_type_error: "Vui lòng chọn ngày kết thúc dự kiến",
+
     }),
     disbursementStages: z.array(z.object({
         disbursementAmount: z.number({
@@ -94,15 +97,48 @@ const addCampaignSchema = z.object({
         (sum, stage) => sum + stage.disbursementAmount,
         0
     );
+    if (data.campaignType === 1) {
+        if (data.disbursementStages.length !== 1) {
+            ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: "Chiến dịch khẩn cấp chỉ được có một giai đoạn giải ngân",
+                path: ["disbursementStages"]
+            });
+        }
+        if (totalDisbursement !== targetAmount) {
+            ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: `Số tiền giải ngân phải bằng số tiền mục tiêu (${targetAmount.toLocaleString()} VNĐ)`,
+                path: ["disbursementStages"]
+            });
+        }
+    } else {
+        if (data.disbursementStages.length < 2) {
+            ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: "Chiến dịch nuôi em phải có ít nhất hai giai đoạn giải ngân",
+                path: ["disbursementStages"]
+            });
+        }
 
-    if (totalDisbursement !== targetAmount) {
-        ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: `Tổng số tiền giải ngân (${totalDisbursement.toLocaleString()} VNĐ) phải bằng số tiền mục tiêu (${targetAmount.toLocaleString()} VNĐ)`,
-            path: ["disbursementStages"]
+        data.disbursementStages.forEach((stage, index) => {
+            if (stage.disbursementAmount > targetAmount * 0.5) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Mỗi giai đoạn không được vượt quá 50% tổng số tiền mục tiêu",
+                    path: [`disbursementStages.${index}.disbursementAmount`]
+                });
+            }
         });
-    }
 
+        if (totalDisbursement !== targetAmount) {
+            ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: `Tổng số tiền giải ngân (${totalDisbursement.toLocaleString()} VNĐ) phải bằng số tiền mục tiêu (${targetAmount.toLocaleString()} VNĐ)`,
+                path: ["disbursementStages"]
+            });
+        }
+    }
     data.disbursementStages.forEach((stage, index) => {
         if (stage.scheduledDate < data.plannedStartDate || stage.scheduledDate > data.plannedEndDate) {
             ctx.addIssue({
@@ -177,31 +213,56 @@ const CampaignInfo = ({ childID }) => {
             campaignType: 0,
             plannedStartDate: new Date(),
             plannedEndDate: new Date(new Date().setMonth(new Date().getMonth() + 1)),
-            disbursementStages: [{
-                disbursementAmount: 0,
-                scheduledDate: new Date(),
-                activity: ''
-            }]
+            disbursementStages: [
+                {
+                    disbursementAmount: 0,
+                    scheduledDate: new Date(),
+                    activity: ''
+                },
+                {
+                    disbursementAmount: 0,
+                    scheduledDate: new Date(new Date().setMonth(new Date().getMonth() + 1)),
+                    activity: ''
+                }
+            ]
         },
         mode: "onChange",
     });
-
-    const calculateTotalDisbursement = (stages) => {
-        return stages.reduce((sum, stage) => sum + (stage.disbursementAmount || 0), 0);
-    };
-
-
-
+    const campaignType = form.watch("campaignType");
     const { fields, append, remove } = useFieldArray({
         control: form.control,
-        name: "disbursementStages"
+        name: "disbursementStages",
+        rules: {
+            minLength: campaignType === 0 ? 2 : 1
+        }
     });
+
+    const handleRemove = (index) => {
+        if (campaignType === 0 && fields.length <= 2) {
+            toast.error('Chiến dịch nuôi em phải có ít nhất hai giai đoạn giải ngân');
+            return;
+        }
+        remove(index);
+    };
     useEffect(() => {
         const subscription = form.watch((value, { name }) => {
+            if (name?.startsWith('disbursementStages')) {
+                const stages = form.getValues('disbursementStages');
+                if (stages.length > 0) {
+                    const lastStage = stages[stages.length - 1];
+                    if (lastStage?.scheduledDate) {
+                        form.setValue('plannedEndDate', new Date(lastStage.scheduledDate));
+                    }
+                }
+            }
+
             if (name?.includes('disbursementStages') || name === 'targetAmount') {
                 const targetAmount = parseFloat(form.getValues('targetAmount')?.replace(/,/g, '') || '0');
                 const stages = form.getValues('disbursementStages');
-                const totalDisbursement = calculateTotalDisbursement(stages);
+                const totalDisbursement = stages.reduce(
+                    (sum, stage) => sum + (stage.disbursementAmount || 0),
+                    0
+                );
 
                 if (targetAmount > 0 && totalDisbursement !== targetAmount) {
                     form.setError('disbursementStages', {
@@ -216,6 +277,28 @@ const CampaignInfo = ({ childID }) => {
 
         return () => subscription.unsubscribe();
     }, [form]);
+    useEffect(() => {
+        const stages = form.getValues('disbursementStages');
+        if (campaignType === 0 && stages.length < 2) {
+            const currentLength = stages.length;
+            for (let i = currentLength; i < 2; i++) {
+                const lastStage = stages[stages.length - 1];
+                const newDate = lastStage
+                    ? new Date(new Date(lastStage.scheduledDate).setMonth(new Date(lastStage.scheduledDate).getMonth() + 1))
+                    : new Date(new Date().setMonth(new Date().getMonth() + i));
+
+                append({
+                    disbursementAmount: 0,
+                    scheduledDate: newDate,
+                    activity: ''
+                });
+            }
+        } else if (campaignType === 1 && stages.length > 1) {
+            while (stages.length > 1) {
+                remove(stages.length - 1);
+            }
+        }
+    }, [campaignType, form, append, remove]);
     const uploadToCloudinary = async (file, folder) => {
         const formData = new FormData();
         formData.append('file', file);
@@ -311,7 +394,7 @@ const CampaignInfo = ({ childID }) => {
 
             // Prepare the final data object
             const finalData = {
-                guaranteeID: user.userID,
+                // guaranteeID: user.userID,
                 childID: childID,
                 title: data.title,
                 story: data.story,
@@ -371,7 +454,7 @@ const CampaignInfo = ({ childID }) => {
                                             <FormLabel>Tiêu Đề Chiến Dịch</FormLabel>
                                             <FormControl>
                                                 <Input placeholder="Nhập tiêu đề chiến dịch" {...field}
-                                                    className="rounded-lg w-3/4"
+                                                    className="rounded-lg"
                                                 />
                                             </FormControl>
                                             <FormMessage />
@@ -422,7 +505,7 @@ const CampaignInfo = ({ childID }) => {
                                                             const value = e.target.value.replace(/[^\d]/g, '');
                                                             field.onChange(formatNumber(value));
                                                         }}
-                                                        className="w-1/3"
+                                                        className="w-2/3"
 
                                                     />
                                                 </FormControl>
@@ -553,6 +636,7 @@ const CampaignInfo = ({ childID }) => {
                                                     date={field.value}
                                                     onDateSelect={(date) => field.onChange(date)}
                                                     variant="outline"
+                                                    minDate={new Date()}
                                                     className="ml-2"
                                                 />
                                             </FormControl>
@@ -572,6 +656,7 @@ const CampaignInfo = ({ childID }) => {
                                                     date={field.value}
                                                     onDateSelect={(date) => field.onChange(date)}
                                                     variant="outline"
+                                                    minDate={new Date()}
                                                     className="ml-2"
                                                 />
                                             </FormControl>
@@ -593,6 +678,7 @@ const CampaignInfo = ({ childID }) => {
                                                     date={field.value}
                                                     onDateSelect={(date) => field.onChange(date)}
                                                     variant="outline"
+                                                    minDate={new Date()}
                                                     className="ml-2"
                                                 />
                                             </FormControl>
@@ -612,6 +698,7 @@ const CampaignInfo = ({ childID }) => {
                                                     date={field.value}
                                                     onDateSelect={(date) => field.onChange(date)}
                                                     variant="outline"
+                                                    minDate={new Date()}
                                                     className="ml-2"
                                                 />
                                             </FormControl>
@@ -727,7 +814,8 @@ const CampaignInfo = ({ childID }) => {
                                                             type="button"
                                                             variant="destructive"
                                                             size="icon"
-                                                            onClick={() => remove(index)}
+                                                            onClick={() => handleRemove(index)}
+                                                            disabled={campaignType === 0 && fields.length <= 2}
                                                         >
                                                             <Trash2 className="h-4 w-4" />
                                                         </Button>
@@ -744,23 +832,25 @@ const CampaignInfo = ({ childID }) => {
                                 )}
                             </div>
 
-                            <Button
-                                type="button"
-                                variant="outline"
-                                size="sm"
-                                onClick={() => {
-                                    const lastStage = fields[fields.length - 1];
-                                    const newDate = new Date(lastStage.scheduledDate);
-                                    newDate.setDate(newDate.getDate() + 1);
-                                    append({
-                                        disbursementAmount: 0,
-                                        scheduledDate: newDate,
-                                        activity: '',
-                                    });
-                                }}
-                            >
-                                <Plus className="mr-2 h-4 w-4" /> Thêm Giai Đoạn
-                            </Button>
+                            {campaignType === 0 && (
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => {
+                                        const lastStage = fields[fields.length - 1];
+                                        const newDate = new Date(lastStage.scheduledDate);
+                                        newDate.setDate(newDate.getDate() + 1);
+                                        append({
+                                            disbursementAmount: 0,
+                                            scheduledDate: newDate,
+                                            activity: '',
+                                        });
+                                    }}
+                                >
+                                    <Plus className="mr-2 h-4 w-4" /> Thêm Giai Đoạn
+                                </Button>
+                            )}
 
                             <div className="flex justify-center">
                                 <Button

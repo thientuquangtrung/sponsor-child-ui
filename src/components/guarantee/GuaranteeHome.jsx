@@ -5,12 +5,7 @@ import { BarChart, Users, DollarSign, ArrowUp, ArrowDown, Mail, AlertTriangle } 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Progress } from "@/components/ui/progress";
 
-const SponsorHome = () => {
-  const sponsorInfo = {
-    name: "Kim jisoo",
-    email: "jisoo@gmail.com",
-    avatarUrl: "https://media-cdn-v2.laodong.vn/Storage/NewsPortal/2022/6/3/1052267/IMG_7095.jpg"
-  };
+const GuaranteeHome = () => {
 
   const stats = [
     {
@@ -119,17 +114,7 @@ const SponsorHome = () => {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold text-gray-900">Tổng Quan Về Nhà Bảo Lãnh</h1>
         <div className="flex items-center space-x-4">
-          <div className="text-right">
-            <p className="font-semibold text-gray-900">{sponsorInfo.name}</p>
-            <p className="text-sm text-gray-600 flex items-center">
-              <Mail className="h-4 w-4 mr-1" />
-              {sponsorInfo.email}
-            </p>
-          </div>
-          <Avatar className="h-12 w-12">
-            <AvatarImage src={sponsorInfo.avatarUrl} alt={sponsorInfo.name} />
-            <AvatarFallback>{sponsorInfo.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
-          </Avatar>
+
         </div>
       </div>
 
@@ -199,4 +184,4 @@ const SponsorHome = () => {
   );
 };
 
-export default SponsorHome;
+export default GuaranteeHome;

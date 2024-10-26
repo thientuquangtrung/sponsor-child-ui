@@ -33,15 +33,7 @@ const ContractCampaignSign = ({ onSign, onContractSent, campaignId }) => {
     const [updateContract, { isLoading: isUpdatingContract }] = useUpdateContractMutation();
     const { data: campaignDetails, isLoading: isLoadingCampaign } = useGetCampaignByIdQuery(campaignId);
 
-    const partyB = {
-        fullName: user.fullname,
-        idNumber: user.idNumber,
-        phoneNumber: user.phone,
-        birthYear: formatDate(user.dateOfBirth),
-        idIssueDate: formatDate(user.idIssueDate),
-        idIssuePlace: user.idIssuePlace,
-        address: user.address,
-    };
+
 
     const handleClear = () => {
         sigCanvas.current.clear();
@@ -186,7 +178,6 @@ const ContractCampaignSign = ({ onSign, onContractSent, campaignId }) => {
                     ) : (
                         <div ref={contractRef}>
                             <ContractCampaignContent
-                                partyB={partyB}
                                 signature={signature}
                                 campaignDetails={campaignDetails}
                             />
@@ -196,12 +187,13 @@ const ContractCampaignSign = ({ onSign, onContractSent, campaignId }) => {
             </div>
             <div className="w-full lg:w-1/3 p-4 bg-white shadow-md py-8 font-sans">
                 <h2 className="font-semibold mb-2">Ký tên</h2>
-                <div className="border-2 border-gray-300 rounded-lg mb-4">
+                <div style={{ border: "1px solid black", width: "100%" }}>
                     <SignatureCanvas
                         ref={sigCanvas}
-                        canvasProps={{ width: 300, height: 150 }}
+                        canvasProps={{ className: "w-full h-[150px]" }}
                     />
                 </div>
+
                 <div className="flex flex-wrap gap-2 mb-4">
                     <div className="flex space-x-2 mt-4">
                         <Button

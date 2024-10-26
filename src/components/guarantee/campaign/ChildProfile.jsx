@@ -6,28 +6,36 @@ import { useSelector } from 'react-redux';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useCreateChildProfileMutation } from '@/redux/childProfile/childProfileApi';
 import { useDropzone } from 'react-dropzone';
 import { Loader, Upload, X } from 'lucide-react';
 import { toast } from 'sonner';
+import useLocationVN from '@/hooks/useLocationVN';
 
 const schema = z.object({
     name: z.string().min(1, "Vui lòng nhập tên trẻ."),
-    age: z.number().int().nonnegative("Tuổi phải là số không âm.").max(16, "Tuổi của trẻ phải nhỏ hơn 17."),
+    age: z.number({ invalid_type_error: "Vui lòng nhập tuổi của trẻ" }).int().nonnegative("Tuổi phải là số không âm.").max(16, "Tuổi của trẻ phải nhỏ hơn 17."),
+
     gender: z.number().min(0).max(1),
     location: z.string().min(1, "Vui lòng nhập địa chỉ trẻ."),
-    identificationInformationFile: z.any().refine((val) => val !== null, "Vui lòng tải ảnh trẻ"),
-    ward: z.string().min(1, "Vui lòng nhập phường/xã"),
-    district: z.string().min(1, "Vui lòng nhập quận/huyện"),
-    province: z.string().min(1, "Vui lòng nhập tỉnh/thành phố"),
+    identificationInformationFile: z
+        .any()
+        .refine((val) => val !== null, "Vui lòng tải thông tin định danh trẻ")
+        .refine((val) => val && val.size <= 10 * 1024 * 1024, "Kích thước tệp không được vượt quá 10MB"),
+    provinceId: z.string().min(1, "Vui lòng chọn tỉnh/thành phố"),
+    districtId: z.string().min(1, "Vui lòng chọn quận/huyện"),
+    wardId: z.string().min(1, "Vui lòng chọn phường/xã"),
 });
 
 const useCustomDropzone = (onDrop) => {
     return useDropzone({
         onDrop,
         accept: {
-            'image/*': ['.jpeg', '.jpg', '.png', '.gif', '.bmp', '.webp'],
-            'application/pdf': ['.pdf']
+            'application/pdf': ['.pdf'],
+            'application/msword': ['.doc'],
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'],
+            'image/*': ['.jpeg', '.jpg', '.png']
         },
         multiple: false
     });
@@ -35,7 +43,6 @@ const useCustomDropzone = (onDrop) => {
 
 const CustomDropzone = ({ onDrop, children }) => {
     const { getRootProps, getInputProps } = useCustomDropzone(onDrop);
-
     return (
         <div {...getRootProps()}>
             <input {...getInputProps()} />
@@ -50,6 +57,15 @@ const ChildProfile = ({ nextStep, onSuccess }) => {
     const [file, setFile] = useState(null);
     const [isUploading, setIsUploading] = useState(false);
 
+    const {
+        provinces,
+        districts,
+        wards,
+        setSelectedProvince,
+        setSelectedDistrict,
+        setSelectedWard,
+    } = useLocationVN();
+
     const form = useForm({
         resolver: zodResolver(schema),
         defaultValues: {
@@ -58,9 +74,9 @@ const ChildProfile = ({ nextStep, onSuccess }) => {
             gender: 0,
             location: "",
             identificationInformationFile: null,
-            ward: "",
-            district: "",
-            province: ""
+            provinceId: "",
+            districtId: "",
+            wardId: ""
         },
     });
 
@@ -73,7 +89,7 @@ const ChildProfile = ({ nextStep, onSuccess }) => {
         try {
             setIsUploading(true);
             const response = await fetch(
-                `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUD_NAME}/image/upload`,
+                `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUD_NAME}/raw/upload`,
                 {
                     method: 'POST',
                     body: formData,
@@ -94,17 +110,12 @@ const ChildProfile = ({ nextStep, onSuccess }) => {
 
     const onDrop = useCallback((acceptedFiles) => {
         const file = acceptedFiles[0];
-        setFile(Object.assign(file, {
-            preview: file.type.startsWith('image/') ? URL.createObjectURL(file) : null
-        }));
+        setFile(file);
         form.setValue('identificationInformationFile', file);
         form.clearErrors('identificationInformationFile');
     }, [form]);
 
     const removeFile = () => {
-        if (file.preview) {
-            URL.revokeObjectURL(file.preview);
-        }
         setFile(null);
         form.setValue('identificationInformationFile', null);
     };
@@ -113,15 +124,19 @@ const ChildProfile = ({ nextStep, onSuccess }) => {
         try {
             const fileUrl = await uploadToCloudinary(data.identificationInformationFile);
 
+            const province = provinces.find(p => p.id === data.provinceId)?.name || '';
+            const district = districts.find(d => d.id === data.districtId)?.name || '';
+            const ward = wards.find(w => w.id === data.wardId)?.name || '';
+
             const childProfileData = {
                 name: data.name,
                 age: Number(data.age),
                 gender: Number(data.gender),
                 location: data.location,
                 identificationInformationFile: fileUrl,
-                ward: data.ward,
-                district: data.district,
-                province: data.province
+                ward: ward,
+                district: district,
+                province: province
             };
 
             const result = await createChildProfile(childProfileData).unwrap();
@@ -137,6 +152,33 @@ const ChildProfile = ({ nextStep, onSuccess }) => {
         } finally {
             setIsUploading(false);
         }
+    };
+
+    const handleProvinceChange = (provinceId) => {
+        const province = provinces.find(p => p.id === provinceId);
+        setSelectedProvince(province);
+        form.setValue('provinceId', provinceId);
+        form.setValue('districtId', '');
+        form.setValue('wardId', '');
+        form.trigger('provinceId');
+
+    };
+
+    const handleDistrictChange = (districtId) => {
+        const district = districts.find(d => d.id === districtId);
+        setSelectedDistrict(district);
+        form.setValue('districtId', districtId);
+        form.setValue('wardId', '');
+        form.trigger('districtId');
+
+    };
+
+    const handleWardChange = (wardId) => {
+        const ward = wards.find(w => w.id === wardId);
+        setSelectedWard(ward);
+        form.setValue('wardId', wardId);
+        form.trigger('wardId');
+
     };
 
     return (
@@ -168,6 +210,7 @@ const ChildProfile = ({ nextStep, onSuccess }) => {
                                         <Input
                                             type="number"
                                             min="0"
+                                            max="16"
                                             {...field}
                                             onChange={(e) => {
                                                 const value = e.target.value;
@@ -175,7 +218,12 @@ const ChildProfile = ({ nextStep, onSuccess }) => {
                                                     field.onChange('');
                                                 } else {
                                                     const numValue = parseInt(value, 10);
-                                                    field.onChange(numValue >= 0 ? numValue : 0);
+                                                    field.onChange(numValue >= 0 && numValue <= 16 ? numValue : 16);
+                                                }
+                                            }}
+                                            onBlur={() => {
+                                                if (field.value > 16) {
+                                                    field.onChange(16);
                                                 }
                                             }}
                                             className="border-gray-300 rounded-lg w-1/5"
@@ -194,7 +242,7 @@ const ChildProfile = ({ nextStep, onSuccess }) => {
                             <FormItem>
                                 <FormLabel className="text-lg">Địa chỉ</FormLabel>
                                 <FormControl>
-                                    <Input placeholder="Nhập địa chỉ" {...field} className="border-gray-300 rounded-lg" />
+                                    <Input placeholder="Nhập số nhà, tên đường" {...field} className="border-gray-300 rounded-lg" />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -204,41 +252,74 @@ const ChildProfile = ({ nextStep, onSuccess }) => {
                     <div className="grid grid-cols-3 gap-4">
                         <FormField
                             control={form.control}
-                            name="ward"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel className="text-lg">Phường/Xã</FormLabel>
-                                    <FormControl>
-                                        <Input placeholder="Nhập phường/xã" {...field} className="border-gray-300 rounded-lg" />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-
-                        <FormField
-                            control={form.control}
-                            name="district"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel className="text-lg">Quận/Huyện</FormLabel>
-                                    <FormControl>
-                                        <Input placeholder="Nhập quận/huyện" {...field} className="border-gray-300 rounded-lg" />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-
-                        <FormField
-                            control={form.control}
-                            name="province"
+                            name="provinceId"
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel className="text-lg">Tỉnh/Thành phố</FormLabel>
-                                    <FormControl>
-                                        <Input placeholder="Nhập tỉnh/thành phố" {...field} className="border-gray-300 rounded-lg" />
-                                    </FormControl>
+                                    <Select onValueChange={handleProvinceChange} value={field.value}>
+                                        <FormControl>
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="Chọn tỉnh/thành phố" />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                            {provinces.map((province) => (
+                                                <SelectItem key={province.id} value={province.id}>
+                                                    {province.name}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+                        <FormField
+                            control={form.control}
+                            name="districtId"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel className="text-lg">Quận/Huyện</FormLabel>
+                                    <Select onValueChange={handleDistrictChange} value={field.value}>
+                                        <FormControl>
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="Chọn quận/huyện" />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                            {districts.map((district) => (
+                                                <SelectItem key={district.id} value={district.id}>
+                                                    {district.name}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+                        <FormField
+                            control={form.control}
+                            name="wardId"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel className="text-lg">Phường/Xã</FormLabel>
+                                    <Select onValueChange={handleWardChange} value={field.value}>
+                                        <FormControl>
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="Chọn phường/xã" />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                            {wards.map((ward) => (
+                                                <SelectItem key={ward.id} value={ward.id}>
+                                                    {ward.name}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
                                     <FormMessage />
                                 </FormItem>
                             )}
@@ -250,23 +331,17 @@ const ChildProfile = ({ nextStep, onSuccess }) => {
                         name="identificationInformationFile"
                         render={() => (
                             <FormItem>
-                                <FormLabel className="text-lg">Ảnh trẻ</FormLabel>
+                                <FormLabel className="text-lg">Thông tin định danh trẻ em</FormLabel>
                                 <FormControl>
                                     <CustomDropzone onDrop={onDrop}>
                                         {file ? (
                                             <div className="flex justify-center items-center w-full py-4">
-                                                <div className="relative">
-                                                    {file.type.startsWith('image/') ? (
-                                                        <img
-                                                            src={file.preview}
-                                                            alt="ID Document"
-                                                            className="w-40 h-40 object-cover rounded-lg"
-                                                        />
-                                                    ) : (
-                                                        <div className="w-40 h-40 flex items-center justify-center bg-gray-100 rounded-lg">
-                                                            <p className="text-gray-500">File: {file.name}</p>
-                                                        </div>
-                                                    )}
+                                                <div className="relative flex items-center justify-center bg-gray-100 rounded-lg p-4">
+                                                    <div className="text-center">
+                                                        <p className="text-gray-700 font-medium">File đã chọn:</p>
+                                                        <p className="text-gray-500">{file.name}</p>
+                                                        <p className="text-gray-500">({(file.size / 1024 / 1024).toFixed(2)} MB)</p>
+                                                    </div>
                                                     <button
                                                         type="button"
                                                         onClick={(e) => {
@@ -288,7 +363,7 @@ const ChildProfile = ({ nextStep, onSuccess }) => {
                                     </CustomDropzone>
                                 </FormControl>
                                 <FormDescription>
-                                    Tải lên ảnh của trẻ (JPEG, PNG, PDF)
+                                    Chấp nhận các định dạng: PDF, DOC, DOCX, JPEG, PNG
                                 </FormDescription>
                                 <FormMessage />
                             </FormItem>
@@ -304,7 +379,7 @@ const ChildProfile = ({ nextStep, onSuccess }) => {
                             {(isUploading || isCreatingChildProfile) ? (
                                 <div className="flex items-center gap-2">
                                     <Loader className="animate-spin" size={18} />
-                                    {isUploading ? 'Đang Tạo...' : 'Đang Tạo Hồ Sơ...'}
+                                    {isUploading ? 'Đang Tải File...' : 'Đang Tạo Hồ Sơ...'}
                                 </div>
                             ) : (
                                 'Tạo Hồ Sơ'
