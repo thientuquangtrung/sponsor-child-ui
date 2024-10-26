@@ -26,7 +26,7 @@ export function GuaranteeLayout() {
                     onClick={redirectToHome}
                     className="bg-teal-500 text-white px-4 py-2 rounded-md hover:bg-teal-600 flex items-center space-x-2"
                 >
-                    <Home className="w-5 h-5" /> 
+                    <Home className="w-5 h-5" />
                     <span className='text-md'>Quay về Trang Chủ</span>
                 </Button>
             </div>
