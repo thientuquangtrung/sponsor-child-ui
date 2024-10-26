@@ -9,21 +9,24 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { useUpdateUserMutation } from '@/redux/user/userApi';
+import { deleteAsset, uploadFile } from '@/lib/cloudinary';
 
 const profileSchema = z.object({
     fullname: z.string().min(1, 'Tên tài khoản là bắt buộc'),
     email: z.string().email('Email không hợp lệ'),
     dateOfBirth: z.string().optional(),
     phoneNumber: z.string().min(10, 'Số điện thoại phải có ít nhất 10 số').optional(),
-    address: z.string().min(1, 'Địa chỉ là bắt buộc'), 
-    bio: z.string().min(1, 'Giới thiệu bản thân là bắt buộc'), 
+    address: z.string().min(1, 'Địa chỉ là bắt buộc'),
+    bio: z.string().min(1, 'Giới thiệu bản thân là bắt buộc'),
 });
 
 export default function MyProfile() {
     const { user } = useSelector((state) => state.auth);
     const [avatarSrc, setAvatarSrc] = useState('https://via.placeholder.com/150');
+    const [newAvatarSrc, setNewAvatarSrc] = useState(null);
     const [dragging, setDragging] = useState(false);
     const [updateUser, { isLoading, isError, error }] = useUpdateUserMutation();
+    const [oldAvatarPublicId, setOldAvatarPublicId] = useState(user?.imageUrl.split('/').pop().split('.')[0]);
 
     const form = useForm({
         resolver: zodResolver(profileSchema),
@@ -40,13 +43,33 @@ export default function MyProfile() {
         try {
             const updateUserProfile = {
                 id: user?.userID,
-                fullname: user?.fullname,
-                dateOfBirth:  user?.dateOfBirth,
-                address: user?.address, 
-                bio: user?.bio, 
+                fullname: values.fullname,
+                dateOfBirth: values.dateOfBirth,
+                address: values.address,
+                bio: values.bio,
             };
 
             console.log('Update User Profile Payload:', updateUserProfile);
+
+            // Check if there's a new avatar and upload it
+            let newAvatarUrl;
+            if (newAvatarSrc) {
+                // Define the folder structure
+                const folderName = `avatar/${user?.userID}`;
+
+                // Upload new avatar
+                const uploadResponse = await uploadFile({
+                    file: newAvatarSrc,
+                    tags: ['avatar'],
+                    resourceType: 'image',
+                    folder: folderName,
+                    oldPublicId: oldAvatarPublicId,
+                });
+
+                newAvatarUrl = uploadResponse.secure_url;
+
+                updateUserProfile.imageUrl = newAvatarUrl;
+            }
 
             const response = await updateUser(updateUserProfile).unwrap();
             console.log('User updated successfully:', response);
@@ -65,6 +88,7 @@ export default function MyProfile() {
         if (file) {
             const reader = new FileReader();
             reader.onloadend = () => {
+                setNewAvatarSrc(reader.result);
                 setAvatarSrc(reader.result);
             };
             reader.readAsDataURL(file);
@@ -88,7 +112,8 @@ export default function MyProfile() {
         if (file) {
             const reader = new FileReader();
             reader.onloadend = () => {
-                setAvatarSrc(reader.result);
+                setNewAvatarSrc(reader.result); // Cập nhật newAvatarSrc với ảnh mới
+                setAvatarSrc(reader.result); // Cập nhật avatarSrc để hiển thị ảnh mới
             };
             reader.readAsDataURL(file);
         }
@@ -108,7 +133,7 @@ export default function MyProfile() {
                         onDrop={handleDrop}
                     >
                         <Avatar className="h-40 w-40 border-4 border-white rounded-full shadow-lg">
-                            <AvatarImage className="object-cover" src={user?.imageUrl} alt={user?.fullname} />
+                            <AvatarImage className="object-cover" src={avatarSrc} alt={user?.fullname} />
                             <AvatarFallback>{user?.fullname?.substring(0, 2).toUpperCase()}</AvatarFallback>
                         </Avatar>
                         <input
@@ -184,11 +209,11 @@ export default function MyProfile() {
                                 name="phoneNumber"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className="text-xl">Số điện thoại</FormLabel>
+                                        <FormLabel className="text-xl">Số điện thoại</FormLabel>
                                         <FormControl>
                                             <Input
                                                 className="text-lg h-14 border-2 border-primary"
-                                                placeholder="Nhập số điện thoại"
+                                                placeholder="Nhập số điện thoại"
                                                 {...field}
                                             />
                                         </FormControl>
@@ -236,6 +261,7 @@ export default function MyProfile() {
                         <Button
                             className="w-full md:w-[40%] h-14 mt-4 text-white text-2xl bg-gradient-to-r from-primary to-secondary"
                             type="submit"
+                            disabled={isLoading}
                         >
                             Cập nhật
                         </Button>
