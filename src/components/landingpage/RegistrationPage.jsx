@@ -14,7 +14,7 @@ const RegistrationPage = () => {
     const navigate = useNavigate();
     const [showForm, setShowForm] = useState(false);
     const [formType, setFormType] = useState('');
-    const { data: guaranteeStatus } = useCheckGuaranteeStatusQuery(user.userID);
+    const { data: guaranteeStatus, isLoading } = useCheckGuaranteeStatusQuery(user.userID);
 
     const progressStep = useMemo(() => {
         if (guaranteeStatus) {
@@ -54,6 +54,10 @@ const RegistrationPage = () => {
                 return 100;
         }
     };
+
+    if (isLoading) {
+        return <p className="text-center text-2xl font-semibold">Loading...</p>;
+    }
 
     return (
         <div className="container mx-auto px-4">
