@@ -2,8 +2,12 @@ import { Outlet, useNavigate } from 'react-router-dom';
 import SidebarGuarantee from '@/components/navigation/SidebarGuarantee';
 import icon from '@/assets/images/no-access.png';
 import { useSelector } from 'react-redux';
+
+import HeaderSidebar from '@/components/navigation/HeaderSidebar';
+
 import { Button } from '@/components/ui/button';
 import { Home } from 'lucide-react';
+
 
 export function GuaranteeLayout() {
     const { user } = useSelector((state) => state.auth);
@@ -30,11 +34,14 @@ export function GuaranteeLayout() {
     }
 
     return (
-        <div className="flex flex-1 overflow-hidden">
+        <div className="min-h-screen bg-[#f3f4f6] dark:bg-[#1a222c] dark:text-white flex flex-col lg:flex-row">
             <SidebarGuarantee />
-            <main className="flex-1 overflow-y-auto bg-[#f3f4f6] dark:bg-gray-700 p-6">
-                <Outlet />
-            </main>
+            <div className="flex-1 flex flex-col h-screen">
+                <HeaderSidebar />
+                <main className="flex-1 overflow-y-auto bg-[#f3f4f6] dark:bg-gray-700 p-6">
+                    <Outlet />
+                </main>
+            </div>
         </div>
     );
 }

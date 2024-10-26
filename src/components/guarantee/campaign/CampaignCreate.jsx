@@ -43,6 +43,7 @@ const CampaignCreate = () => {
                     {steps.map((step, index) => (
                         <li
                             key={index}
+                
                             className={`flex items-center font-bold ${
                                 currentStep === index ? 'text-teal-500 dark:text-teal-500' : ''
                             }`}
@@ -52,7 +53,7 @@ const CampaignCreate = () => {
                                     currentStep === index
                                         ? 'border-teal-500 dark:border-teal-500'
                                         : 'border-gray-500 dark:border-gray-400'
-                                } rounded-full shrink-0`}
+                                    } rounded-full shrink-0`}
                             >
                                 {index + 1}
                             </span>

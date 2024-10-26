@@ -33,7 +33,7 @@ function Calendar() {
     };
 
     const monthNames = [
-        'Tháng Một', 'Tháng Hai', 'Tháng Ba', 'Tháng Tư', 'Tháng Năm', 'Tháng Sáu', 
+        'Tháng Một', 'Tháng Hai', 'Tháng Ba', 'Tháng Tư', 'Tháng Năm', 'Tháng Sáu',
         'Tháng Bảy', 'Tháng Tám', 'Tháng Chín', 'Tháng Mười', 'Tháng Mười Một', 'Tháng Mười Hai'
     ];
 
@@ -42,10 +42,8 @@ function Calendar() {
     const totalDays = daysInMonth(currentMonth, currentYear);
     const firstDay = getFirstDayOfMonth(currentMonth, currentYear);
 
-    // Tạo các ô rỗng trước khi tháng bắt đầu
     const blankDays = Array(firstDay).fill(null);
 
-    // Tạo danh sách các ngày trong tháng
     const daysArray = [...Array(totalDays).keys()].map((i) => i + 1);
 
     return (
@@ -54,9 +52,8 @@ function Calendar() {
                 <button onClick={handlePreviousMonth}>
                     <ChevronLeft size={24} className="text-gray-600 hover:text-black" />
                 </button>
-                {/* Thêm khoảng cách giữa tháng và năm */}
                 <span className="text-lg font-medium space-x-2">
-                    <span>{monthNames[currentMonth]}</span> 
+                    <span>{monthNames[currentMonth]}</span>
                     <span>{currentYear}</span>
                 </span>
                 <button onClick={handleNextMonth}>
@@ -65,29 +62,25 @@ function Calendar() {
             </div>
 
             <div className="grid grid-cols-7 gap-2">
-                {/* Hiển thị các ngày trong tuần */}
                 {weekDays.map((day, index) => (
                     <div key={index} className="text-center text-sm font-medium text-gray-500">
                         {day}
                     </div>
                 ))}
 
-                {/* Hiển thị các ô trống trước ngày đầu tháng */}
                 {blankDays.map((_, index) => (
                     <div key={index} className="h-10"></div>
                 ))}
 
-                {/* Hiển thị các ngày của tháng */}
                 {daysArray.map((day) => (
                     <div
                         key={day}
-                        className={`h-10 w-10 flex items-center justify-center rounded-lg cursor-pointer ${
-                            day === today.getDate() &&
+                        className={`h-10 w-10 flex items-center justify-center rounded-lg cursor-pointer ${day === today.getDate() &&
                             currentMonth === today.getMonth() &&
                             currentYear === today.getFullYear()
-                                ? 'bg-teal-500 text-white'
-                                : 'bg-normal text-black'
-                        } hover:bg-blue-100`}
+                            ? 'bg-teal-500 text-white'
+                            : 'bg-normal text-black'
+                            } hover:bg-blue-100`}
                     >
                         {day}
                     </div>

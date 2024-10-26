@@ -54,6 +54,10 @@ export const guaranteeApi = baseApi.injectEndpoints({
                 method: 'DELETE',
             }),
         }),
+        getGuaranteeProfile: builder.query({
+            query: (userId) => `/guarantee/getguaranteeprofile/${userId}`,
+
+        }),
     }),
 });
 
@@ -66,4 +70,5 @@ export const {
     useUpdateOrganizationGuaranteeMutation,
     useDeleteGuaranteeMutation,
     useCheckGuaranteeStatusQuery,
+    useGetGuaranteeProfileQuery,
 } = guaranteeApi;

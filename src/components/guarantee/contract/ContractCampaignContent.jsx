@@ -1,5 +1,8 @@
 import React from 'react';
 import { format } from 'date-fns';
+import { useGetGuaranteeProfileQuery } from '@/redux/guarantee/guaranteeApi';
+import { useSelector } from 'react-redux';
+import LoadingScreen from '@/components/common/LoadingScreen';
 
 const formatCurrency = (amount) => {
     return new Intl.NumberFormat('vi-VN', {
@@ -15,11 +18,81 @@ const formatDate = (dateString) => {
 
 
 
-const ContractContent = ({ partyB, signature, campaignDetails }) => {
+const ContractContent = ({ signature, campaignDetails }) => {
     const disbursementPlan = campaignDetails?.disbursementPlans?.[0] || {};
     const stages = disbursementPlan?.stages || [];
     const today = new Date();
+    const { user } = useSelector((state) => state.auth);
+    const {
+        data: guaranteeProfile,
+        isLoading,
+        error
+    } = useGetGuaranteeProfileQuery(user?.userID, {
+        skip: !user?.userID
+    });
+    if (isLoading) return <LoadingScreen />;
+
+    if (error) {
+        console.error('Error fetching guarantee profile:', error);
+        return <div>Error loading profile</div>;
+    }
+
+    console.log(guaranteeProfile);
+
     const formattedToday = format(today, "dd' tháng 'MM' năm 'yyyy");
+    const renderPartyB = () => {
+        if (!guaranteeProfile) {
+            return {
+                fullName: ".......................",
+                citizenIdentification: ".......................",
+                phoneNumber: ".......................",
+                birthYear: ".......................",
+                idIssueDate: ".......................",
+                idIssuePlace: ".......................",
+                address: "......................."
+            };
+        }
+
+        if (guaranteeProfile.guaranteeType === "0") {
+            return (
+                <div className="space-y-2">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                            <p><span className="inline-block w-36">Họ tên:</span> {guaranteeProfile.fullname}</p>
+                            <p><span className="inline-block w-36">Số CMND/CCCD:</span> {guaranteeProfile.citizenIdentification}</p>
+                            <p><span className="inline-block w-36">Số điện thoại:</span> {guaranteeProfile.phoneNumber}</p>
+                        </div>
+                        <div className="space-y-2">
+                            <p><span className="inline-block w-20">Năm sinh:</span> {formatDate(guaranteeProfile.dateOfBirth)}</p>
+                            <div className="flex flex-wrap">
+                                <p className="mr-4 mb-2"><span className="inline-block w-20">Cấp ngày:</span> {formatDate(guaranteeProfile.issueDate)}</p>
+                                <p><span className="inline-block w-20">Nơi cấp:</span> {guaranteeProfile.issueLocation}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <p className="mt-2"><span className="inline-block w-36">Địa chỉ thường trú:</span> {guaranteeProfile.permanentAddress}</p>
+                </div>
+            );
+        } else {
+            return (
+                <div className="space-y-2">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                            <p><span className="inline-block w-36">Tên tổ chức:</span> {guaranteeProfile.organizationName}</p>
+                            <p><span className="inline-block w-36">Người đại diện:</span> {guaranteeProfile.representativeName}</p>
+                        </div>
+                        <div className="space-y-2">
+                            <p><span className="inline-block w-36">Số điện thoại:</span> {guaranteeProfile.organizationPhoneNumber}</p>
+                            <p><span className="inline-block w-36">Chức vụ:</span> {guaranteeProfile.position}</p>
+
+                        </div>
+                    </div>
+                    <p className="mt-2"><span className="inline-block w-36">Địa chỉ tổ chức:</span> {guaranteeProfile.organizationAddress}</p>
+                </div>
+            );
+        }
+    };
+
 
     return (
         <div className="p-8 bg-white text-black font-serif">
@@ -29,7 +102,7 @@ const ContractContent = ({ partyB, signature, campaignDetails }) => {
 
             <h3 className="text-lg font-semibold text-center mb-8">HỢP ĐỒNG THAM GIA BẢO LÃNH CHIẾN DỊCH HỖ TRỢ TRẺ EM </h3>
             <div className="ml-6 text-sm">
-                <p className="mb-4">Số: ..../HĐ-BLCD</p>
+                <p className="mb-4">Số: 101/HĐ-BLCD</p>
                 <p className="mb-6">Hôm nay, ngày {formattedToday}, tại TP. Hồ Chí Minh</p>
 
                 <div className="mb-6">
@@ -54,21 +127,8 @@ const ContractContent = ({ partyB, signature, campaignDetails }) => {
 
                 <div className="mb-6">
                     <h4 className="font-semibold underline mb-2">2. BÊN BẢO LÃNH:</h4>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                            <p><span className="inline-block w-36">Họ tên:</span> {partyB.fullName || "......................................................."}</p>
-                            <p><span className="inline-block w-36">Số CMND/CCCD:</span> {partyB.idNumber || "......................................................."}</p>
-                            <p><span className="inline-block w-36">Số điện thoại:</span> {partyB.phoneNumber || "......................................................."}</p>
-                        </div>
-                        <div className="space-y-2">
-                            <p><span className="inline-block w-20">Năm sinh:</span> {partyB.birthYear || ".................."}</p>
-                            <div className="flex flex-wrap">
-                                <p className="mr-4 mb-2"><span className="inline-block w-20">Cấp ngày:</span> {partyB.idIssueDate || ".................."}</p>
-                                <p><span className="inline-block w-20">Nơi cấp:</span> {partyB.idIssuePlace || ".................."}</p>
-                            </div>
-                        </div>
-                    </div>
-                    <p className="mt-2"><span className="inline-block w-36">Địa chỉ thường trú:</span> {partyB.address || "...................................................................................................................................."}</p>
+                    {renderPartyB()}
+
                     <p className="font-semibold mt-2">Sau đây gọi là Bên B</p>
                 </div>
 
@@ -166,7 +226,7 @@ const ContractContent = ({ partyB, signature, campaignDetails }) => {
                         {signature && (
                             <img src={signature} alt="Chữ ký Bên B" className="mt-4" />
                         )}
-                        <p className="mt-2">{partyB.fullName}</p>
+                        <p className="mt-2">{guaranteeProfile?.fullname || guaranteeProfile?.representativeName}</p>
                     </div>
                 </div>
             </div>
