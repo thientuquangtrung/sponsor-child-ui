@@ -12,11 +12,13 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import { campaignStatus, campaignTypes, provinces } from '@/config/combobox';
+import { campaignStatus, campaignTypes } from '@/config/combobox';
 import { Button } from '../ui/button';
 import { BellRing, X } from 'lucide-react';
+import useLocationVN from '@/hooks/useLocationVN';
 
 const DonateTarget = () => {
+    const { provinces } = useLocationVN();
     const [URLSearchParams, SetURLSearchParams] = useSearchParams();
     const [searchTerm, setSearchTerm] = useState('');
     const [activeTab, setActiveTab] = useState('all');
@@ -27,9 +29,9 @@ const DonateTarget = () => {
 
     useEffect(() => {
         if (debouncedSearchTerm) {
-            URLSearchParams.set('search', debouncedSearchTerm);
+            URLSearchParams.set('title', debouncedSearchTerm);
         } else {
-            URLSearchParams.delete('search');
+            URLSearchParams.delete('title');
         }
         SetURLSearchParams(URLSearchParams);
     }, [debouncedSearchTerm]);
@@ -77,7 +79,7 @@ const DonateTarget = () => {
                     <div className="h-auto w-auto bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 p-[2px] rounded-md">
                         <Button className="bg-white text-black font-semibold px-6 py-2 rounded-md flex items-center space-x-2 h-full w-full hover:bg-normal">
                             <BellRing className="w-6 h-6 text-rose-600 animate-shake" />
-                            <span className='text-rose-600'>Chiến dịch chưa có Người bảo lãnh</span>
+                            <span className="text-rose-600">Chiến dịch chưa có Người bảo lãnh</span>
                         </Button>
                     </div>
                 </Link>
@@ -122,8 +124,8 @@ const DonateTarget = () => {
                         </SelectContent>
                     </Select>
                     <Select
-                        onValueChange={(value) => handleSelect('provinceId', value)}
-                        value={URLSearchParams.get('provinceId') || ''}
+                        onValueChange={(value) => handleSelect('province', encodeURIComponent(value))}
+                        value={decodeURIComponent(URLSearchParams.get('province') || '')}
                     >
                         <SelectTrigger className="w-[150px]">
                             <SelectValue placeholder="Chọn tỉnh thành" />
@@ -132,20 +134,20 @@ const DonateTarget = () => {
                             <SelectGroup>
                                 <SelectLabel>Tỉnh</SelectLabel>
                                 {provinces.map((province) => (
-                                    <SelectItem key={province.value} value={province.value}>
-                                        {province.label}
+                                    <SelectItem key={province.id} value={province.name}>
+                                        {province.name}
                                     </SelectItem>
                                 ))}
                             </SelectGroup>
                         </SelectContent>
                     </Select>
                     {(URLSearchParams.get('type') ||
-                        URLSearchParams.get('provinceId') ||
+                        URLSearchParams.get('province') ||
                         URLSearchParams.get('status')) && (
                         <Button
                             onClick={() => {
                                 URLSearchParams.delete('type');
-                                URLSearchParams.delete('provinceId');
+                                URLSearchParams.delete('province');
                                 URLSearchParams.delete('status');
                                 SetURLSearchParams(URLSearchParams);
                             }}
