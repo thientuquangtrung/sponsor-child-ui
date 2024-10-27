@@ -24,7 +24,7 @@ export const campaignApi = baseApi.injectEndpoints({
         }),
         updateCampaign: builder.mutation({
             query: ({ id, ...data }) => ({
-                url: `/campaign/${id}`,
+                url: `/campaign/update/${id}`,
                 method: 'PUT',
                 body: data,
             }),

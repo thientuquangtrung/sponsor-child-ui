@@ -33,7 +33,7 @@ const HowToGetInvolved = () => {
                 {steps.map((step, index) => (
                     <Card key={index} className="flex flex-col">
                         <CardHeader className="flex flex-col items-center">
-                            <div className="rounded-full bg-primary p-3 mb-4">
+                            <div className="rounded-full bg-secondary text-white p-3 mb-4">
                                 {step.icon}
                             </div>
                             <CardTitle className="text-xl font-semibold mb-2">{step.title}</CardTitle>
@@ -45,7 +45,7 @@ const HowToGetInvolved = () => {
                 ))}
             </div>
             <div className="mt-12 text-center">
-                <Button size="lg">
+                <Button size="lg" className="bg-gradient-to-l from-teal-200 to-rose-200">
                     Bắt Đầu Ngay
                 </Button>
             </div>

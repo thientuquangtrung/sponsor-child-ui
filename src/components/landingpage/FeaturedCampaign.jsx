@@ -13,8 +13,8 @@ const FeaturedCampaign = () => {
     }));
 
     return (
-        <div className="container space-y-8 py-8 bg-[#c1e2e2] font-sans">
-            <div className="flex items-center justify-center my-8">
+        <div className="container space-y-8 py-8 bg-gradient-to-b from-teal-100 to-rose-100 font-sans">
+            <div className="flex items-center justify-center">
                 <div className="border-t-2 border-teal-500 w-20"></div>
                 <h1 className="text-2xl font-semibold mx-4">Chiến dịch gây quỹ nổi bật</h1>
                 <div className="border-t-2 border-teal-500 w-20"></div>

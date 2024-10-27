@@ -33,7 +33,7 @@ const SidebarGuarantee = () => {
                     </Link>
                 )}
                 {!isMobile && (
-                    <Button variant="ghost" size="icon" onClick={() => setOpen(!open)}>
+                    <Button variant="ghost" size="icon" onClick={() => setOpen(!open)} className="hover:bg-secondary/50">
                         <PanelsTopLeft className="h-4 w-4 transition-transform duration-300 ease-in-out transform" />
                     </Button>
                 )}
@@ -59,12 +59,12 @@ const SidebarGuarantee = () => {
                                 variant="ghost"
                                 className={cn(
                                     "w-full justify-start transition-all duration-300 ease-in-out transform hover:scale-105 hover:translate-x-2",
-                                    location.pathname === menu.path ? "bg-secondary" : "hover:bg-secondary/50",
+                                    location.pathname === menu.path ? "bg-secondary hover:bg-secondary rounded-none" : "hover:bg-normal",
                                     !open && "px-6"
                                 )}
                             >
-                                <menu.icon className={cn("h-4 w-4 transition-transform duration-300 ease-in-out transform", open ? "mr-2" : "mr-0")} />
-                                {open && <span className="font-semibold">{menu.label}</span>}
+                                <menu.icon className={cn("h-5 w-5 transition-transform duration-300 ease-in-out transform", open ? "mr-4" : "mr-0")} />
+                                {open && <span className="text-[16px]">{menu.label}</span>}
                             </Button>
                         </Link>
                     )
