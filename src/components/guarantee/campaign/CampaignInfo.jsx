@@ -245,60 +245,79 @@ const CampaignInfo = ({ childID }) => {
         remove(index);
     };
     useEffect(() => {
+        // Reset form khi thay đổi loại chiến dịch
         const subscription = form.watch((value, { name }) => {
-            if (name?.startsWith('disbursementStages')) {
-                const stages = form.getValues('disbursementStages');
-                if (stages.length > 0) {
-                    const lastStage = stages[stages.length - 1];
-                    if (lastStage?.scheduledDate) {
-                        form.setValue('plannedEndDate', new Date(lastStage.scheduledDate));
-                    }
-                }
-            }
+            if (name === 'campaignType') {
+                const campaignType = form.getValues('campaignType');
+                const currentDate = new Date();
 
-            if (name?.includes('disbursementStages') || name === 'targetAmount') {
-                const targetAmount = parseFloat(form.getValues('targetAmount')?.replace(/,/g, '') || '0');
-                const stages = form.getValues('disbursementStages');
-                const totalDisbursement = stages.reduce(
-                    (sum, stage) => sum + (stage.disbursementAmount || 0),
-                    0
-                );
-
-                if (targetAmount > 0 && totalDisbursement !== targetAmount) {
-                    form.setError('disbursementStages', {
-                        type: 'custom',
-                        message: `Tổng số tiền giải ngân (${totalDisbursement.toLocaleString()} VNĐ) phải bằng số tiền mục tiêu (${targetAmount.toLocaleString()} VNĐ)`
-                    });
+                if (campaignType === 1) {
+                    // Chiến dịch khẩn cấp
+                    form.setValue('disbursementStages', [{
+                        disbursementAmount: 0,
+                        scheduledDate: currentDate,
+                        activity: ''
+                    }]);
                 } else {
-                    form.clearErrors('disbursementStages');
+                    // Chiến dịch nuôi em
+                    const nextMonth = new Date(currentDate);
+                    nextMonth.setMonth(currentDate.getMonth() + 1);
+
+                    form.setValue('disbursementStages', [
+                        {
+                            disbursementAmount: 0,
+                            scheduledDate: currentDate,
+                            activity: ''
+                        },
+                        {
+                            disbursementAmount: 0,
+                            scheduledDate: nextMonth,
+                            activity: ''
+                        }
+                    ]);
                 }
             }
         });
 
         return () => subscription.unsubscribe();
     }, [form]);
-    useEffect(() => {
-        const stages = form.getValues('disbursementStages');
-        if (campaignType === 0 && stages.length < 2) {
-            const currentLength = stages.length;
-            for (let i = currentLength; i < 2; i++) {
-                const lastStage = stages[stages.length - 1];
-                const newDate = lastStage
-                    ? new Date(new Date(lastStage.scheduledDate).setMonth(new Date(lastStage.scheduledDate).getMonth() + 1))
-                    : new Date(new Date().setMonth(new Date().getMonth() + i));
 
-                append({
+    // Xóa useEffect cũ về campaignType và thay bằng useEffect mới
+    useEffect(() => {
+        const campaignType = form.getValues('campaignType');
+        const stages = form.getValues('disbursementStages') || [];
+
+        // Chỉ tự động thêm giai đoạn nếu không có giai đoạn nào
+        if (stages.length === 0) {
+            const currentDate = new Date();
+            if (campaignType === 0) {
+                const nextMonth = new Date(currentDate);
+                nextMonth.setMonth(currentDate.getMonth() + 1);
+
+                form.setValue('disbursementStages', [
+                    {
+                        disbursementAmount: 0,
+                        scheduledDate: currentDate,
+                        activity: ''
+                    },
+                    {
+                        disbursementAmount: 0,
+                        scheduledDate: nextMonth,
+                        activity: ''
+                    }
+                ]);
+            } else {
+                form.setValue('disbursementStages', [{
                     disbursementAmount: 0,
-                    scheduledDate: newDate,
+                    scheduledDate: currentDate,
                     activity: ''
-                });
-            }
-        } else if (campaignType === 1 && stages.length > 1) {
-            while (stages.length > 1) {
-                remove(stages.length - 1);
+                }]);
             }
         }
-    }, [campaignType, form, append, remove]);
+    }, [form]);
+
+
+
     const uploadToCloudinary = async (file, folder) => {
         const formData = new FormData();
         formData.append('file', file);
@@ -394,7 +413,7 @@ const CampaignInfo = ({ childID }) => {
 
             // Prepare the final data object
             const finalData = {
-                // guaranteeID: user.userID,
+                guaranteeID: user.userID,
                 childID: childID,
                 title: data.title,
                 story: data.story,

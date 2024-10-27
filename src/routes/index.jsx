@@ -20,6 +20,7 @@ import CampaignOverview from '@/components/landingpage/CampaignOverview';
 import ContractPage from '@/components/guarantee/contract/ContractPage';
 import ContractDetail from '@/components/guarantee/contract/ContractDetail';
 import ContractGuarantee from '@/components/guarantee/contract/ContractGuarantee';
+import CampaignGuaranteeDetail from '@/components/guarantee/campaign/CampaignGuaranteeDetail';
 
 const Loadable = (Component) => {
     const LoadableComponent = (props) => {
@@ -56,10 +57,11 @@ export default function Router() {
             children: [
                 { element: <GuaranteeHome />, index: true },
                 { element: <GuaranteeCampaigns />, path: 'campaigns' },
+                { element: <CampaignGuaranteeDetail />, path: 'campaign/:id' },
                 { element: <DonationHistory />, path: 'donation-history' },
                 { element: <CampaignCreate />, path: 'create-campaign' },
                 { element: <ContractPage />, path: 'contracts' },
-                { element: <ContractCampaign />, path: 'create-contract-campaign' },
+                { element: <ContractCampaign />, path: 'contract/contract-campaign/:contractID/:campaignID' },
                 { element: <ContractDetail />, path: 'contract/:id' },
                 { element: <Page404 />, path: '404' },
                 { path: '*', element: <Navigate to="404" replace /> },

@@ -70,7 +70,7 @@ const ChildProfile = ({ nextStep, onSuccess }) => {
         resolver: zodResolver(schema),
         defaultValues: {
             name: "",
-            age: 0,
+            age: 1,
             gender: 0,
             location: "",
             identificationInformationFile: null,
@@ -209,7 +209,7 @@ const ChildProfile = ({ nextStep, onSuccess }) => {
                                     <FormControl>
                                         <Input
                                             type="number"
-                                            min="0"
+                                            min="1"
                                             max="16"
                                             {...field}
                                             onChange={(e) => {
