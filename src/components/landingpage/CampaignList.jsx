@@ -3,7 +3,13 @@ import { Link } from 'react-router-dom';
 import { useGetAllCampaignsQuery } from '@/redux/campaign/campaignApi';
 
 const CampaignList = ({ excludeCampaignId }) => {
-    const { data: campaigns = [], isLoading, error } = useGetAllCampaignsQuery();
+    const {
+        data: campaigns = [],
+        isLoading,
+        error,
+    } = useGetAllCampaignsQuery({
+        hasGuarantee: true,
+    });
     const filteredCampaigns = campaigns.filter((campaign) => campaign.campaignID !== excludeCampaignId);
 
     if (isLoading) {
