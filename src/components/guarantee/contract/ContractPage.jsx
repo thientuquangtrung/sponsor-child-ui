@@ -9,7 +9,7 @@ import {
     getSortedRowModel,
     useReactTable,
 } from '@tanstack/react-table';
-import { MoreHorizontal, Eye, BadgePlus } from 'lucide-react';
+import { MoreHorizontal, Eye, Pencil } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
     DropdownMenu,
@@ -33,6 +33,8 @@ export function ContractPage() {
     const [sorting, setSorting] = React.useState([
         { id: 'startDate', desc: true }
     ]);
+    console.log(user.userID);
+
 
     const columns = [
         // {
@@ -94,7 +96,7 @@ export function ContractPage() {
                             return 'text-red-600';
                         case 0: // Đang chờ
                         case 1: // Đang chờ quản trị viên
-                            return 'text-yellow-600';
+                            return 'text-blue-600';
                         default:
                             return 'text-gray-600';
                     }
@@ -123,10 +125,17 @@ export function ContractPage() {
                             <Eye className="mr-2 h-4 w-4" />
                             Xem chi tiết
                         </DropdownMenuItem>
+                        {row.original.status === 0 && (
+                            <DropdownMenuItem onClick={() => navigate(`/guarantee/contract/contract-campaign/${row.original.contractID}/${row.original.campaignID}`)}>
+                                <Pencil className="mr-2 h-4 w-4" />
+                                Ký hợp đồng
+                            </DropdownMenuItem>
+                        )}
                     </DropdownMenuContent>
                 </DropdownMenu>
             ),
-        },
+        }
+
     ];
     const sortedData = React.useMemo(() => {
         if (!contracts) return [];
@@ -162,15 +171,6 @@ export function ContractPage() {
             <div className="w-full space-y-4 mx-3">
                 <h1 className="text-2xl font-bold ml-6 mt-6">Danh sách hợp đồng</h1>
 
-                <div className="flex justify-end items-center mb-6">
-                    <Button
-                        className="bg-teal-600 hover:bg-teal-700 text-white"
-                        onClick={() => navigate('/guarantee/create-contract-campaign')}
-                    >
-                        <BadgePlus className="w-4 h-4 mr-2" />
-                        Tạo hợp đồng tham gia chiến dịch
-                    </Button>
-                </div>
 
                 <ToolbarForContractGuarantee table={table} />
 

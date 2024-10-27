@@ -154,7 +154,7 @@ const ContractDetail = () => {
                 <div className={`flex ${contract.status === 1 ? 'gap-6' : ''}`}>
                     <Card className={contract.status === 1 ? "w-2/3" : "w-2/3"}>
                         <CardHeader className="bg-teal-600 text-white">
-                            <CardTitle className="text-2xl">Ảnh hợp đồng</CardTitle>
+                            <CardTitle className="text-2xl"> File ảnh hợp đồng</CardTitle>
                         </CardHeader>
                         <CardContent>
                             <ScrollArea className="h-[800px] w-full rounded-md border p-4 bg-white">

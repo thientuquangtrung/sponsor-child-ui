@@ -6,34 +6,25 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Save, Send, Trash } from 'lucide-react';
 import "react-datepicker/dist/react-datepicker.css";
-import { useCreateContractMutation, useUpdateContractMutation } from '@/redux/contract/contractApi';
+import { useGetContractByIdQuery, useUpdateContractMutation } from '@/redux/contract/contractApi';
 import { useSelector } from 'react-redux';
-import { format, parseISO } from 'date-fns';
 import { formatInTimeZone } from 'date-fns-tz'
 import { Toaster, toast } from 'sonner';
 import { useGetCampaignByIdQuery } from '@/redux/campaign/campaignApi';
 import ContractCampaignContent from '@/components/guarantee/contract/ContractCampaignContent';
 
-const formatDate = (dateString) => {
-    if (!dateString) return null;
-    const date = typeof dateString === 'string' ? parseISO(dateString) : dateString;
-    return format(date, 'dd/MM/yyyy');
-};
-
 const signDate = formatInTimeZone(new Date(), 'Asia/Ho_Chi_Minh', "yyyy-MM-dd'T'HH:mm:ss.SSSxxx");
 
-const ContractCampaignSign = ({ onSign, onContractSent, campaignId }) => {
+const ContractCampaignSign = ({ onSign, onContractSent, campaignId, contractId }) => {
     const { user } = useSelector((state) => state.auth);
     const [signature, setSignature] = useState(null);
     const [isSigned, setIsSigned] = useState(false);
     const sigCanvas = useRef({});
     const contractRef = useRef(null);
     const [uploadLoading, setUploadLoading] = useState(false);
-    const [createContract, { isLoading: isCreatingContract }] = useCreateContractMutation();
     const [updateContract, { isLoading: isUpdatingContract }] = useUpdateContractMutation();
     const { data: campaignDetails, isLoading: isLoadingCampaign } = useGetCampaignByIdQuery(campaignId);
-
-
+    const { data: contractDetails, isLoading: isLoadingContract } = useGetContractByIdQuery(contractId);
 
     const handleClear = () => {
         sigCanvas.current.clear();
@@ -66,6 +57,7 @@ const ContractCampaignSign = ({ onSign, onContractSent, campaignId }) => {
 
         return await response.json();
     };
+
     const generatePDF = async () => {
         const element = contractRef.current;
         const canvas = await html2canvas(element, {
@@ -101,6 +93,8 @@ const ContractCampaignSign = ({ onSign, onContractSent, campaignId }) => {
     };
 
     const handleUpload = async () => {
+        if (!contractDetails) return;
+
         setUploadLoading(true);
         toast.promise(
             async () => {
@@ -124,28 +118,20 @@ const ContractCampaignSign = ({ onSign, onContractSent, campaignId }) => {
                     );
                     const pdfUrl = pdfData.secure_url;
 
-                    // Create Contract
-                    const result = await createContract({
-                        partyBID: partyBID,
-                        contractType: 1,
-                        campaignId: campaignId,
+                    await updateContract({
+                        contractId: contractDetails.contractID,
+                        contractType: contractDetails.contractType,
+                        partyAType: contractDetails.partyAType,
+                        // partyAID: contractDetails.partyAID,
+                        partyBType: contractDetails.partyBType,
+                        partyBID: contractDetails.partyBID,
+                        signDate: signDate,
+                        status: 1, // pending Admin sign
+                        softContractUrl: pdfUrl,
+                        hardContractUrl: "",
+                        partyBSignatureUrl: signatureUrl,
+                        campaignID: contractDetails.campaignID
                     }).unwrap();
-
-                    if (result && result.contractID) {
-                        await updateContract({
-                            contractId: result.contractID,
-                            contractType: 1, // Campaign Contract
-                            partyAType: 0, // Admin
-                            partyAID: "f7b2a26b-75f2-4c43-88b1-df094c8bfb2e", //admin 1
-                            partyBType: 1, // Guarantee
-                            partyBID: user.userID,
-                            signDate: signDate,
-                            status: 1, // pending Admin sign
-                            softContractUrl: pdfUrl,
-                            hardContractUrl: "",
-                            partyBSignatureUrl: signatureUrl
-                        }).unwrap();
-                    }
 
                     onSign(pdfUrl);
                     onContractSent();
@@ -187,11 +173,8 @@ const ContractCampaignSign = ({ onSign, onContractSent, campaignId }) => {
             </div>
             <div className="w-full lg:w-1/3 p-4 bg-white shadow-md py-8 font-sans">
                 <h2 className="font-semibold mb-2">Ký tên</h2>
-                <div style={{ border: "1px solid black", width: "100%" }}>
-                    <SignatureCanvas
-                        ref={sigCanvas}
-                        canvasProps={{ className: "w-full h-[150px]" }}
-                    />
+                <div className="border-2 border-gray-300 rounded-lg mb-4 w-fit">
+                    <SignatureCanvas ref={sigCanvas} canvasProps={{ width: 350, height: 150 }} />
                 </div>
 
                 <div className="flex flex-wrap gap-2 mb-4">
@@ -201,21 +184,21 @@ const ContractCampaignSign = ({ onSign, onContractSent, campaignId }) => {
                             type="button"
                             onClick={handleClear}
                         >
-                            <Trash className="h-4 w-4 mr-2" /> Xóa
+                            <Trash className="h-4 w-4 mr-2" /> Ký lại
                         </Button>
                         <Button
                             className="flex-1 border-2 bg-blue-500 hover:bg-blue-700 text-white rounded-lg"
                             onClick={handleSave}
                         >
-                            <Save className="h-4 w-4 mr-2" /> Lưu
+                            <Save className="h-4 w-4 mr-2" /> Xác nhận
                         </Button>
                         <Button
                             className="flex-1 border-2 bg-[#f5b642] hover:bg-yellow-600 text-white"
                             onClick={handleUpload}
-                            disabled={!isSigned || uploadLoading || isCreatingContract || isUpdatingContract}
+                            disabled={!isSigned || uploadLoading || isUpdatingContract}
                         >
                             <Send className="h-4 w-4 mr-2" />
-                            {uploadLoading || isCreatingContract || isUpdatingContract ? 'Đang gửi...' : 'Gửi hợp đồng'}
+                            {uploadLoading || isUpdatingContract ? 'Đang gửi...' : 'Gửi hợp đồng'}
                         </Button>
                     </div>
                 </div>
