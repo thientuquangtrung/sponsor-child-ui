@@ -20,6 +20,7 @@ import { Form, FormItem, FormLabel, FormControl, FormMessage } from '@/component
 import { useCreateIndividualGuaranteeMutation } from '@/redux/guarantee/guaranteeApi';
 import { useGetBankNamesQuery } from '@/redux/guarantee/getEnumApi';
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from '@/components/ui/select';
+import { parse, format } from 'date-fns';
 
 const PersonalRegistrationForm = ({ onSubmit }) => {
     const { user } = useSelector((state) => state.auth);
@@ -37,6 +38,18 @@ const PersonalRegistrationForm = ({ onSubmit }) => {
         issue_date: '',
         issue_location: '',
     });
+
+    const convertToISOString = (dateString) => {
+        if (!dateString) return null;
+
+        try {
+            const parsedDate = parse(dateString, 'dd/MM/yyyy', new Date());
+            return format(parsedDate, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        } catch (error) {
+            console.error('Error converting date:', error);
+            return null;
+        }
+    };
     const [isScanned, setIsScanned] = useState(false);
     const [uploadedFiles, setUploadedFiles] = useState([]);
     const [showConfirmation, setShowConfirmation] = useState(false);
@@ -62,6 +75,7 @@ const PersonalRegistrationForm = ({ onSubmit }) => {
 
     const [createIndividualGuarantee, { isLoading, isSuccess, isError }] = useCreateIndividualGuaranteeMutation();
     const { data: bankNames, isLoading: isLoadingBanks } = useGetBankNamesQuery();
+
 
     const uploadToCloudinary = async (file, folder) => {
         const formData = new FormData();
@@ -230,6 +244,8 @@ const PersonalRegistrationForm = ({ onSubmit }) => {
                 backCIImageUrl: backCIUrl,
                 volunteerExperienceFiles: uploadedUrls.join(','),
                 citizenIdentification: cccdData.id,
+                issue_date: cccdData.issue_date,
+                issue_location: cccdData.issue_location,
             };
 
             const payload = {
@@ -242,6 +258,8 @@ const PersonalRegistrationForm = ({ onSubmit }) => {
                 householdRegistrationAddress: updatedData.householdRegistrationAddress,
                 permanentAddress: updatedData.permanentAddress,
                 socialMediaLinks: updatedData.socialMediaLinks,
+                issueDate: convertToISOString(updatedData.issue_date),
+                issueLocation: updatedData.issue_location,
                 volunteerExperienceFiles: updatedData.volunteerExperienceFiles,
             };
 

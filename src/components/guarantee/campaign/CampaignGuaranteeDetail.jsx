@@ -69,7 +69,6 @@ const CampaignGuaranteeDetail = () => {
 
     const progress = (campaignData.raisedAmount / campaignData.targetAmount) * 100;
 
-    console.log(campaignData);
 
     const handleContractSign = () => {
         if (campaignData.contracts && campaignData.contracts.length > 0) {
@@ -258,99 +257,59 @@ const CampaignGuaranteeDetail = () => {
                                 </CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-4 pt-6">
-                                {campaignData.contracts.map((contract, index) => (
-                                    <div key={index} className="p-4 bg-gray-50 rounded-xl space-y-4">
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                                {campaignData.contracts && campaignData.contracts.length > 0 ? (
+                                    campaignData.contracts.map((contract, index) => (
+                                        <div key={index} className="p-4 bg-gray-50 rounded-xl space-y-4">
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
 
-                                            <div>
-                                                <span className="font-medium text-gray-700">Loại hợp đồng:</span>{' '}
-                                                <Badge variant="outline">
-                                                    {getContractTypeLabel(contract.contractType)}
-                                                </Badge>
-                                            </div>
-                                            <div>
-                                                <span className="font-medium text-gray-700">Ngày bắt đầu:</span>{' '}
-                                                <span className="text-gray-600">
-                                                    {new Date(contract.startDate).toLocaleDateString('vi-VN')}
-                                                </span>
-                                            </div>
-                                            <div>
-                                                <span className="font-medium text-gray-700">Ngày kết thúc:</span>{' '}
-                                                <span className="text-gray-600">
-                                                    {new Date(contract.endDate).toLocaleDateString('vi-VN')}
-                                                </span>
-                                            </div>
-                                            <div>
-                                                <span className="font-medium text-gray-700">Trạng thái:</span>{' '}
-                                                <Badge
-                                                    variant={
-                                                        contract.status === 2 ? 'success' :
-                                                            contract.status === 0 || contract.status === 1 ? 'secondary' :
-                                                                'destructive'
-                                                    }
-                                                >
-                                                    {getContractStatusLabel(contract.status)}
-                                                </Badge>
-                                            </div>
-                                        </div>
-
-                                        {contract.contractParties && contract.contractParties.length > 0 && (
-                                            <div className="mt-4">
-                                                <h4 className="font-medium text-gray-800 mb-3">Bên tham gia hợp đồng:</h4>
-                                                <div className="space-y-3">
-                                                    {contract.contractParties.map((party, partyIndex) => (
-                                                        <div key={partyIndex} className="bg-white p-3 rounded-lg shadow-sm">
-                                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                                                <div>
-                                                                    <span className="font-medium text-gray-700">Tên:</span>{' '}
-                                                                    <span className="text-gray-600">{party.name}</span>
-                                                                </div>
-                                                                <div>
-                                                                    <span className="font-medium text-gray-700">Email:</span>{' '}
-                                                                    <span className="text-gray-600">{party.email}</span>
-                                                                </div>
-                                                                <div>
-                                                                    <span className="font-medium text-gray-700">Số điện thoại:</span>{' '}
-                                                                    <span className="text-gray-600">{party.phone}</span>
-                                                                </div>
-                                                                <div>
-                                                                    <span className="font-medium text-gray-700">Trạng thái ký:</span>{' '}
-                                                                    <Badge
-                                                                        variant={party.signStatus ? 'success' : 'secondary'}
-                                                                    >
-                                                                        {party.signStatus ? 'Đã ký' : 'Chưa ký'}
-                                                                    </Badge>
-                                                                </div>
-                                                                {party.signedDate && (
-                                                                    <div>
-                                                                        <span className="font-medium text-gray-700">Ngày ký:</span>{' '}
-                                                                        <span className="text-gray-600">
-                                                                            {new Date(party.signedDate).toLocaleDateString('vi-VN')}
-                                                                        </span>
-                                                                    </div>
-                                                                )}
-                                                            </div>
-
-                                                        </div>
-                                                    ))}
+                                                <div>
+                                                    <span className="font-medium text-gray-700">Loại hợp đồng:</span>{' '}
+                                                    <Badge variant="outline">
+                                                        {getContractTypeLabel(contract.contractType)}
+                                                    </Badge>
+                                                </div>
+                                                <div>
+                                                    <span className="font-medium text-gray-700">Ngày bắt đầu:</span>{' '}
+                                                    <span className="text-gray-600">
+                                                        {new Date(contract.startDate).toLocaleDateString('vi-VN')}
+                                                    </span>
+                                                </div>
+                                                <div>
+                                                    <span className="font-medium text-gray-700">Ngày kết thúc:</span>{' '}
+                                                    <span className="text-gray-600">
+                                                        {new Date(contract.endDate).toLocaleDateString('vi-VN')}
+                                                    </span>
+                                                </div>
+                                                <div>
+                                                    <span className="font-medium text-gray-700">Trạng thái:</span>{' '}
+                                                    <Badge
+                                                        variant={
+                                                            contract.status === 2 ? 'success' :
+                                                                contract.status === 0 || contract.status === 1 ? 'secondary' :
+                                                                    'outline'
+                                                        }
+                                                    >
+                                                        {getContractStatusLabel(contract.status)}
+                                                    </Badge>
                                                 </div>
                                             </div>
-                                        )}
 
 
 
-                                    </div>
-                                ))}
+
+                                        </div>
+                                    ))) : (
+                                    <div className="text-gray-600 text-center">Chưa có hợp đồng</div>
+                                )}
                             </CardContent>
-
                         </Card>
-                        {campaignData.status === 1 && (
+                        {campaignData.contracts && campaignData.contracts.length > 0 && campaignData.contracts[0].status === 0 && (
                             <div className="flex justify-center">
                                 <Button
                                     onClick={handleContractSign}
                                     className="bg-primary hover:bg-primary/90 text-white py-6 font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
                                 >
-                                    Xem và ký hợp đồng tham gia chiến dịch
+                                    Xem và ký hợp đồng tham gia chiến dịch
                                 </Button>
                             </div>
                         )}

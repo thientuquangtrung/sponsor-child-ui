@@ -33,7 +33,6 @@ export function ContractPage() {
     const [sorting, setSorting] = React.useState([
         { id: 'startDate', desc: true }
     ]);
-    console.log(user.userID);
 
 
     const columns = [

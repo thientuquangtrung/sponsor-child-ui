@@ -21,6 +21,8 @@ import ContractPage from '@/components/guarantee/contract/ContractPage';
 import ContractDetail from '@/components/guarantee/contract/ContractDetail';
 import ContractGuarantee from '@/components/guarantee/contract/ContractGuarantee';
 import CampaignGuaranteeDetail from '@/components/guarantee/campaign/CampaignGuaranteeDetail';
+import VisitEvents from '@/components/landingpage/VisitEvents';
+import EventDetail from '@/components/landingpage/EventDetail';
 
 const Loadable = (Component) => {
     const LoadableComponent = (props) => {
@@ -132,6 +134,15 @@ export default function Router() {
                     path: 'contract',
                     element: <ContractGuarantee />,
                 },
+                {
+                    path: 'events',
+                    element: <VisitEvents />,
+                },
+                {
+                    path: 'event/:id',
+                    element: <EventDetail />,
+                },
+
 
                 {
                     path: 'empty',

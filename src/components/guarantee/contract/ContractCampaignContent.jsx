@@ -18,7 +18,7 @@ const formatDate = (dateString) => {
 
 
 
-const ContractContent = ({ signature, campaignDetails }) => {
+const ContractCampaignContent = ({ signature, campaignDetails }) => {
     const disbursementPlan = campaignDetails?.disbursementPlans?.[0] || {};
     const stages = disbursementPlan?.stages || [];
     const today = new Date();
@@ -37,7 +37,6 @@ const ContractContent = ({ signature, campaignDetails }) => {
         return <div>Error loading profile</div>;
     }
 
-    console.log(guaranteeProfile);
 
     const formattedToday = format(today, "dd' tháng 'MM' năm 'yyyy");
     const renderPartyB = () => {
@@ -234,4 +233,4 @@ const ContractContent = ({ signature, campaignDetails }) => {
     );
 };
 
-export default ContractContent;
+export default ContractCampaignContent;
