@@ -21,8 +21,13 @@ import ContractPage from '@/components/guarantee/contract/ContractPage';
 import ContractDetail from '@/components/guarantee/contract/ContractDetail';
 import ContractGuarantee from '@/components/guarantee/contract/ContractGuarantee';
 import CampaignGuaranteeDetail from '@/components/guarantee/campaign/CampaignGuaranteeDetail';
+
 import VisitEvents from '@/components/landingpage/VisitEvents';
 import EventDetail from '@/components/landingpage/EventDetail';
+
+import DisbursementRequest from '@/components/guarantee/campaign/DisbursementRequest';
+import CreateDisbursementRequest from '@/components/guarantee/campaign/CreateDisbursementRequest';
+
 
 const Loadable = (Component) => {
     const LoadableComponent = (props) => {
@@ -65,6 +70,8 @@ export default function Router() {
                 { element: <ContractPage />, path: 'contracts' },
                 { element: <ContractCampaign />, path: 'contract/contract-campaign/:contractID/:campaignID' },
                 { element: <ContractDetail />, path: 'contract/:id' },
+                { element: <DisbursementRequest />, path: 'disbursement-requests' },
+                { element: <CreateDisbursementRequest />, path: 'create-disbursement-request' },
                 { element: <Page404 />, path: '404' },
                 { path: '*', element: <Navigate to="404" replace /> },
             ],
