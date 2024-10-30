@@ -26,6 +26,39 @@ const ContractCampaignSign = ({ onSign, onContractSent, campaignId, contractId }
     const { data: campaignDetails, isLoading: isLoadingCampaign } = useGetCampaignByIdQuery(campaignId);
     const { data: contractDetails, isLoading: isLoadingContract } = useGetContractByIdQuery(contractId);
 
+    console.log(contractDetails);
+    if (contractDetails && contractDetails.status !== 0) {
+        return (
+            <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
+                <div className="bg-white rounded-lg shadow-xl p-8 max-w-md w-full text-center">
+                    <div className="mb-4">
+                        <svg
+                            className="mx-auto h-16 w-16 text-green-500"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                            />
+                        </svg>
+                    </div>
+                    <h2 className="text-2xl font-bold text-gray-800 mb-4">
+                        Hợp đồng đã được ký!
+                    </h2>
+                    <p className="text-gray-600 mb-6">
+                        Bạn đã ký và gửi hợp đồng này rồi. Vui lòng chờ phản hồi từ phía Admin.
+                    </p>
+
+                </div>
+            </div>
+        );
+    }
+
+
     const handleClear = () => {
         sigCanvas.current.clear();
         setSignature(null);
