@@ -174,19 +174,19 @@ const CampaignDetail = () => {
                         <TabsContent value="story" className="p-4">
                             <h3 className="text-xl font-bold text-gray-800">Thông tin của trẻ</h3>
                             <p className="text-lg text-gray-700 mt-2">
-                                <strong>Tên:</strong> {campaign?.childProfile.name}
+                                <strong>Tên:</strong> {campaign?.childName}
                             </p>
                             <div className="flex space-x-24">
                                 <p className="text-lg text-gray-700 mt-2">
-                                    <strong>Tuổi:</strong> {campaign?.childProfile.age}
+                                    <strong>Tuổi:</strong> {new Date().getFullYear() - campaign?.childBirthYear}
                                 </p>
                                 <p className="text-lg text-gray-700 mt-2">
-                                    <strong>Giới tính:</strong> {campaign?.childProfile.gender === 1 ? 'Nam' : 'Nữ'}
+                                    <strong>Giới tính:</strong> {campaign?.childGender === 1 ? 'Nam' : 'Nữ'}
                                 </p>
                             </div>
                             <p className="text-lg text-gray-700 mt-2">
                                 <strong>Địa chỉ:</strong>{' '}
-                                {`${campaign?.childProfile.location}, ${campaign?.childProfile.ward}, ${campaign?.childProfile.district}, ${campaign?.childProfile.province}`}
+                                {`${campaign?.childLocation}, ${campaign?.childWard}, ${campaign?.childDistrict}, ${campaign?.childProvince}`}
                             </p>
                             <p className="text-lg text-gray-700 mt-2">{campaign?.story}</p>
                         </TabsContent>
@@ -270,7 +270,7 @@ const CampaignDetail = () => {
 
                         <div className="flex items-center mt-6">
                             <MapPin className="text-gray-500 mr-2" />
-                            <span className="text-sm text-gray-600">{`${campaign?.childProfile.location}, ${campaign?.childProfile.ward}, ${campaign?.childProfile.district}, ${campaign?.childProfile.province}`}</span>
+                            <span className="text-sm text-gray-600">{`${campaign?.childLocation}, ${campaign?.childWard}, ${campaign?.childDistrict}, ${campaign?.childProvince}`}</span>
                         </div>
 
                         <div className="mt-4">
@@ -314,7 +314,11 @@ const CampaignDetail = () => {
                         <div className="mt-4 space-y-3 h-[300px] overflow-y-auto">
                             {partners.map((partner, index) => (
                                 <div key={index} className="flex items-center space-x-3">
-                                    <img src={partner.avatar} alt={partner.name} className="w-10 h-10 rounded-full" />
+                                    <img
+                                        src={partner.avatar || 'https://via.placeholder.com/40/40'}
+                                        alt={partner.name}
+                                        className="w-10 h-10 rounded-full"
+                                    />
                                     <div className="flex-1">
                                         <h4 className="font-semibold text-gray-800">{partner.name}</h4>
                                         <p className="text-sm text-gray-500 italic">Đã kêu gọi {partner.raised}</p>
@@ -339,7 +343,7 @@ const CampaignDetail = () => {
                             />
                             <div>
                                 <div className="flex items-center">
-                                    <h1 className="w-[80%] text-lg font-bold text-[#69A6B8] truncate max-w-xs mr-2">
+                                    <h1 className="w-full text-lg font-bold text-[#69A6B8] truncate max-w-xs mr-2">
                                         {campaign?.guaranteeName || 'Quỹ thiện nguyên'}
                                     </h1>
                                     <div className="bg-[#69A6B8] p-1 rounded-full">
