@@ -6,7 +6,7 @@ import { jsPDF } from 'jspdf';
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useSelector } from 'react-redux';
 import { format, parseISO } from 'date-fns';
-import ContractContent from '@/components/guarantee/contract/ContractCampaignContent';
+import ContractCampaignContent from '@/components/guarantee/contract/ContractCampaignContent';
 import { useGetCampaignByIdQuery } from '@/redux/campaign/campaignApi';
 
 
@@ -86,7 +86,7 @@ const SendHardContractCampaign = ({ campaignId }) => {
             <div className="w-full lg:w-2/3 p-4">
                 <ScrollArea className="h-[calc(100vh-2rem)] lg:h-[calc(100vh-2rem)]">
                     <div ref={contractRef}>
-                        <ContractContent
+                        <ContractCampaignContent
                             partyB={partyB}
                             campaignDetails={campaignDetails}
                         />

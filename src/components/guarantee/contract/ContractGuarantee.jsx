@@ -5,6 +5,9 @@ import { Button } from "@/components/ui/button";
 import { ArrowBigRight, ArrowLeft, ArrowRight } from 'lucide-react';
 import ContractSigningGuide from '@/components/guarantee/contract/ContractSigningGuide';
 import ContractViewAndSign from '@/components/guarantee/contract/ContractViewAndSign';
+import { useGetGuaranteeProfileQuery } from '@/redux/guarantee/guaranteeApi';
+import { useSelector } from 'react-redux';
+import LoadingScreen from '@/components/common/LoadingScreen';
 
 const steps = ['Hướng dẫn', 'Xem và Ký hợp đồng', 'Gửi bản cứng hợp đồng', 'Xác nhận'];
 
@@ -12,6 +15,17 @@ const ContractGuarantee = () => {
     const [currentStep, setCurrentStep] = useState(0);
     const [signedContract, setSignedContract] = useState(null);
     const [contractSent, setContractSent] = useState(false);
+    const { user } = useSelector((state) => state.auth);
+    const { data: guaranteeProfile, isLoading, error } = useGetGuaranteeProfileQuery(user?.userID, {
+        skip: !user?.userID
+    });
+
+    if (isLoading) return <LoadingScreen />;
+
+    if (error) {
+        console.error('Error fetching guarantee profile:', error);
+        return <div>Error loading profile</div>;
+    }
 
     const nextStep = () => {
         if (currentStep === 1 && (!signedContract || !contractSent)) {
@@ -36,9 +50,16 @@ const ContractGuarantee = () => {
             case 0:
                 return <ContractSigningGuide />;
             case 1:
-                return <ContractViewAndSign onSign={handleContractSign} onContractSent={handleContractSent} />;
+                return <ContractViewAndSign
+                    onSign={handleContractSign}
+                    onContractSent={handleContractSent}
+                    guaranteeProfile={guaranteeProfile}
+                />;
             case 2:
-                return <SendHardContract signedContract={signedContract} />;
+                return <SendHardContract
+                    signedContract={signedContract}
+                    guaranteeProfile={guaranteeProfile}
+                />;
             case 3:
                 return <ContractSentConfirmation />;
             default:

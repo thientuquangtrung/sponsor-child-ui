@@ -20,9 +20,9 @@ import {
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
 import { contractStatus, contractPartyType, contractType } from '@/config/combobox';
-
 import { useGetContractByIdQuery, useUpdateContractMutation } from '@/redux/contract/contractApi';
 import LoadingScreen from '@/components/common/LoadingScreen';
+
 pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js`;
 
 const ContractDetail = () => {
@@ -59,7 +59,7 @@ const ContractDetail = () => {
                 signDate: contract.signDate,
                 softContractUrl: contract.softContractUrl,
                 hardContractUrl: contract.hardContractUrl,
-                status: 3, // reject for Guarantee
+                status: 3,
                 partyBSignatureUrl: contract.signatureUrl
             });
 
@@ -82,7 +82,7 @@ const ContractDetail = () => {
         setNumPages(numPages);
     };
 
-    if (isLoading) return <div><LoadingScreen /></div>;
+    if (isLoading) return <LoadingScreen />;
     if (error) return <div className="flex justify-center items-center h-screen">Lỗi: {error.message}</div>;
     if (!contract) return <div className="flex justify-center items-center h-screen">Không tìm thấy hợp đồng</div>;
 
@@ -109,12 +109,17 @@ const ContractDetail = () => {
                                 </TableRow>
                                 <TableRow>
                                     <TableHead className="font-semibold">Ngày ký</TableHead>
-                                    <TableCell>{new Date(contract.signDate).toLocaleDateString('vi-VN')}</TableCell>
+                                    <TableCell>
+                                        {contract.signDate
+                                            ? new Date(contract.signDate).toLocaleDateString('vi-VN')
+                                            : "Chưa ký"
+                                        }
+                                    </TableCell>
                                     <TableHead className="font-semibold">Trạng thái</TableHead>
                                     <TableCell>
                                         <span className={`px-2 py-1 rounded-full text-xs font-semibold ${contract.status === 2 ? 'bg-green-200 text-green-800' :
                                             contract.status === 0 || contract.status === 1 ? 'bg-yellow-200 text-yellow-800' :
-                                                'bg-red-200 text-red-800'
+                                                'bg-gray-200 text-gray-800'
                                             }`}>
                                             {getContractStatusString(contract.status)}
                                         </span>
@@ -125,36 +130,44 @@ const ContractDetail = () => {
                                     <TableCell>{new Date(contract.startDate).toLocaleDateString('vi-VN')}</TableCell>
                                     <TableHead className="font-semibold">Ngày kết thúc</TableHead>
                                     <TableCell>{new Date(contract.endDate).toLocaleDateString('vi-VN')}</TableCell>
-                                    {(contract.status === 0 || contract.status === 1) && (
-                                        <TableCell>
-                                            <div className="flex justify-center">
-                                                <Button
-                                                    onClick={() => setShowConfirmDialog(true)}
-                                                    className="bg-red-400 hover:bg-red-500 text-white py-2 px-4 rounded-lg"
-                                                    disabled={isRejecting}
-                                                >
-                                                    {isRejecting ? (
-                                                        <>
-                                                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                                                            Đang xử lý...
-                                                        </>
-                                                    ) : (
-                                                        'Từ chối hợp đồng'
-                                                    )}
-                                                </Button>
-                                            </div>
-                                        </TableCell>
-                                    )}
                                 </TableRow>
                             </TableBody>
                         </Table>
                     </CardContent>
                 </Card>
 
-                <div className={`flex ${contract.status === 1 ? 'gap-6' : ''}`}>
-                    <Card className={contract.status === 1 ? "w-2/3" : "w-2/3"}>
+                {contract.status === 0 ? (
+                    <>
+
+                        <div className="flex justify-end gap-4 mt-4">
+                            <Button
+                                onClick={() => navigate(`/guarantee/contract/contract-campaign/${contract.contractID}/${contract.campaignID}`)}
+                                className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg"
+                            >
+                                Xem và ký hợp đồng
+                            </Button>
+                            <Button
+                                onClick={() => setShowConfirmDialog(true)}
+                                className="bg-red-400 hover:bg-red-500 text-white py-2 px-4 rounded-lg"
+                                disabled={isRejecting}
+                            >
+                                {isRejecting ? (
+                                    <>
+                                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                        Đang xử lý...
+                                    </>
+                                ) : (
+                                    'Từ chối hợp đồng'
+                                )}
+                            </Button>
+                        </div>
+
+
+                    </>
+                ) : (
+                    <Card className="w-2/3">
                         <CardHeader className="bg-teal-600 text-white">
-                            <CardTitle className="text-2xl"> File ảnh hợp đồng</CardTitle>
+                            <CardTitle className="text-2xl">File ảnh hợp đồng</CardTitle>
                         </CardHeader>
                         <CardContent>
                             <ScrollArea className="h-[800px] w-full rounded-md border p-4 bg-white">
@@ -177,9 +190,7 @@ const ContractDetail = () => {
                             </ScrollArea>
                         </CardContent>
                     </Card>
-
-
-                </div>
+                )}
             </div>
 
             <AlertDialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
