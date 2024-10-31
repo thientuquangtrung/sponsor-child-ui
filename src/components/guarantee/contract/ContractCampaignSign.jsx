@@ -26,7 +26,6 @@ const ContractCampaignSign = ({ onSign, onContractSent, campaignId, contractId }
     const { data: campaignDetails, isLoading: isLoadingCampaign } = useGetCampaignByIdQuery(campaignId);
     const { data: contractDetails, isLoading: isLoadingContract } = useGetContractByIdQuery(contractId);
 
-    console.log(contractDetails);
     if (contractDetails && contractDetails.status !== 0) {
         return (
             <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
@@ -47,17 +46,19 @@ const ContractCampaignSign = ({ onSign, onContractSent, campaignId, contractId }
                         </svg>
                     </div>
                     <h2 className="text-2xl font-bold text-gray-800 mb-4">
-                        Hợp đồng đã được ký!
+                        {contractDetails.status === 1
+                            ? "Hợp đồng đã được ký chờ xác nhận!"
+                            : "Hợp đồng đã được ký hoàn tất!"}
                     </h2>
                     <p className="text-gray-600 mb-6">
-                        Bạn đã ký và gửi hợp đồng này rồi. Vui lòng chờ phản hồi từ phía Admin.
+                        {contractDetails.status === 1
+                            ? "Chữ ký của bạn đã được gửi. Vui lòng chờ phản hồi từ phía Admin."
+                            : "Hợp đồng của bạn đã được xử lý hoàn tất."}
                     </p>
-
                 </div>
             </div>
         );
     }
-
 
     const handleClear = () => {
         sigCanvas.current.clear();

@@ -12,6 +12,7 @@ export const contractApi = baseApi.injectEndpoints({
         }),
         getContractById: builder.query({
             query: (contractId) => `/Contract/${contractId}`,
+            providesTags: ['Contract']
         }),
         getAllContracts: builder.query({
             query: () => '/Contract/all',
@@ -29,6 +30,7 @@ export const contractApi = baseApi.injectEndpoints({
                 method: 'PUT',
                 body: data,
             }),
+            invalidatesTags: ['Contract']
         }),
     }),
 });
