@@ -28,7 +28,6 @@ import EventDetail from '@/components/landingpage/EventDetail';
 import DisbursementRequest from '@/components/guarantee/campaign/DisbursementRequest';
 import CreateDisbursementRequest from '@/components/guarantee/campaign/CreateDisbursementRequest';
 
-
 const Loadable = (Component) => {
     const LoadableComponent = (props) => {
         return (
@@ -66,7 +65,7 @@ export default function Router() {
                 { element: <GuaranteeCampaigns />, path: 'campaigns' },
                 { element: <CampaignGuaranteeDetail />, path: 'campaign/:id' },
                 { element: <DonationHistory />, path: 'donation-history' },
-                { element: <CampaignCreate />, path: 'create-campaign' },
+                // { element: <CampaignCreate />, path: 'create-campaign' },
                 { element: <ContractPage />, path: 'contracts' },
                 { element: <ContractCampaign />, path: 'contract/contract-campaign/:contractID/:campaignID' },
                 { element: <ContractDetail />, path: 'contract/:id' },
@@ -150,7 +149,6 @@ export default function Router() {
                     element: <EventDetail />,
                 },
 
-
                 {
                     path: 'empty',
                     element: <PageEmpty />,
@@ -184,4 +182,4 @@ const AboutPage = Loadable(lazy(() => import('../pages/AboutPage')));
 const GuaranteeHome = Loadable(lazy(() => import('@/components/guarantee/GuaranteeHome')));
 const GuaranteeCampaigns = Loadable(lazy(() => import('@/components/guarantee/campaign/GuaranteeCampaigns')));
 const DonationHistory = Loadable(lazy(() => import('@/components/guarantee/DonationHistory')));
-const CampaignCreate = Loadable(lazy(() => import('@/components/guarantee/campaign/CampaignCreate')));
+// const CampaignCreate = Loadable(lazy(() => import('@/components/guarantee/campaign/CampaignCreate')));

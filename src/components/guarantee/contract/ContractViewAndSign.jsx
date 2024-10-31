@@ -10,7 +10,7 @@ import { useCreateContractMutation, useUpdateContractMutation } from '@/redux/co
 import { useSelector } from 'react-redux';
 import { format, parseISO } from 'date-fns';
 
-import { formatInTimeZone } from 'date-fns-tz'
+import { formatInTimeZone } from 'date-fns-tz';
 import { toast } from 'sonner';
 const formatDate = (dateString) => {
     if (!dateString) return '.....................';
@@ -18,6 +18,7 @@ const formatDate = (dateString) => {
 };
 
 const ContractContent = ({ guaranteeProfile, signature }) => {
+    console.log(guaranteeProfile);
     const today = new Date();
     const formattedToday = format(today, "dd' tháng 'MM' năm 'yyyy");
     const renderPartyB = () => {
@@ -26,41 +27,73 @@ const ContractContent = ({ guaranteeProfile, signature }) => {
                 <div className="space-y-2">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
-                            <p><span className="inline-block w-36">Họ tên:</span> .........................</p>
-                            <p><span className="inline-block w-36">Số CMND/CCCD:</span> .........................</p>
-                            <p><span className="inline-block w-36">Số điện thoại:</span> .........................</p>
+                            <p>
+                                <span className="inline-block w-36">Họ tên:</span> .........................
+                            </p>
+                            <p>
+                                <span className="inline-block w-36">Số CMND/CCCD:</span> .........................
+                            </p>
+                            <p>
+                                <span className="inline-block w-36">Số điện thoại:</span> .........................
+                            </p>
                         </div>
                         <div className="space-y-2">
-                            <p><span className="inline-block w-20">Năm sinh:</span> .........................</p>
+                            <p>
+                                <span className="inline-block w-20">Năm sinh:</span> .........................
+                            </p>
                             <div className="flex flex-wrap">
-                                <p className="mr-4 mb-2"><span className="inline-block w-20">Cấp ngày:</span> .........................</p>
-                                <p><span className="inline-block w-20">Nơi cấp:</span> .........................</p>
+                                <p className="mr-4 mb-2">
+                                    <span className="inline-block w-20">Cấp ngày:</span> .........................
+                                </p>
+                                <p>
+                                    <span className="inline-block w-20">Nơi cấp:</span> .........................
+                                </p>
                             </div>
                         </div>
                     </div>
-                    <p className="mt-2"><span className="inline-block w-36">Địa chỉ thường trú:</span> .........................</p>
+                    <p className="mt-2">
+                        <span className="inline-block w-36">Địa chỉ thường trú:</span> .........................
+                    </p>
                 </div>
             );
         }
 
-        if (guaranteeProfile.guaranteeType === "0") {
+        if (guaranteeProfile.guaranteeType === 0) {
             return (
                 <div className="space-y-2">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
-                            <p><span className="inline-block w-36">Họ tên:</span> {guaranteeProfile.fullname}</p>
-                            <p><span className="inline-block w-36">Số CMND/CCCD:</span> {guaranteeProfile.citizenIdentification}</p>
-                            <p><span className="inline-block w-36">Số điện thoại:</span> {guaranteeProfile.phoneNumber}</p>
+                            <p>
+                                <span className="inline-block w-36">Họ tên:</span> {guaranteeProfile.fullname}
+                            </p>
+                            <p>
+                                <span className="inline-block w-36">Số CMND/CCCD:</span>{' '}
+                                {guaranteeProfile.citizenIdentification}
+                            </p>
+                            <p>
+                                <span className="inline-block w-36">Số điện thoại:</span> {guaranteeProfile.phoneNumber}
+                            </p>
                         </div>
                         <div className="space-y-2">
-                            <p><span className="inline-block w-20">Năm sinh:</span> {formatDate(guaranteeProfile.dateOfBirth)}</p>
+                            <p>
+                                <span className="inline-block w-20">Năm sinh:</span>{' '}
+                                {formatDate(guaranteeProfile.dateOfBirth)}
+                            </p>
                             <div className="flex flex-wrap">
-                                <p className="mr-4 mb-2"><span className="inline-block w-20">Cấp ngày:</span> {formatDate(guaranteeProfile.issueDate)}</p>
-                                <p><span className="inline-block w-20">Nơi cấp:</span> {guaranteeProfile.issueLocation}</p>
+                                <p className="mr-4 mb-2">
+                                    <span className="inline-block w-20">Cấp ngày:</span>{' '}
+                                    {formatDate(guaranteeProfile.issueDate)}
+                                </p>
+                                <p>
+                                    <span className="inline-block w-20">Nơi cấp:</span> {guaranteeProfile.issueLocation}
+                                </p>
                             </div>
                         </div>
                     </div>
-                    <p className="mt-2"><span className="inline-block w-36">Địa chỉ thường trú:</span> {guaranteeProfile.permanentAddress}</p>
+                    <p className="mt-2">
+                        <span className="inline-block w-36">Địa chỉ thường trú:</span>{' '}
+                        {guaranteeProfile.permanentAddress}
+                    </p>
                 </div>
             );
         } else {
@@ -68,15 +101,29 @@ const ContractContent = ({ guaranteeProfile, signature }) => {
                 <div className="space-y-2">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
-                            <p><span className="inline-block w-36">Tên tổ chức:</span> {guaranteeProfile.organizationName}</p>
-                            <p><span className="inline-block w-36">Người đại diện:</span> {guaranteeProfile.representativeName}</p>
+                            <p>
+                                <span className="inline-block w-36">Tên tổ chức:</span>{' '}
+                                {guaranteeProfile.organizationName}
+                            </p>
+                            <p>
+                                <span className="inline-block w-36">Người đại diện:</span>{' '}
+                                {guaranteeProfile.representativeName}
+                            </p>
                         </div>
                         <div className="space-y-2">
-                            <p><span className="inline-block w-36">Số điện thoại:</span> {guaranteeProfile.organizationPhoneNumber}</p>
-                            <p><span className="inline-block w-36">Chức vụ:</span> {guaranteeProfile.position}</p>
+                            <p>
+                                <span className="inline-block w-36">Số điện thoại:</span>{' '}
+                                {guaranteeProfile.organizationPhoneNumber}
+                            </p>
+                            <p>
+                                <span className="inline-block w-36">Chức vụ:</span> {guaranteeProfile.position}
+                            </p>
                         </div>
                     </div>
-                    <p className="mt-2"><span className="inline-block w-36">Địa chỉ tổ chức:</span> {guaranteeProfile.organizationAddress}</p>
+                    <p className="mt-2">
+                        <span className="inline-block w-36">Địa chỉ tổ chức:</span>{' '}
+                        {guaranteeProfile.organizationAddress}
+                    </p>
                 </div>
             );
         }
@@ -135,8 +182,8 @@ const ContractContent = ({ guaranteeProfile, signature }) => {
                 </div>
 
                 <p className="font-semibold">
-                    Cả hai bên cùng thống nhất ký kết hợp đồng tham gia bảo lãnh chiến dịch hỗ trợ trẻ em với các điều khoản
-                    như sau:
+                    Cả hai bên cùng thống nhất ký kết hợp đồng tham gia bảo lãnh chiến dịch hỗ trợ trẻ em với các điều
+                    khoản như sau:
                 </p>
 
                 <div className="mb-6 mt-2">
@@ -159,8 +206,8 @@ const ContractContent = ({ guaranteeProfile, signature }) => {
                         <br />
                         2.2. <strong>Trách nhiệm của Bên Bảo Lãnh:</strong> <br />
                         - Cam kết sử dụng nguồn quỹ đúng mục đích theo từng chiến dịch cụ thể. <br />
-                        - Nộp báo cáo tiến độ đúng thời gian và đầy đủ chứng từ minh bạch cho từng đợt giải ngân. <br />-
-                        Chịu trách nhiệm hoàn toàn về việc sử dụng quỹ và thông tin cung cấp trong báo cáo.
+                        - Nộp báo cáo tiến độ đúng thời gian và đầy đủ chứng từ minh bạch cho từng đợt giải ngân. <br />
+                        - Chịu trách nhiệm hoàn toàn về việc sử dụng quỹ và thông tin cung cấp trong báo cáo.
                     </p>
                 </div>
 
@@ -168,11 +215,12 @@ const ContractContent = ({ guaranteeProfile, signature }) => {
                     <h4 className="font-semibold">Điều 3: Trách nhiệm của Bên A </h4>
                     <p>
                         3.1. <strong>Hỗ trợ Bên Bảo Lãnh:</strong> <br />
-                        - Bên A có trách nhiệm cung cấp các hướng dẫn, quy trình và hỗ trợ cho Bên Bảo Lãnh khi cần thiết.
+                        - Bên A có trách nhiệm cung cấp các hướng dẫn, quy trình và hỗ trợ cho Bên Bảo Lãnh khi cần
+                        thiết.
                         <br />
                         <br />
-                        3.2. <strong>Quản lý và kiểm tra:</strong> <br />- Bên A sẽ giám sát và kiểm tra việc sử dụng quỹ,
-                        đảm bảo rằng quỹ được sử dụng đúng mục đích và theo quy định.
+                        3.2. <strong>Quản lý và kiểm tra:</strong> <br />- Bên A sẽ giám sát và kiểm tra việc sử dụng
+                        quỹ, đảm bảo rằng quỹ được sử dụng đúng mục đích và theo quy định.
                     </p>
                 </div>
 
@@ -180,8 +228,8 @@ const ContractContent = ({ guaranteeProfile, signature }) => {
                     <h4 className="font-semibold">Điều 4: Điều kiện và quy trình hủy bỏ tư cách Bên Bảo Lãnh</h4>
                     <p>
                         4.1. <strong>Hủy bỏ tư cách Bên Bảo Lãnh:</strong> <br />
-                        - Trong trường hợp Bên Bảo Lãnh không tuân thủ các quy định của hệ thống hoặc vi phạm các cam kết,
-                        Bên A có quyền hủy bỏ tư cách này.
+                        - Trong trường hợp Bên Bảo Lãnh không tuân thủ các quy định của hệ thống hoặc vi phạm các cam
+                        kết, Bên A có quyền hủy bỏ tư cách này.
                         <br />
                         <br />
                         4.2. <strong>Hình phạt:</strong> <br />- Nếu có sai phạm liên quan đến việc sử dụng quỹ, Bên Bảo
@@ -193,8 +241,8 @@ const ContractContent = ({ guaranteeProfile, signature }) => {
                     <h4 className="font-semibold">Điều 5: Thông tin tài khoản và giao dịch</h4>
                     <p>
                         5.1. <strong>Cung cấp thông tin chính xác:</strong> <br />
-                        - Bên Bảo Lãnh phải cung cấp chính xác thông tin tài khoản ngân hàng để nhận quỹ. Mọi thay đổi phải
-                        được thông báo kịp thời và cập nhật trong hệ thống.
+                        - Bên Bảo Lãnh phải cung cấp chính xác thông tin tài khoản ngân hàng để nhận quỹ. Mọi thay đổi
+                        phải được thông báo kịp thời và cập nhật trong hệ thống.
                         <br />
                         <br />
                         5.2. <strong>Bảo mật thông tin:</strong> <br />- Bên Bảo Lãnh cam kết bảo mật các thông tin liên
@@ -205,17 +253,17 @@ const ContractContent = ({ guaranteeProfile, signature }) => {
                 <div className="mb-6 mt-2">
                     <h4 className="font-semibold">Điều 6: Xử lý tranh chấp</h4>
                     <p>
-                        6.1. <strong>Giải quyết tranh chấp:</strong> <br />- Mọi tranh chấp phát sinh từ việc thực hiện hợp
-                        đồng này sẽ được giải quyết thông qua thương lượng giữa hai bên. Nếu không thể đạt được thỏa thuận,
-                        vụ việc sẽ được đưa ra tòa án có thẩm quyền.
+                        6.1. <strong>Giải quyết tranh chấp:</strong> <br />- Mọi tranh chấp phát sinh từ việc thực hiện
+                        hợp đồng này sẽ được giải quyết thông qua thương lượng giữa hai bên. Nếu không thể đạt được thỏa
+                        thuận, vụ việc sẽ được đưa ra tòa án có thẩm quyền.
                     </p>
                 </div>
 
                 <div className="mb-6">
                     <h4 className="font-semibold">Điều 7: Cam kết chung</h4>
                     <p>
-                        Cả Bên A và Bên B đều xác nhận rằng tất cả thông tin trong hợp đồng là chính xác và hợp pháp. Cả hai
-                        bên cam kết thực hiện đầy đủ các điều khoản đã thỏa thuận.
+                        Cả Bên A và Bên B đều xác nhận rằng tất cả thông tin trong hợp đồng là chính xác và hợp pháp. Cả
+                        hai bên cam kết thực hiện đầy đủ các điều khoản đã thỏa thuận.
                     </p>
                 </div>
 
@@ -234,8 +282,8 @@ const ContractContent = ({ guaranteeProfile, signature }) => {
                 <div className="mb-6">
                     <div className="border-t-2 mb-2"></div>
                     <p className="text-center">
-                        Hợp đồng này được lập thành 03 bản, bên Bảo lãnh giữ 01 bản, bên Quản trị nền tảng SponsorChild giữ
-                        02 bản và có giá trị pháp lý như nhau.
+                        Hợp đồng này được lập thành 03 bản, bên Bảo lãnh giữ 01 bản, bên Quản trị nền tảng SponsorChild
+                        giữ 02 bản và có giá trị pháp lý như nhau.
                     </p>
                 </div>
             </div>
@@ -244,8 +292,6 @@ const ContractContent = ({ guaranteeProfile, signature }) => {
 };
 
 const signDate = formatInTimeZone(new Date(), 'Asia/Ho_Chi_Minh', "yyyy-MM-dd'T'HH:mm:ss.SSSxxx");
-
-
 
 const ContractViewAndSign = ({ onSign, onContractSent, guaranteeProfile }) => {
     const { user } = useSelector((state) => state.auth);
@@ -256,10 +302,6 @@ const ContractViewAndSign = ({ onSign, onContractSent, guaranteeProfile }) => {
     const [uploadLoading, setUploadLoading] = useState(false);
     const [createContract, { isLoading: isCreatingContract }] = useCreateContractMutation();
     const [updateContract, { isLoading: isUpdatingContract }] = useUpdateContractMutation();
-
-
-
-
 
     const handleClear = () => {
         sigCanvas.current.clear();
@@ -272,7 +314,6 @@ const ContractViewAndSign = ({ onSign, onContractSent, guaranteeProfile }) => {
         setIsSigned(true);
         onSign(sigCanvas.current.toDataURL());
     };
-
 
     const generatePDF = async () => {
         const element = contractRef.current;
@@ -315,13 +356,10 @@ const ContractViewAndSign = ({ onSign, onContractSent, guaranteeProfile }) => {
         formData.append('upload_preset', import.meta.env.VITE_UPLOAD_PRESET_NAME);
         formData.append('folder', folder);
 
-        const response = await fetch(
-            `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUD_NAME}/raw/upload`,
-            {
-                method: 'POST',
-                body: formData,
-            }
-        );
+        const response = await fetch(`https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUD_NAME}/raw/upload`, {
+            method: 'POST',
+            body: formData,
+        });
 
         if (!response.ok) {
             throw new Error(`Upload failed: ${response.statusText}`);
@@ -342,21 +380,21 @@ const ContractViewAndSign = ({ onSign, onContractSent, guaranteeProfile }) => {
                     const signatureBlob = await (await fetch(signature)).blob();
                     const signatureData = await uploadToCloudinary(
                         signatureBlob,
-                        `user_${partyBID}/guarantee/signatures_guaranteed`
+                        `user_${partyBID}/guarantee/signatures_guaranteed`,
                     );
                     const signatureUrl = signatureData.secure_url;
 
                     // Upload PDF
                     const pdfData = await uploadToCloudinary(
                         pdfBlob,
-                        `user_${partyBID}/guarantee/contracts_guaranteed`
+                        `user_${partyBID}/guarantee/contracts_guaranteed`,
                     );
                     const pdfUrl = pdfData.secure_url;
 
                     // Create Contract
                     const result = await createContract({
                         partyBID: partyBID,
-                        contractType: 0
+                        contractType: 0,
                     }).unwrap();
 
                     if (result && result.contractID) {
@@ -371,7 +409,7 @@ const ContractViewAndSign = ({ onSign, onContractSent, guaranteeProfile }) => {
                             status: 1, // pending Admin sign
                             softContractUrl: pdfUrl,
                             hardContractUrl: '',
-                            partyBSignatureUrl: signatureUrl
+                            partyBSignatureUrl: signatureUrl,
                         }).unwrap();
                     }
 
@@ -406,7 +444,6 @@ const ContractViewAndSign = ({ onSign, onContractSent, guaranteeProfile }) => {
                 </ScrollArea>
             </div>
             <div className="w-full lg:w-1/3 p-4 bg-white shadow-md py-8 font-sans">
-
                 <h2 className="font-semibold mb-2">Ký tên</h2>
                 <div className="border-2 border-gray-300 rounded-lg mb-4 w-fit">
                     <SignatureCanvas ref={sigCanvas} canvasProps={{ width: 350, height: 150 }} />

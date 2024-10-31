@@ -22,7 +22,7 @@ export const campaignStatusUser = [
 ];
 
 export const campaignTypes = [
-    { label: 'Nuôi em', value: 0 },
+    { label: 'Nuôi trẻ', value: 0 },
     { label: 'Khẩn cấp', value: 1 },
 ];
 

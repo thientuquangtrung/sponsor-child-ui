@@ -28,6 +28,7 @@ const ContractCampaign = () => {
     const handleContractSubmissionSuccess = () => {
         setContractSent(true);
         setCurrentStep((prev) => Math.min(prev + 1, steps.length - 1));
+        setCurrentStep(1);
     };
 
     const prevStep = () => {
