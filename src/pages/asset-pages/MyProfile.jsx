@@ -1,15 +1,18 @@
 import * as React from 'react';
 import { useForm } from 'react-hook-form';
 import { useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Button } from '@/components/ui/button';
+
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { useUpdateUserMutation } from '@/redux/user/userApi';
-import { deleteAsset, uploadFile } from '@/lib/cloudinary';
+import { getAssetsList, uploadFile } from '@/lib/cloudinary';
+import ButtonLoading from '@/components/ui/loading-button';
+import { toast } from 'sonner';
+import { UpdateUser } from '@/redux/auth/authActionCreators';
 
 const profileSchema = z.object({
     fullname: z.string().min(1, 'Tên tài khoản là bắt buộc'),
@@ -22,11 +25,12 @@ const profileSchema = z.object({
 
 export default function MyProfile() {
     const { user } = useSelector((state) => state.auth);
-    const [avatarSrc, setAvatarSrc] = useState('https://via.placeholder.com/150');
+    const dispatch = useDispatch();
+    const [avatarSrc, setAvatarSrc] = useState(user?.imageUrl || 'https://via.placeholder.com/150');
     const [newAvatarSrc, setNewAvatarSrc] = useState(null);
     const [dragging, setDragging] = useState(false);
+    const [isImgUploading, setIsImgUploading] = useState(false);
     const [updateUser, { isLoading, isError, error }] = useUpdateUserMutation();
-    const [oldAvatarPublicId, setOldAvatarPublicId] = useState(user?.imageUrl.split('/').pop().split('.')[0]);
 
     const form = useForm({
         resolver: zodResolver(profileSchema),
@@ -54,31 +58,41 @@ export default function MyProfile() {
             // Check if there's a new avatar and upload it
             let newAvatarUrl;
             if (newAvatarSrc) {
+                setIsImgUploading(true);
                 // Define the folder structure
-                const folderName = `avatar/${user?.userID}`;
+                const folderName = `users/profile_pictures`;
 
                 // Upload new avatar
                 const uploadResponse = await uploadFile({
                     file: newAvatarSrc,
-                    tags: ['avatar'],
                     resourceType: 'image',
                     folder: folderName,
-                    oldPublicId: oldAvatarPublicId,
+                    customFilename: `${user?.userID}_profile`,
                 });
 
                 newAvatarUrl = uploadResponse.secure_url;
-
                 updateUserProfile.imageUrl = newAvatarUrl;
             }
 
-            const response = await updateUser(updateUserProfile).unwrap();
-            console.log('User updated successfully:', response);
+            await updateUser(updateUserProfile)
+                .unwrap()
+                .then((res) => {
+                    dispatch(UpdateUser({ user: { ...user, ...updateUserProfile } }));
+                    console.log('User updated successfully:', updateUserProfile);
+                    toast.success('Cập nhật thông tin thành công');
+                })
+                .catch((err) => {
+                    toast.error('Cập nhật thông tin thất bại');
+                    console.error('Failed to update user profile:', err);
+                });
         } catch (error) {
             console.error('Failed to update user profile:', error);
 
             if (error.data && error.data.errors) {
                 console.log('Validation Errors:', error.data.errors);
             }
+        } finally {
+            setIsImgUploading(false);
         }
     }
 
@@ -258,13 +272,14 @@ export default function MyProfile() {
                         </div>
                     </div>
                     <div className="flex justify-center">
-                        <Button
+                        <ButtonLoading
                             className="w-full md:w-[40%] h-14 mt-4 text-white text-2xl bg-gradient-to-r from-primary to-secondary"
                             type="submit"
-                            disabled={isLoading}
+                            disabled={isLoading || isImgUploading}
+                            isLoading={isLoading || isImgUploading}
                         >
                             Cập nhật
-                        </Button>
+                        </ButtonLoading>
                     </div>
                 </form>
             </Form>

@@ -76,7 +76,6 @@ const PersonalRegistrationForm = ({ onSubmit }) => {
     const [createIndividualGuarantee, { isLoading, isSuccess, isError }] = useCreateIndividualGuaranteeMutation();
     const { data: bankNames, isLoading: isLoadingBanks } = useGetBankNamesQuery();
 
-
     const uploadToCloudinary = async (file, folder) => {
         const formData = new FormData();
         formData.append('file', file);
@@ -181,7 +180,7 @@ const PersonalRegistrationForm = ({ onSubmit }) => {
             const response = await fetch('https://api.fpt.ai/vision/idr/vnm', {
                 method: 'POST',
                 headers: {
-                    'api-key': 'KRosD34JKZa60M99NSynhncVZH2wELaU',
+                    'api-key': 'CXOOmOxGb7Y8jLIbVFhACpvWoi4tOfEI',
                 },
                 body: formData,
             });
@@ -443,7 +442,11 @@ const PersonalRegistrationForm = ({ onSubmit }) => {
                             </div>
                         </div>
                     </div>
-                    <Button onClick={handleScanCCCD} className="mt-4 bg-secondary text-white">
+                    <Button
+                        onClick={handleScanCCCD}
+                        disabled={!frontCI || !backCI}
+                        className="mt-4 bg-secondary text-white"
+                    >
                         Scan CCCD
                     </Button>
 
@@ -695,7 +698,7 @@ const PersonalRegistrationForm = ({ onSubmit }) => {
                                 variant="solid"
                                 onClick={handleSubmitForm}
                                 className="bg-teal-600 text-white"
-                                disabled={isLoading}
+                                disabled={isLoading || !isScanned}
                             >
                                 {isLoading ? 'Đang đăng ký...' : 'ĐĂNG KÝ'}
                             </Button>

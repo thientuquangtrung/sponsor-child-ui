@@ -1,69 +1,80 @@
+import { BASE_URL } from '@/config/app';
 import { Cloudinary } from '@cloudinary/url-gen';
+
+const UPLOAD_PRESET_NAME = import.meta.env.VITE_UPLOAD_PRESET_NAME;
+const CLOUD_NAME = import.meta.env.VITE_CLOUD_NAME;
+const CLOUDINARY_API_KEY = import.meta.env.VITE_CLOUDINARY_APIKEY;
+const CLOUDINARY_SECRET = import.meta.env.VITE_CLOUDINARY_SECRET;
 
 // Create a Cloudinary instance and set your cloud name.
 const cld = new Cloudinary({
     cloud: {
-        cloudName: import.meta.env.VITE_CLOUD_NAME,
+        cloudName: CLOUD_NAME,
+        apiKey: CLOUDINARY_API_KEY,
+        apiSecret: CLOUDINARY_SECRET,
     },
 });
 
-// Function to upload a file to Cloudinary
-// async function uploadFile({ file, tags = [], folder = '', resourceType = 'image' }) {
-//     const formData = new FormData();
-//     formData.append('file', file);
-//     formData.append('upload_preset', import.meta.env.VITE_UPLOAD_PRESET_NAME);
-
-//     if (tags.length > 0) {
-//         formData.append('tags', tags.join(','));
-//     }
-
-//     if (folder) {
-//         formData.append('folder', folder);
-//     }
-
-//     try {
-//         const response = await fetch(
-//             `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUD_NAME}/${resourceType}/upload`,
-//             {
-//                 method: 'POST',
-//                 body: formData,
-//             },
-//         );
-//         return await response.json();
-//     } catch (error) {
-//         console.error('Upload failed:', error);
-//         throw error;
-//     }
-// }
-
-// Function to upload a file to Cloudinary
-async function uploadFile({ file, tags = [], folder = '', resourceType = 'image', oldPublicId = null }) {
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('upload_preset', import.meta.env.VITE_UPLOAD_PRESET_NAME);
-
-    if (tags.length > 0) {
-        formData.append('tags', tags.join(','));
-    }
-
-    if (folder) {
-        formData.append('folder', folder);
-    }
-
+/**
+ * Fetches signature and timestamp from the server for Cloudinary operations
+ * @param {Object} searchParams - Parameters to include in signature generation
+ * @returns {Promise<{signature: string, timestamp: number}>} Object containing signature and timestamp
+ * @throws {Error} If signature fetch fails
+ */
+async function getSignatureAndTimestamp({ ...searchParams }) {
     try {
-        // Delete the old avatar if provided
-        if (oldPublicId) {
-            await deleteAsset(oldPublicId, resourceType);
+        const response = await fetch(`${BASE_URL}/FileManagement/signature?${new URLSearchParams(searchParams)}`);
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Failed to get signature and timestamp:', error);
+        throw error;
+    }
+}
+
+/**
+ * Uploads a file to Cloudinary
+ * @param {Object} params - Upload parameters
+ * @param {File} params.file - The file to upload
+ * @param {string} [params.folder=''] - Cloudinary folder path
+ * @param {string} [params.resourceType='image'] - Resource type ('image', 'video', 'raw', etc.)
+ * @param {string} [params.customFilename=null] - Custom public_id for the uploaded file
+ * @returns {Promise<Object>} Cloudinary upload response
+ * @throws {Error} If upload fails
+ */
+async function uploadFile({ file, folder = '', tag = '', resourceType = 'image', customFilename = null }) {
+    try {
+        const { signature, timestamp } = await getSignatureAndTimestamp({
+            folder,
+            tag,
+            public_id: customFilename,
+            upload_preset: UPLOAD_PRESET_NAME,
+        });
+
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('upload_preset', UPLOAD_PRESET_NAME);
+        formData.append('api_key', CLOUDINARY_API_KEY);
+        formData.append('timestamp', timestamp);
+        formData.append('signature', signature);
+
+        if (folder) {
+            formData.append('folder', folder);
+        }
+
+        if (tag) {
+            formData.append('tag', tag);
+        }
+
+        if (customFilename) {
+            formData.append('public_id', customFilename);
         }
 
         // Upload the new file
-        const response = await fetch(
-            `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUD_NAME}/${resourceType}/upload`,
-            {
-                method: 'POST',
-                body: formData,
-            },
-        );
+        const response = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/${resourceType}/upload`, {
+            method: 'POST',
+            body: formData,
+        });
 
         return await response.json();
     } catch (error) {
@@ -72,7 +83,27 @@ async function uploadFile({ file, tags = [], folder = '', resourceType = 'image'
     }
 }
 
-// Function to retrieve assets list
+/**
+ * Upload multiple files to Cloudinary
+ * @param {Object} params - Upload parameters
+ * @param {Array} params.files - Array of files to upload
+ * @param {string} [params.folder=''] - Cloudinary folder path
+ */
+async function uploadMultipleFiles({ files, folder = '' }) {
+    const tag = folder;
+    const uploadPromises = files.map((file, index) =>
+        uploadFile({ file, folder, tag, resourceType: file.type.split('/')[0], customFilename: index.toString() }),
+    );
+    return await Promise.all(uploadPromises);
+}
+
+/**
+ * Retrieves a list of assets within a folder
+ * @param {string} tag - Tag to filter assets
+ * @param {string} [resourceType='image'] - Resource type to filter
+ * @returns {Promise<Array>} Array of matching resources
+ * @throws {Error} If asset retrieval fails
+ */
 async function getAssetsList(tag, resourceType = 'image') {
     const url = `https://res.cloudinary.com/${import.meta.env.VITE_CLOUD_NAME}/${resourceType}/list/${tag}.json`;
 
@@ -86,12 +117,24 @@ async function getAssetsList(tag, resourceType = 'image') {
     }
 }
 
-// Function to generate a Cloudinary URL with transformations
+/**
+ * Generates a Cloudinary URL with specified transformations
+ * @param {string} publicId - Public ID of the asset
+ * @param {Array} [transformations=[]] - Array of transformation objects
+ * @param {string} [resourceType='image'] - Type of resource
+ * @returns {string} Transformed Cloudinary URL
+ */
 function getUrlWithTransformations(publicId, transformations = [], resourceType = 'image') {
     return cld.image(publicId).setDeliveryType(resourceType).setTransformation(transformations).toURL();
 }
 
-// Function to apply a resize transformation (for images)
+/**
+ * Generates a URL for a resized version of an image
+ * @param {string} publicId - Public ID of the image
+ * @param {number} width - Desired width in pixels
+ * @param {number} height - Desired height in pixels
+ * @returns {string} URL for the resized image
+ */
 function resizeAsset(publicId, width, height) {
     return getUrlWithTransformations(publicId, [
         {
@@ -102,27 +145,43 @@ function resizeAsset(publicId, width, height) {
     ]);
 }
 
-// Function to generate a secure URL for the asset
+/**
+ * Generates a secure URL for an asset
+ * @param {string} publicId - Public ID of the asset
+ * @param {string} [resourceType='image'] - Type of resource
+ * @returns {string} Secure Cloudinary URL
+ */
 function getSecureUrl(publicId, resourceType = 'image') {
     return cld.image(publicId).setDeliveryType(resourceType).toURL();
 }
 
-// Function to delete an asset from Cloudinary
-async function deleteAsset(publicId, resourceType = 'image') {
+/**
+ * Deletes an asset from Cloudinary
+ * @param {Object} params - Delete parameters
+ * @param {string} params.publicId - Public ID of the asset to delete
+ * @param {string} [params.resourceType='image'] - Type of resource to delete
+ * @returns {Promise<Object>} Cloudinary deletion response
+ * @throws {Error} If deletion fails
+ */
+async function deleteAsset({ publicId, resourceType = 'image' }) {
     try {
-        const response = await fetch(
-            `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUD_NAME}/${resourceType}/destroy`,
-            {
-                method: 'POST',
-                body: JSON.stringify({
-                    public_id: publicId,
-                    type: 'upload',
-                }),
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            }
-        );
+        // Get signature and timestamp using existing function
+        const { signature, timestamp } = await getSignatureAndTimestamp({
+            public_id: publicId,
+        });
+
+        const formData = new FormData();
+        formData.append('public_id', publicId);
+        formData.append('api_key', CLOUDINARY_API_KEY);
+        formData.append('timestamp', timestamp);
+        formData.append('signature', signature);
+        formData.append('resource_type', resourceType);
+
+        // Use signature to delete from Cloudinary
+        const response = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/${resourceType}/destroy`, {
+            method: 'POST',
+            body: formData,
+        });
 
         const data = await response.json();
         return data;
@@ -132,4 +191,13 @@ async function deleteAsset(publicId, resourceType = 'image') {
     }
 }
 
-export { cld, uploadFile, getAssetsList, getUrlWithTransformations, resizeAsset, getSecureUrl, deleteAsset };
+export {
+    cld,
+    uploadFile,
+    uploadMultipleFiles,
+    getAssetsList,
+    getUrlWithTransformations,
+    resizeAsset,
+    getSecureUrl,
+    deleteAsset,
+};
