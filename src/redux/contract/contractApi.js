@@ -23,7 +23,11 @@ export const contractApi = baseApi.injectEndpoints({
         getContractsByUserId: builder.query({
             query: (userId) => `/Contract/user/${userId}/contracts`,
         }),
-
+        getContractsByTypeAndPartyB: builder.query({
+            query: ({ contractType, partyBId }) =>
+                `/Contract/type/${contractType}/partyB/${partyBId}`,
+            providesTags: ['Contracts'],
+        }),
         updateContract: builder.mutation({
             query: ({ contractId, ...data }) => ({
                 url: `/Contract/update/${contractId}`,
@@ -42,4 +46,5 @@ export const {
     useGetContractsByStatusQuery,
     useGetContractsByUserIdQuery,
     useUpdateContractMutation,
+    useGetContractsByTypeAndPartyBQuery,
 } = contractApi;
