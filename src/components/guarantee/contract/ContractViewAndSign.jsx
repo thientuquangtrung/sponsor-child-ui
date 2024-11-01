@@ -304,46 +304,46 @@ const ContractViewAndSign = ({ onSign, onContractSent, guaranteeProfile, onNextS
     });
     const [updateContract, { isLoading: isUpdatingContract }] = useUpdateContractMutation();
     const [currentContractId, setCurrentContractId] = useState(null);
-
+    const [contractStatus, setContractStatus] = useState(null);
     useEffect(() => {
         if (contracts && contracts.length > 0) {
             setCurrentContractId(contracts[0].contractID);
-
-            if (contracts[0].status !== 0) {
-                return (
-                    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
-                        <div className="bg-white rounded-lg shadow-xl p-8 max-w-md w-full text-center">
-                            <div className="mb-4">
-                                <svg
-                                    className="mx-auto h-16 w-16 text-green-500"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                                    />
-                                </svg>
-                            </div>
-                            <h2 className="text-2xl font-bold text-gray-800 mb-4">
-                                {contracts[0].status === 1
-                                    ? "Hợp đồng đã được ký chờ xác nhận!"
-                                    : "Hợp đồng đã được ký hoàn tất!"}
-                            </h2>
-                            <p className="text-gray-600 mb-6">
-                                {contracts[0].status === 1
-                                    ? "Chữ ký của bạn đã được gửi. Vui lòng chờ phản hồi từ phía Admin."
-                                    : "Hợp đồng của bạn đã được xử lý hoàn tất."}
-                            </p>
-                        </div>
-                    </div>
-                );
-            }
+            setContractStatus(contracts[0].status);
         }
     }, [contracts]);
+    if (contractStatus !== null && contractStatus !== 0) {
+        return (
+            <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
+                <div className="bg-white rounded-lg shadow-xl p-8 max-w-md w-full text-center">
+                    <div className="mb-4">
+                        <svg
+                            className="mx-auto h-16 w-16 text-green-500"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                            />
+                        </svg>
+                    </div>
+                    <h2 className="text-2xl font-bold text-gray-800 mb-4">
+                        {contractStatus === 1
+                            ? "Hợp đồng đã được ký chờ xác nhận!"
+                            : "Hợp đồng đã được ký hoàn tất!"}
+                    </h2>
+                    <p className="text-gray-600 mb-6">
+                        {contractStatus === 1
+                            ? "Chữ ký của bạn đã được gửi. Vui lòng chờ phản hồi từ phía Admin."
+                            : "Hợp đồng của bạn đã được xử lý hoàn tất."}
+                    </p>
+                </div>
+            </div>
+        );
+    }
 
     const handleClear = () => {
         sigCanvas.current.clear();
