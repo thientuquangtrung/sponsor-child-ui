@@ -85,6 +85,7 @@ export function GuaranteeCampaigns() {
         { id: 'startDate', desc: true }
     ]);
 
+    console.log(campaigns);
 
     const columns = [
         {
@@ -142,12 +143,10 @@ export function GuaranteeCampaigns() {
             },
         },
         {
-            id: 'childName',
+            accessorKey: 'childName',
             header: ({ column }) => <DataTableColumnHeader column={column} title="Tên trẻ em" />,
-            accessorFn: (row) => row.childProfile?.name,
             cell: ({ row }) => <div>{row.getValue('childName') || 'Chưa có thông tin'}</div>,
         },
-
         {
             id: 'actions',
             cell: ({ row }) => <ActionMenu row={row} />,

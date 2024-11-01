@@ -342,7 +342,7 @@ const CampaignInfo = ({ }) => {
         <div className='relative font-sans'>
             <Card className="w-full max-w-6xl mx-auto rounded-lg border-2">
                 <CardHeader>
-                    <CardTitle className="text-center text-3xl">Tạo thông tin chiến dịch</CardTitle>
+                    <CardTitle className="text-center text-3xl">TẠO CHIẾN DỊCH</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <Form {...form}>
