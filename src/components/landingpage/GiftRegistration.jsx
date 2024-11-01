@@ -102,18 +102,7 @@ const GiftRegistration = ({ isOpen, onClose, onSubmit }) => {
                 </DialogHeader>
                 <form onSubmit={handleSubmit(onSubmitForm)} className="space-y-6">
                     <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="registrationDate">Ngày đăng ký</Label>
-                            <Input
-                                id="registrationDate"
-                                type="date"
-                                {...register('registrationDate')}
-                                className={`w-full border border-gray-300 ${errors.registrationDate ? 'border-2 border-red-600' : ''}`}
-                            />
-                            {errors.registrationDate && (
-                                <p className="text-sm text-red-500">{errors.registrationDate.message}</p>
-                            )}
-                        </div>
+
                         <div className="space-y-2">
                             <Label htmlFor="giftType">Loại quà</Label>
                             <Select

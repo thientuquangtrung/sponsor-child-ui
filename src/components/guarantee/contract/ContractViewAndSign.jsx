@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import SignatureCanvas from 'react-signature-canvas';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Save, Send, Trash } from 'lucide-react';
 import 'react-datepicker/dist/react-datepicker.css';
-import { useCreateContractMutation, useUpdateContractMutation } from '@/redux/contract/contractApi';
+import { useGetContractsByTypeAndPartyBQuery, useUpdateContractMutation } from '@/redux/contract/contractApi';
 import { useSelector } from 'react-redux';
 import { format, parseISO } from 'date-fns';
 
@@ -115,9 +115,7 @@ const ContractContent = ({ guaranteeProfile, signature }) => {
                                 <span className="inline-block w-36">Số điện thoại:</span>{' '}
                                 {guaranteeProfile.organizationPhoneNumber}
                             </p>
-                            <p>
-                                <span className="inline-block w-36">Chức vụ:</span> {guaranteeProfile.position}
-                            </p>
+
                         </div>
                     </div>
                     <p className="mt-2">
@@ -293,15 +291,59 @@ const ContractContent = ({ guaranteeProfile, signature }) => {
 
 const signDate = formatInTimeZone(new Date(), 'Asia/Ho_Chi_Minh', "yyyy-MM-dd'T'HH:mm:ss.SSSxxx");
 
-const ContractViewAndSign = ({ onSign, onContractSent, guaranteeProfile }) => {
+const ContractViewAndSign = ({ onSign, onContractSent, guaranteeProfile, onNextStep }) => {
     const { user } = useSelector((state) => state.auth);
     const [signature, setSignature] = useState(null);
     const [isSigned, setIsSigned] = useState(false);
     const sigCanvas = useRef({});
     const contractRef = useRef(null);
     const [uploadLoading, setUploadLoading] = useState(false);
-    const [createContract, { isLoading: isCreatingContract }] = useCreateContractMutation();
+    const { data: contracts, isLoading } = useGetContractsByTypeAndPartyBQuery({
+        contractType: 0,
+        partyBId: user?.userID,
+    });
     const [updateContract, { isLoading: isUpdatingContract }] = useUpdateContractMutation();
+    const [currentContractId, setCurrentContractId] = useState(null);
+
+    useEffect(() => {
+        if (contracts && contracts.length > 0) {
+            setCurrentContractId(contracts[0].contractID);
+
+            if (contracts[0].status !== 0) {
+                return (
+                    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
+                        <div className="bg-white rounded-lg shadow-xl p-8 max-w-md w-full text-center">
+                            <div className="mb-4">
+                                <svg
+                                    className="mx-auto h-16 w-16 text-green-500"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                                    />
+                                </svg>
+                            </div>
+                            <h2 className="text-2xl font-bold text-gray-800 mb-4">
+                                {contracts[0].status === 1
+                                    ? "Hợp đồng đã được ký chờ xác nhận!"
+                                    : "Hợp đồng đã được ký hoàn tất!"}
+                            </h2>
+                            <p className="text-gray-600 mb-6">
+                                {contracts[0].status === 1
+                                    ? "Chữ ký của bạn đã được gửi. Vui lòng chờ phản hồi từ phía Admin."
+                                    : "Hợp đồng của bạn đã được xử lý hoàn tất."}
+                            </p>
+                        </div>
+                    </div>
+                );
+            }
+        }
+    }, [contracts]);
 
     const handleClear = () => {
         sigCanvas.current.clear();
@@ -391,33 +433,23 @@ const ContractViewAndSign = ({ onSign, onContractSent, guaranteeProfile }) => {
                     );
                     const pdfUrl = pdfData.secure_url;
 
-                    // Create Contract
-                    const result = await createContract({
-                        partyBID: partyBID,
-                        contractType: 0,
+
+
+                    await updateContract({
+                        contractId: currentContractId,
+                        contractType: 0, // Guarantee Contract
+                        partyAType: 0, // Admin
+                        partyBType: 1, // Guarantee
+                        partyBID: user.userID,
+                        signDate: signDate,
+                        status: 1, // pending Admin sign
+                        softContractUrl: pdfUrl,
+                        hardContractUrl: '',
+                        partyBSignatureUrl: signatureUrl,
                     }).unwrap();
-
-                    if (result && result.contractID) {
-                        await updateContract({
-                            contractId: result.contractID,
-                            contractType: 0, // Guarantee Contract
-                            partyAType: 0, // Admin
-                            partyAID: 'f7b2a26b-75f2-4c43-88b1-df094c8bfb2e', //admin 1
-                            partyBType: 1, // Guarantee
-                            partyBID: user.userID,
-                            signDate: signDate,
-                            status: 1, // pending Admin sign
-                            softContractUrl: pdfUrl,
-                            hardContractUrl: '',
-                            partyBSignatureUrl: signatureUrl,
-                        }).unwrap();
-                    }
-
-                    // Update status  and noti for  component ContractSignPage
-
                     onSign(pdfUrl);
                     onContractSent();
-
+                    onNextStep();
                     return 'Hợp đồng đã được gửi thành công';
                 } catch (error) {
                     console.error('Upload failed:', error);
@@ -445,8 +477,8 @@ const ContractViewAndSign = ({ onSign, onContractSent, guaranteeProfile }) => {
             </div>
             <div className="w-full lg:w-1/3 p-4 bg-white shadow-md py-8 font-sans">
                 <h2 className="font-semibold mb-2">Ký tên</h2>
-                <div className="border-2 border-gray-300 rounded-lg mb-4 w-fit">
-                    <SignatureCanvas ref={sigCanvas} canvasProps={{ width: 350, height: 150 }} />
+                <div className="border-2 border-gray-300 rounded-lg mb-4">
+                    <SignatureCanvas ref={sigCanvas} canvasProps={{ width: 370, height: 150 }} />
                 </div>
                 <div className="flex flex-wrap gap-2 mb-4">
                     <div className="flex space-x-2 mt-4">
@@ -466,10 +498,10 @@ const ContractViewAndSign = ({ onSign, onContractSent, guaranteeProfile }) => {
                         <Button
                             className="flex-1 border-2 bg-[#f5b642] hover:bg-yellow-600 text-white"
                             onClick={handleUpload}
-                            disabled={!isSigned || uploadLoading || isCreatingContract || isUpdatingContract}
+                            disabled={!isSigned || uploadLoading || isUpdatingContract}
                         >
                             <Send className="h-4 w-4 mr-2" />
-                            {uploadLoading || isCreatingContract || isUpdatingContract ? 'Đang gửi...' : 'Gửi hợp đồng'}
+                            {uploadLoading || isUpdatingContract ? 'Đang gửi...' : 'Gửi hợp đồng'}
                         </Button>
                     </div>
                 </div>
