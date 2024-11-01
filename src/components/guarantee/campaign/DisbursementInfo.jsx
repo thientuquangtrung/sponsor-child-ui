@@ -45,7 +45,7 @@ const DisbursementInfo = ({ campaignType }) => {
 
     return (
         <div className="space-y-6">
-            <h3 className="font-semibold mb-2 text-2xl text-center">Kế hoạch dự kiến giải ngân</h3>
+            <h2 className="text-xl font-semibold">Kế hoạch dự kiến giải ngân</h2>
             <div className="flex justify-between">
                 <FormField
                     control={control}
