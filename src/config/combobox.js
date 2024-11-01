@@ -64,3 +64,23 @@ export const contractType = [
     { label: 'Đăng ký Bảo lãnh', value: 0 },
     { label: 'Chiến dịch gây quỹ', value: 1 },
 ];
+
+// bank names
+
+export const bankName = [
+    { label: 'Vietcombank', value: 0 },
+    { label: 'Techcombank', value: 1 },
+    { label: 'VietinBank', value: 2 },
+    { label: 'BIDV', value: 3 },
+    { label: 'Agribank', value: 4 },
+    { label: 'Sacombank', value: 5 },
+    { label: 'MB', value: 6 },
+    { label: 'ACB', value: 7 },
+    { label: 'VPBank', value: 8 },
+    { label: 'HDBank', value: 9 },
+    { label: 'TPBank', value: 10 },
+    { label: 'VIB', value: 11 },
+    { label: 'SHB', value: 12 },
+    { label: 'Eximbank', value: 13 },
+    { label: 'OceanBank', value: 14 },
+];
