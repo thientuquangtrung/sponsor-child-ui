@@ -41,10 +41,10 @@ const ContractCampaign = () => {
     };
 
     const nextStep = () => {
-        if (currentStep === 0 && (!signedContract || !contractSent)) {
-            alert("Vui lòng ký và gửi hợp đồng trước khi tiếp tục.");
-            return;
-        }
+        // if (currentStep === 0 && (!signedContract || !contractSent)) {
+        //     alert("Vui lòng ký và gửi hợp đồng trước khi tiếp tục.");
+        //     return;
+        // }
         setCurrentStep((prev) => Math.min(prev + 1, steps.length - 1));
     };
 
