@@ -1,13 +1,12 @@
-import { Navigate, Outlet } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 import { Header } from './Header';
 import { Footer } from './Footer';
-import { useSelector } from 'react-redux';
 import Chat from './Chat';
 
 export function Applayout() {
-    const { user } = useSelector((state) => state.auth);
+    // const { user } = useSelector((state) => state.auth);
 
-    if (!user) return <Navigate to="/auth/login" replace />;
+    // if (!user) return <Navigate to="/auth/login" replace />;
 
     return (
         <>

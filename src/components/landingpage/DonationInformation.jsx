@@ -38,11 +38,15 @@ const DonationInformation = () => {
     const navigate = useNavigate();
     const { user } = useSelector((state) => state.auth);
 
-    const { data: campaign, isLoading, error } = useGetCampaignByIdQuery(id);
-    const { data: donation } = useGetDonationsByCampaignIdQuery(id);
+    const { data: campaign, isLoading, error } = useGetCampaignByIdQuery(id, { skip: !id || !user });
+    const { data: donation } = useGetDonationsByCampaignIdQuery(id, { skip: !id || !user });
     const [createDonation, { isLoading: isCreatingDonation }] = useCreateDonationMutation();
     const [cancelDonation, { isLoading: isCancellingDonation }] = useCancelDonationByOrderCodeMutation();
     const [isTermsDialogOpen, setIsTermsDialogOpen] = useState(false);
+
+    useEffect(() => {
+        if (!user) navigate('/auth/login', { replace: true });
+    }, [user]);
 
     const [payOSConfig, setPayOSConfig] = useState({
         RETURN_URL: window.location.origin, // required
@@ -389,73 +393,75 @@ const DonationInformation = () => {
                         <div className="mb-4">
                             <h2 className="font-bold text-[16px]">1. Giới thiệu về Hệ thống</h2>
                             <p>
-                                - Sponsor Child là một nền tảng công nghệ cung cấp cho người dùng các chiến dịch, hoạt động
-                                thiện nguyện do các tổ chức, cá nhân uy tín thực hiện. Người ủng hộ có thể tự đánh giá và
-                                lựa chọn các chiến dịch phù hợp với mong muốn và khả năng thiện nguyện của mình.
+                                - Sponsor Child là một nền tảng công nghệ cung cấp cho người dùng các chiến dịch, hoạt
+                                động thiện nguyện do các tổ chức, cá nhân uy tín thực hiện. Người ủng hộ có thể tự đánh
+                                giá và lựa chọn các chiến dịch phù hợp với mong muốn và khả năng thiện nguyện của mình.
                             </p>
                             <p>
-                                - Mục tiêu của Hệ thống là tạo ra một kênh kết nối an toàn, minh bạch giữa Người ủng
-                                hộ và các hoạt động từ thiện, giúp họ đóng góp một cách hiệu quả.
+                                - Mục tiêu của Hệ thống là tạo ra một kênh kết nối an toàn, minh bạch giữa Người ủng hộ
+                                và các hoạt động từ thiện, giúp họ đóng góp một cách hiệu quả.
                             </p>
                         </div>
                         <div className="mb-4">
                             <h2 className="font-bold text-[16px]">2. Sự tự nguyện và trách nhiệm của Người ủng hộ</h2>
                             <p>
-                                - Người ủng hộ khi tham gia các chiến dịch kêu gọi trên Hệ thống cần đánh giá kỹ lưỡng trước
-                                khi đưa ra quyết định đóng góp. Việc ủng hộ hoàn toàn tự nguyện và không có sự ép buộc từ
-                                phía Hệ thống hay bất kỳ bên thứ ba nào.
-                            </p>                            
+                                - Người ủng hộ khi tham gia các chiến dịch kêu gọi trên Hệ thống cần đánh giá kỹ lưỡng
+                                trước khi đưa ra quyết định đóng góp. Việc ủng hộ hoàn toàn tự nguyện và không có sự ép
+                                buộc từ phía Hệ thống hay bất kỳ bên thứ ba nào.
+                            </p>
                             <p>
-                                - Người ủng hộ hoàn toàn chịu trách nhiệm đối với các quyết định và hành động đóng góp của
-                                mình. Hệ thống không chịu trách nhiệm pháp lý cho các quyết định ủng hộ của người dùng.
+                                - Người ủng hộ hoàn toàn chịu trách nhiệm đối với các quyết định và hành động đóng góp
+                                của mình. Hệ thống không chịu trách nhiệm pháp lý cho các quyết định ủng hộ của người
+                                dùng.
                             </p>
                         </div>
                         <div className="mb-4">
-                            <h2 className="font-bold text-[16px]">3. Quản lý và sử dụng số tiền ủng hộ</h2> 
+                            <h2 className="font-bold text-[16px]">3. Quản lý và sử dụng số tiền ủng hộ</h2>
                             <p>
-                                - Toàn bộ số tiền ủng hộ sẽ được chuyển tới chiến dịch, dự án mà Người ủng hộ đã lựa chọn.
-                                Trong trường hợp số tiền thu về vượt quá mục tiêu của chiến dịch hoặc dự án, phần dư sẽ được
-                                chuyển vào Quỹ chung của Hệ thống để sử dụng cho các hoạt động thiện nguyện khác.
-                            </p>                            
+                                - Toàn bộ số tiền ủng hộ sẽ được chuyển tới chiến dịch, dự án mà Người ủng hộ đã lựa
+                                chọn. Trong trường hợp số tiền thu về vượt quá mục tiêu của chiến dịch hoặc dự án, phần
+                                dư sẽ được chuyển vào Quỹ chung của Hệ thống để sử dụng cho các hoạt động thiện nguyện
+                                khác.
+                            </p>
                             <p>
-                                - Hệ thống cam kết quản lý và sử dụng Quỹ chung một cách minh bạch. Báo cáo tài chính về việc
-                                sử dụng quỹ sẽ được công khai định kỳ để đảm bảo sự minh bạch cho Người ủng hộ.
+                                - Hệ thống cam kết quản lý và sử dụng Quỹ chung một cách minh bạch. Báo cáo tài chính về
+                                việc sử dụng quỹ sẽ được công khai định kỳ để đảm bảo sự minh bạch cho Người ủng hộ.
                             </p>
                         </div>
                         <div className="mb-4">
-                            <h2 className="font-bold text-[16px]">4. Chính sách hoàn tiền</h2>                            
+                            <h2 className="font-bold text-[16px]">4. Chính sách hoàn tiền</h2>
                             <p>
-                                - Người ủng hộ có thể yêu cầu hoàn lại tiền trong trường hợp chiến dịch chưa bắt đầu thực hiện
-                                và các điều kiện pháp lý cho phép. Sau khi chiến dịch đã bắt đầu, số tiền ủng hộ sẽ không
-                                được hoàn lại.
+                                - Người ủng hộ có thể yêu cầu hoàn lại tiền trong trường hợp chiến dịch chưa bắt đầu
+                                thực hiện và các điều kiện pháp lý cho phép. Sau khi chiến dịch đã bắt đầu, số tiền ủng
+                                hộ sẽ không được hoàn lại.
                             </p>
                         </div>
                         <div className="mb-4">
                             <h2 className="font-bold text-[16px]">5. Quyền và trách nhiệm của Hệ thống</h2>
                             <p>
-                                - Hệ thống có quyền từ chối hoặc hủy bỏ các khoản đóng góp nếu phát hiện hành vi gian lận, vi
-                                phạm pháp luật hoặc các hành động không phù hợp với chính sách của Hệ thống.
+                                - Hệ thống có quyền từ chối hoặc hủy bỏ các khoản đóng góp nếu phát hiện hành vi gian
+                                lận, vi phạm pháp luật hoặc các hành động không phù hợp với chính sách của Hệ thống.
                             </p>
                             <p>
-                                - Hệ thống đảm bảo cung cấp thông tin rõ ràng và chính xác về các chiến dịch. Tuy nhiên, Hệ
-                                thống không chịu trách nhiệm về kết quả hoặc tiến độ của các chiến dịch mà Người ủng hộ đã
-                                chọn tham gia.
+                                - Hệ thống đảm bảo cung cấp thông tin rõ ràng và chính xác về các chiến dịch. Tuy nhiên,
+                                Hệ thống không chịu trách nhiệm về kết quả hoặc tiến độ của các chiến dịch mà Người ủng
+                                hộ đã chọn tham gia.
                             </p>
                         </div>
                         <div className="mb-4">
-                            <h2 className="font-bold text-[16px]">6. Bảo mật thông tin cá nhân</h2>                            
+                            <h2 className="font-bold text-[16px]">6. Bảo mật thông tin cá nhân</h2>
                             <p>
-                                - Hệ thống cam kết bảo vệ quyền riêng tư và bảo mật thông tin cá nhân của Người ủng hộ. Thông
-                                tin cá nhân sẽ không được chia sẻ cho bên thứ ba, ngoại trừ trường hợp có yêu cầu từ cơ quan
-                                chức năng hoặc theo quy định pháp luật.
+                                - Hệ thống cam kết bảo vệ quyền riêng tư và bảo mật thông tin cá nhân của Người ủng hộ.
+                                Thông tin cá nhân sẽ không được chia sẻ cho bên thứ ba, ngoại trừ trường hợp có yêu cầu
+                                từ cơ quan chức năng hoặc theo quy định pháp luật.
                             </p>
                         </div>
                         <div className="mb-4">
                             <h2 className="font-bold text-[16px]">7. Thay đổi điều khoản</h2>
                             <p>
-                                - Hệ thống có quyền thay đổi các điều khoản sử dụng này bất kỳ lúc nào và sẽ thông báo đến
-                                Người ủng hộ qua website. Việc tiếp tục sử dụng hệ thống sau khi có sự thay đổi đồng nghĩa
-                                với việc Người ủng hộ chấp nhận các điều khoản mới.
+                                - Hệ thống có quyền thay đổi các điều khoản sử dụng này bất kỳ lúc nào và sẽ thông báo
+                                đến Người ủng hộ qua website. Việc tiếp tục sử dụng hệ thống sau khi có sự thay đổi đồng
+                                nghĩa với việc Người ủng hộ chấp nhận các điều khoản mới.
                             </p>
                         </div>
                     </DialogDescription>

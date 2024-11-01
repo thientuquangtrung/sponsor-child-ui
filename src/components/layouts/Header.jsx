@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Icons } from '@/components/icons';
@@ -26,11 +26,13 @@ import { useLogoutMutation } from '@/redux/auth/authApi';
 import SearchIcon from '@/assets/icons/SearchIcon';
 import { Input } from '@/components/ui/input';
 import Notification from '../landingpage/Notification';
+import { LogInIcon } from 'lucide-react';
 
 export function Header() {
     const [logout] = useLogoutMutation();
     const { user, refreshToken } = useSelector((state) => state.auth);
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const [open, setOpen] = useState(false);
     const location = useLocation();
     const [searchQuery, setSearchQuery] = useState('');
@@ -225,41 +227,49 @@ export function Header() {
 
                 {/* Right Section */}
                 <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
-                    <div className="w-full flex-1 md:w-auto md:flex-none">{/* <CommandMenu /> */}</div>
-                    <nav className="flex items-center space-x-2">
-                        <Notification />
-                        <div className="hidden md:block">
-                            <ModeToggle />
-                        </div>
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-                                    <Avatar className="h-8 w-8">
-                                        <AvatarImage src={user?.imageUrl} alt={user?.fullname} />
-                                        <AvatarFallback>{user?.fullname?.substring(0, 2).toUpperCase()}</AvatarFallback>
-                                    </Avatar>
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent className="w-56" align="end" forceMount>
-                                <DropdownMenuLabel className="font-normal">
-                                    <div className="flex flex-col space-y-1">
-                                        <p className="text-sm font-medium leading-none">{user?.fullname}</p>
-                                        <p className="text-xs leading-none text-muted-foreground">{user?.email}</p>
-                                    </div>
-                                </DropdownMenuLabel>
-                                {user?.role === 'Guarantee' && (
-                                    <NavLink to="/guarantee">
-                                        <DropdownMenuItem>Nhà bảo lãnh</DropdownMenuItem>
+                    {user ? (
+                        <nav className="flex items-center space-x-2">
+                            <Notification />
+                            <div className="hidden md:block">
+                                <ModeToggle />
+                            </div>
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                                        <Avatar className="h-8 w-8">
+                                            <AvatarImage src={user?.imageUrl} alt={user?.fullname} />
+                                            <AvatarFallback>
+                                                {user?.fullname?.substring(0, 2).toUpperCase()}
+                                            </AvatarFallback>
+                                        </Avatar>
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent className="w-56" align="end" forceMount>
+                                    <DropdownMenuLabel className="font-normal">
+                                        <div className="flex flex-col space-y-1">
+                                            <p className="text-sm font-medium leading-none">{user?.fullname}</p>
+                                            <p className="text-xs leading-none text-muted-foreground">{user?.email}</p>
+                                        </div>
+                                    </DropdownMenuLabel>
+                                    {user?.role === 'Guarantee' && (
+                                        <NavLink to="/guarantee">
+                                            <DropdownMenuItem>Nhà bảo lãnh</DropdownMenuItem>
+                                        </NavLink>
+                                    )}
+                                    <NavLink to="/profile">
+                                        <DropdownMenuItem>Xem thông tin cá nhân</DropdownMenuItem>
                                     </NavLink>
-                                )}
-                                <NavLink to="/profile">
-                                    <DropdownMenuItem>Xem thông tin cá nhân</DropdownMenuItem>
-                                </NavLink>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem onClick={handleLogout}>Đăng xuất</DropdownMenuItem>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
-                    </nav>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem onClick={handleLogout}>Đăng xuất</DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        </nav>
+                    ) : (
+                        <Button variant="outline" onClick={() => navigate('/auth/login')}>
+                            Đăng nhập
+                            <LogInIcon className="w-4 h-4 ml-2" />
+                        </Button>
+                    )}
                 </div>
             </div>
         </nav>
