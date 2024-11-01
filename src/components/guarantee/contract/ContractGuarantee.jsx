@@ -32,10 +32,10 @@ const ContractGuarantee = () => {
     }
 
     const nextStep = () => {
-        if (currentStep === 1 && (!signedContract || !contractSent)) {
-            alert('Vui lòng ký và gửi hợp đồng trước khi tiếp tục.');
-            return;
-        }
+        // if (currentStep === 1 && (!signedContract || !contractSent)) {
+        //     alert('Vui lòng ký và gửi hợp đồng trước khi tiếp tục.');
+        //     return;
+        // }
         setCurrentStep((prev) => Math.min(prev + 1, steps.length - 1));
     };
 
@@ -82,8 +82,8 @@ const ContractGuarantee = () => {
                         >
                             <span
                                 className={`flex items-center justify-center w-5 h-5 mr-2 text-xl border ${currentStep === index
-                                        ? 'border-green-600 dark:border-green-500'
-                                        : 'border-gray-500 dark:border-gray-400'
+                                    ? 'border-green-600 dark:border-green-500'
+                                    : 'border-gray-500 dark:border-gray-400'
                                     } rounded-full shrink-0`}
                             >
                                 {index + 1}

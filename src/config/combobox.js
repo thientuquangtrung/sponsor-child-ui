@@ -52,7 +52,7 @@ export const contractStatus = [
     { label: 'Từ chối bởi bảo lãnh', value: 3 },
     { label: 'Từ chối bởi quản trị viên', value: 4 },
     { label: 'Đã hủy', value: 5 },
-    { label: 'Đã duyệt bản cứng hợp đồng', value: 6 },
+    { label: 'Chờ tải bản cứng', value: 6 },
 
 ];
 export const contractPartyType = [
