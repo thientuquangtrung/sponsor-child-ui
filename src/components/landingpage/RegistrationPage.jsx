@@ -14,7 +14,11 @@ const RegistrationPage = () => {
     const navigate = useNavigate();
     const [showForm, setShowForm] = useState(false);
     const [formType, setFormType] = useState('');
-    const { data: guaranteeStatus, isLoading } = useCheckGuaranteeStatusQuery(user.userID, { skip: !user.userID });
+    const { data: guaranteeStatus, isLoading } = useCheckGuaranteeStatusQuery(user?.userID, { skip: !user?.userID });
+
+    useEffect(() => {
+        if (!user) navigate('/auth/login', { replace: true });
+    }, [user]);
 
     const progressStep = useMemo(() => {
         if (guaranteeStatus) {

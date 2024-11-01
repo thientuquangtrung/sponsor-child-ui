@@ -18,6 +18,7 @@ const formatDate = (dateString) => {
 };
 
 const ContractContent = ({ guaranteeProfile, signature }) => {
+    console.log(guaranteeProfile);
     const today = new Date();
     const formattedToday = format(today, "dd' tháng 'MM' năm 'yyyy");
     const renderPartyB = () => {
