@@ -14,16 +14,16 @@ const RegistrationPage = () => {
     const navigate = useNavigate();
     const [showForm, setShowForm] = useState(false);
     const [formType, setFormType] = useState('');
-    const { data: guaranteeStatus, isLoading } = useCheckGuaranteeStatusQuery(user.userID);
+    const { data: guaranteeStatus, isLoading } = useCheckGuaranteeStatusQuery(user?.userID, { skip: !user?.userID });
 
     const progressStep = useMemo(() => {
         if (guaranteeStatus) {
             switch (guaranteeStatus.status) {
-                case 'Pending':
+                case 0: // Pending
                     return 2;
-                case 'InContractSigning':
+                case 1: // InContractSigning
                     return 3;
-                case 'Approve':
+                case 2: // Approve
                     return 4;
             }
         }
@@ -46,11 +46,11 @@ const RegistrationPage = () => {
 
     const calculateProgressPercentage = (status) => {
         switch (status) {
-            case 'Pending':
+            case 0: // Pending
                 return 40;
-            case 'InContractSigning':
+            case 1: // InContractSigning
                 return 60;
-            case 'Approve':
+            case 2: // Approve
                 return 100;
         }
     };
@@ -198,7 +198,7 @@ const RegistrationPage = () => {
                         </div>
 
                         {/* Để test qua bước tiếp theo */}
-                        {progressStep === 2 && (
+                        {progressStep === 3 && (
                             <button
                                 onClick={() => {
                                     navigate('/contract');

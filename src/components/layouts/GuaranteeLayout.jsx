@@ -8,10 +8,11 @@ import HeaderSidebar from '@/components/navigation/HeaderSidebar';
 import { Button } from '@/components/ui/button';
 import { Home } from 'lucide-react';
 
-
 export function GuaranteeLayout() {
     const { user } = useSelector((state) => state.auth);
     const navigate = useNavigate();
+
+    if (!user) navigate('/home', { replace: true });
 
     const redirectToHome = () => {
         navigate('/');
@@ -27,7 +28,7 @@ export function GuaranteeLayout() {
                     className="bg-teal-500 text-white px-4 py-2 rounded-md hover:bg-teal-600 flex items-center space-x-2"
                 >
                     <Home className="w-5 h-5" />
-                    <span className='text-md'>Quay về Trang Chủ</span>
+                    <span className="text-md">Quay về Trang Chủ</span>
                 </Button>
             </div>
         );

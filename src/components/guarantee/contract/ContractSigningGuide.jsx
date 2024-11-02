@@ -26,7 +26,8 @@ const ContractSigningGuide = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (!isLoading && (!guaranteeStatus || guaranteeStatus.status !== 'InContractSigning')) {
+        if (!isLoading && (!guaranteeStatus || guaranteeStatus.status !== 1)) {
+            // not InContractSigning
             navigate('/');
         }
     }, [guaranteeStatus, isLoading, navigate]);

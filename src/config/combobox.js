@@ -22,7 +22,7 @@ export const campaignStatusUser = [
 ];
 
 export const campaignTypes = [
-    { label: 'Nuôi em', value: 0 },
+    { label: 'Nuôi trẻ', value: 0 },
     { label: 'Khẩn cấp', value: 1 },
 ];
 
@@ -70,7 +70,7 @@ export const contractStatus = [
     { label: 'Từ chối bởi bảo lãnh', value: 3 },
     { label: 'Từ chối bởi quản trị viên', value: 4 },
     { label: 'Đã hủy', value: 5 },
-    { label: 'Đã duyệt bản cứng hợp đồng', value: 6 },
+    { label: 'Chờ tải bản cứng', value: 6 },
 
 ];
 export const contractPartyType = [
@@ -81,4 +81,24 @@ export const contractPartyType = [
 export const contractType = [
     { label: 'Đăng ký Bảo lãnh', value: 0 },
     { label: 'Chiến dịch gây quỹ', value: 1 },
+];
+
+// bank names
+
+export const bankName = [
+    { label: 'Vietcombank', value: 0 },
+    { label: 'Techcombank', value: 1 },
+    { label: 'VietinBank', value: 2 },
+    { label: 'BIDV', value: 3 },
+    { label: 'Agribank', value: 4 },
+    { label: 'Sacombank', value: 5 },
+    { label: 'MB', value: 6 },
+    { label: 'ACB', value: 7 },
+    { label: 'VPBank', value: 8 },
+    { label: 'HDBank', value: 9 },
+    { label: 'TPBank', value: 10 },
+    { label: 'VIB', value: 11 },
+    { label: 'SHB', value: 12 },
+    { label: 'Eximbank', value: 13 },
+    { label: 'OceanBank', value: 14 },
 ];

@@ -2,7 +2,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Calendar, Clock, MapPin } from 'lucide-react';
+import { Calendar, Clock, FileText, MapPin, User2, UserRoundSearch } from 'lucide-react';
 import { Progress } from "@/components/ui/progress";
 import { useGetCampaignByIdQuery } from '@/redux/campaign/campaignApi';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -136,34 +136,59 @@ const CampaignGuaranteeDetail = () => {
                                     </span>
                                     <span className="text-sm text-gray-500">Mục tiêu</span>
                                 </div>
+
                             </div>
+                            <div className="flex justify-between items-center text-gray-700">
+                                <div className="flex items-center gap-3">
+                                    <Calendar className="h-5 w-5 text-teal-500" />
+                                    <span>Bắt đầu: {new Date(campaignData.startDate).toLocaleDateString('vi-VN')}</span>
+                                </div>
+                                <div className="flex items-center gap-3">
+                                    <Clock className="h-5 w-5 text-teal-500" />
+                                    <span>Kết thúc: {new Date(campaignData.endDate).toLocaleDateString('vi-VN')}</span>
+                                </div>
+                            </div>
+
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <Card className="border border-gray-100 shadow-md hover:shadow-lg transition-shadow duration-300">
-                                <CardHeader className="bg-rose-50 border-b border-gray-100">
-                                    <CardTitle className="text-lg flex items-center gap-2 text-gray-800">
-                                        Thông tin chiến dịch
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent className="space-y-4 pt-6">
-                                    <div className="flex items-center gap-3 text-gray-700">
+                        <Card className="border border-gray-100 shadow-md hover:shadow-lg transition-shadow duration-300">
+                            <CardHeader className="bg-rose-50 border-b border-gray-100">
+                                <CardTitle className="text-lg flex items-center gap-2 text-gray-800">
+                                    Thông tin trẻ em
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent className="space-y-4 pt-6">
+                                <div className="grid grid-cols-3 gap-6 text-gray-700">
+                                    <div className="flex items-center gap-3">
+                                        <User2 className="h-5 w-5 text-teal-500" />
+                                        <span>Tên: {campaignData.childName}</span>
+                                    </div>
+                                    <div className="flex items-center gap-3">
                                         <Calendar className="h-5 w-5 text-teal-500" />
-                                        <span>Bắt đầu: {new Date(campaignData.startDate).toLocaleDateString('vi-VN')}</span>
+                                        <span>Năm sinh: {campaignData.childBirthYear}</span>
                                     </div>
-                                    <div className="flex items-center gap-3 text-gray-700">
-                                        <Clock className="h-5 w-5 text-teal-500" />
-                                        <span>Kết thúc: {new Date(campaignData.endDate).toLocaleDateString('vi-VN')}</span>
+                                    <div className="flex items-center gap-3">
+                                        <UserRoundSearch className="h-5 w-5 text-teal-500" />
+                                        <span>Giới tính: {campaignData.childGender === 0 ? 'Nam' : 'Nữ'}</span>
                                     </div>
-                                    <div className="flex items-center gap-3 text-gray-700">
-                                        <MapPin className="h-5 w-5 text-teal-500" />
-                                        <span>Địa điểm: {campaignData.childProfile.province}</span>
-                                    </div>
-                                </CardContent>
-                            </Card>
+                                </div>
 
+                                <div className="flex items-center gap-3 text-gray-700">
+                                    <MapPin className="h-5 w-5 text-teal-500" />
+                                    <span>Địa chỉ: {`${campaignData.childLocation}, ${campaignData.childWard}, ${campaignData.childDistrict}, ${campaignData.childProvince}`}</span>
+                                </div>
+                                <div className="flex items-center gap-3 text-gray-700">
+                                    <FileText className="h-5 w-5 text-teal-500" />
+                                    <span>
+                                        Ảnh hay giấy tờ liên quan đến trẻ:
+                                        <a href={campaignData.childIdentificationInformationFile} target="_blank" rel="noopener noreferrer" className="text-blue-500 underline">
+                                            Tải xuống
+                                        </a>
+                                    </span>
+                                </div>
+                            </CardContent>
+                        </Card>
 
-                        </div>
 
                         <Card className="border border-gray-100 shadow-md hover:shadow-lg transition-shadow duration-300">
                             <CardHeader className="bg-rose-50 border-b border-gray-100">

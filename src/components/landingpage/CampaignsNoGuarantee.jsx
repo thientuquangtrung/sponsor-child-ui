@@ -52,7 +52,7 @@ const CampaignsNoGuarantee = () => {
                                 <div className="flex flex-row space-x-2 p-4">
                                     <MapPin size={24} />
                                     <p className="text-md text-gray-600">
-                                        {`${campaign?.childProfile.ward}, ${campaign?.childProfile.district}, ${campaign?.childProfile.province}`}
+                                        {`${campaign?.childWard}, ${campaign?.childDistrict}, ${campaign?.childProvince}`}
                                     </p>
                                 </div>
                             </div>

@@ -720,7 +720,8 @@ const PersonalRegistrationForm = ({ onSubmit }) => {
                                 variant="solid"
                                 className="bg-gradient-to-b from-teal-400 to-teal-600 text-white px-6 py-2 rounded-lg shadow"
                                 onClick={handleSubmitForm}
-                                disabled={isLoading}
+                                className="bg-teal-600 text-white"
+                                disabled={isLoading || !isScanned}
                             >
                                 {isLoading ? 'Đang đăng ký...' : 'Đăng ký'}
                             </Button>
