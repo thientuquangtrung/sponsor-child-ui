@@ -22,9 +22,9 @@ const PageIntroduction = () => {
     };
 
     return (
-        <div className="bg-white">
+        <div className="mx-auto py-8">
             <div className="relative bg-cover bg-center">
-                <img src={banner} alt="banner" className="w-full object-cover" />
+                <img src={banner} alt="banner" className="w-full object-cover rounded-lg shadow-md" />
             </div>
 
             <section

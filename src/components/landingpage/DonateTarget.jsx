@@ -67,7 +67,7 @@ const DonateTarget = () => {
     }
 
     return (
-        <div className="mx-auto py-8 px-4">
+        <div className="mx-auto py-8">
             <div className="relative bg-cover bg-center">
                 <img src={banner} alt="banner" className="w-full object-cover rounded-lg shadow-md" />
             </div>
@@ -148,18 +148,18 @@ const DonateTarget = () => {
                     {(URLSearchParams.get('type') ||
                         URLSearchParams.get('province') ||
                         URLSearchParams.get('status')) && (
-                        <Button
-                            onClick={() => {
-                                URLSearchParams.delete('type');
-                                URLSearchParams.delete('province');
-                                URLSearchParams.delete('status');
-                                SetURLSearchParams(URLSearchParams);
-                            }}
-                            variant="outline"
-                        >
-                            <X className="w-4 h-4 mr-1" /> xoá bộ lọc
-                        </Button>
-                    )}
+                            <Button
+                                onClick={() => {
+                                    URLSearchParams.delete('type');
+                                    URLSearchParams.delete('province');
+                                    URLSearchParams.delete('status');
+                                    SetURLSearchParams(URLSearchParams);
+                                }}
+                                variant="outline"
+                            >
+                                <X className="w-4 h-4 mr-1" /> xoá bộ lọc
+                            </Button>
+                        )}
                 </div>
 
                 <div className="relative mb-2">
@@ -193,9 +193,8 @@ const DonateTarget = () => {
                 {['all', 'organization', 'individual'].map((tab) => (
                     <button
                         key={tab}
-                        className={`text-lg font-semibold ${
-                            activeTab === tab ? 'text-teal-600 border-b-2 border-teal-600' : 'text-gray-700'
-                        }`}
+                        className={`text-lg font-semibold ${activeTab === tab ? 'text-teal-600 border-b-2 border-teal-600' : 'text-gray-700'
+                            }`}
                         onClick={() => handleTabClick(tab)}
                     >
                         {tab === 'all' ? 'Tất cả' : tab === 'organization' ? 'Tổ chức' : 'Cá nhân'}
