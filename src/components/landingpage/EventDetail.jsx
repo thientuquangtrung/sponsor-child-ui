@@ -104,7 +104,6 @@ const EventDetail = () => {
             { time: "16:30 - 17:00", activity: "Tổng kết chương trình" }
         ],
         requirements: [
-            "Độ tuổi từ 18 trở lên",
             "Có tinh thần thiện nguyện và yêu trẻ",
             "Cam kết tham gia đầy đủ thời gian",
             "Mang theo giấy tờ tùy thân"

@@ -6,7 +6,7 @@ const addCampaignSchema = z.object({
         required_error: "Vui lòng nhập năm sinh",
         invalid_type_error: "Năm sinh không hợp lệ"
     })
-        .min(new Date().getFullYear() - 17, "Trẻ phải dưới 17 tuổi")
+        .min(new Date().getFullYear() - 16, "Trẻ phải dưới 17 tuổi")
         .max(new Date().getFullYear(), "Năm sinh không hợp lệ"),
     childGender: z.number().min(0).max(1),
     childLocation: z.string().min(1, "Vui lòng nhập địa chỉ trẻ."),
@@ -19,10 +19,15 @@ const addCampaignSchema = z.object({
     wardId: z.string().min(1, "Vui lòng chọn phường/xã"),
     title: z.string().min(1, "Bạn vui lòng nhập Tiêu Đề chiến dịch"),
     story: z.string().min(1, "Bạn vui lòng nhập thông tin chi tiết về chiến dịch"),
-    targetAmount: z.string().refine((val) => {
-        const numericValue = parseFloat(val.replace(/,/g, ''));
-        return !isNaN(numericValue) && numericValue > 0;
-    }, { message: "Bạn vui lòng nhập số tiền mục tiêu lớn hơn 0" }),
+    targetAmount: z.string()
+        .refine((val) => {
+            const numericValue = parseFloat(val.replace(/,/g, ''));
+            return !isNaN(numericValue) && numericValue >= 10000000;
+        }, { message: "Số tiền mục tiêu tối thiểu là 10,000,000đ" })
+        .refine((val) => {
+            const numericValue = parseFloat(val.replace(/,/g, ''));
+            return !isNaN(numericValue) && numericValue <= 50000000000;
+        }, { message: "Số tiền mục tiêu tối đa là 50,000,000,000đ" }),
     startDate: z.date({
         required_error: "Vui lòng chọn ngày bắt đầu",
     }),
