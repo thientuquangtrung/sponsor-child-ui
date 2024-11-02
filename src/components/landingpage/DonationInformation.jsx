@@ -4,12 +4,12 @@ import { useSelector } from 'react-redux';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { cn } from '@/lib/utils';
 import { Check, Copy } from 'lucide-react';
 import { usePayOS } from 'payos-checkout';
+import { toast } from 'sonner';
 
+import { cn, formatNumber } from '@/lib/utils';
 import qrcode from '@/assets/images/qrcode.jpg';
-
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -21,7 +21,6 @@ import {
     useCreateDonationMutation,
     useGetDonationsByCampaignIdQuery,
 } from '@/redux/donation/donationApi';
-import { toast } from 'sonner';
 
 const formSchema = z.object({
     amount: z.string().refine((val) => parseInt(val.replace(/\./g, ''), 10) >= 1, {
@@ -43,10 +42,6 @@ const DonationInformation = () => {
     const [createDonation, { isLoading: isCreatingDonation }] = useCreateDonationMutation();
     const [cancelDonation, { isLoading: isCancellingDonation }] = useCancelDonationByOrderCodeMutation();
     const [isTermsDialogOpen, setIsTermsDialogOpen] = useState(false);
-
-    useEffect(() => {
-        if (!user) navigate('/auth/login', { replace: true });
-    }, [user]);
 
     const [payOSConfig, setPayOSConfig] = useState({
         RETURN_URL: window.location.origin, // required
@@ -92,8 +87,6 @@ const DonationInformation = () => {
             anonymous: false,
         },
     });
-
-    const formatNumber = (value) => value.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 
     const handleAmountChange = async (e) => {
         let value = e.target.value.replace(/\D/g, '');

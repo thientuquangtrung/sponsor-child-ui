@@ -2,9 +2,10 @@ import { Suspense, lazy } from 'react';
 import { Navigate, useRoutes } from 'react-router-dom';
 
 // layouts
-import { Applayout } from '@/components/layouts/AppLayout';
+import { AppLayout } from '@/components/layouts/AppLayout';
 import { AuthLayout } from '@/components/layouts/AuthLayout';
 import { GuaranteeLayout } from '@/components/layouts/GuaranteeLayout';
+import { MemberLayout } from '@/components/layouts/MemberLayout';
 
 // config
 import { DEFAULT_PATH } from '../config/app';
@@ -78,12 +79,18 @@ export default function Router() {
         },
         {
             path: '/',
-            element: <Applayout />,
+            element: <AppLayout />,
             children: [
-                // { element: <Navigate to={DEFAULT_PATH} replace />, index: true },
-
-                { element: <HomePage />, index: true },
-
+                { element: <Navigate to={DEFAULT_PATH} replace />, index: true },
+                { path: 'home', element: <HomePage /> },
+                {
+                    path: 'introduction',
+                    element: <PageIntroduction />,
+                },
+                {
+                    path: 'about',
+                    element: <AboutPage />,
+                },
                 {
                     path: 'campaign-detail/:id',
                     element: <CampaignDetail />,
@@ -101,47 +108,6 @@ export default function Router() {
                     element: <DonateTarget />,
                 },
                 {
-                    path: 'donate-target/info-donate/:id',
-                    element: <DonationInformation />,
-                },
-                {
-                    path: 'introduction',
-                    element: <PageIntroduction />,
-                },
-                {
-                    path: 'register',
-                    element: <RegistrationPage />,
-                },
-                {
-                    path: 'about',
-                    element: <AboutPage />,
-                },
-
-                {
-                    path: 'home',
-                    element: <HomePage />,
-                },
-                {
-                    path: 'assets',
-                    element: <PageMyAssets />,
-                },
-                {
-                    path: 'assets/add',
-                    element: <PageAddAsset />,
-                },
-                {
-                    path: 'assetshub',
-                    element: <PageAssetsHub />,
-                },
-                {
-                    path: 'profile',
-                    element: <PageMyProfile />,
-                },
-                {
-                    path: 'contract',
-                    element: <ContractGuarantee />,
-                },
-                {
                     path: 'events',
                     element: <VisitEvents />,
                 },
@@ -149,10 +115,27 @@ export default function Router() {
                     path: 'event/:id',
                     element: <EventDetail />,
                 },
-
                 {
-                    path: 'empty',
-                    element: <PageEmpty />,
+                    path: '',
+                    element: <MemberLayout />,
+                    children: [
+                        {
+                            path: 'profile',
+                            element: <PageMyProfile />,
+                        },
+                        {
+                            path: 'contract',
+                            element: <ContractGuarantee />,
+                        },
+                        {
+                            path: 'donate-target/info-donate/:id',
+                            element: <DonationInformation />,
+                        },
+                        {
+                            path: 'register',
+                            element: <RegistrationPage />,
+                        },
+                    ],
                 },
                 { path: '404', element: <Page404 /> },
                 { path: '*', element: <Navigate to="/404" replace /> },
@@ -162,22 +145,20 @@ export default function Router() {
     ]);
 }
 
+//auth
 const LoginPage = Loadable(lazy(() => import('../pages/auth/Login')));
 const RegisterPage = Loadable(lazy(() => import('../pages/auth/Register')));
 const ConfirmMailPage = Loadable(lazy(() => import('../pages/auth/ConfirmMail')));
 const ResetPasswordPage = Loadable(lazy(() => import('../pages/auth/ResetPassword')));
 const NewPasswordPage = Loadable(lazy(() => import('../pages/auth/NewPassword')));
 
-const PageMyProfile = Loadable(lazy(() => import('../pages/asset-pages/MyProfile')));
-const PageMyAssets = Loadable(lazy(() => import('../pages/asset-pages/MyAssets')));
-const PageAddAsset = Loadable(lazy(() => import('../pages/asset-pages/AddAsset')));
-const PageAssetsHub = Loadable(lazy(() => import('../pages/asset-pages/AssetsHub')));
+//login required
+const PageMyProfile = Loadable(lazy(() => import('../pages/MyProfile')));
 
-const PageEmpty = Loadable(lazy(() => import('../pages/Empty')));
-const Page404 = Loadable(lazy(() => import('../pages/NoMatch')));
-
+//app
 const HomePage = Loadable(lazy(() => import('../pages/HomePage')));
 const AboutPage = Loadable(lazy(() => import('../pages/AboutPage')));
+const Page404 = Loadable(lazy(() => import('../pages/NoMatch')));
 
 //guarantee
 const GuaranteeHome = Loadable(lazy(() => import('@/components/guarantee/GuaranteeHome')));
