@@ -16,6 +16,7 @@ import {
 } from '@/components/ui/dialog';
 import { Carousel, CarouselPrevious, CarouselNext, CarouselContent, CarouselItem } from '@/components/ui/carousel';
 import { useSelector } from 'react-redux';
+import { formatNumber } from '@/lib/utils';
 
 const CampaignOverview = () => {
     const { id } = useParams();
@@ -77,9 +78,8 @@ const CampaignOverview = () => {
             try {
                 const resources = await getAssetsList('campaign_1');
                 const imageUrls = resources.map((resource) => {
-                    return `https://res.cloudinary.com/${import.meta.env.VITE_CLOUD_NAME}/image/${resource.type}/${
-                        resource.public_id
-                    }.${resource.format}`;
+                    return `https://res.cloudinary.com/${import.meta.env.VITE_CLOUD_NAME}/image/${resource.type}/${resource.public_id
+                        }.${resource.format}`;
                 });
                 setImages(imageUrls);
             } catch (error) {
@@ -142,27 +142,27 @@ const CampaignOverview = () => {
                                 </h3>
                                 <div className="p-4">
                                     <p className="text-lg text-gray-700 mt-2">
-                                        <strong>Tên:</strong> {campaign?.childProfile.name}
+                                        <strong>Tên:</strong> {campaign?.childName}
                                     </p>
                                     <div className="flex space-x-24">
                                         <p className="text-lg text-gray-700 mt-2">
-                                            <strong>Tuổi:</strong> {campaign?.childProfile.age}
+                                            <strong>Năm sinh:</strong> {campaign?.childBirthYear}
                                         </p>
                                         <p className="text-lg text-gray-700 mt-2">
                                             <strong>Giới tính:</strong>{' '}
-                                            {campaign?.childProfile.gender === 1 ? 'Nam' : 'Nữ'}
+                                            {campaign?.childGender === 1 ? 'Nam' : 'Nữ'}
                                         </p>
                                     </div>
                                     <p className="text-lg text-gray-700 mt-2">
                                         <strong>Địa chỉ:</strong>{' '}
-                                        {`${campaign?.childProfile.location}, ${campaign?.childProfile.ward}, ${campaign?.childProfile.district}, ${campaign?.childProfile.province}`}
+                                        {`${campaign?.childLocation}, ${campaign?.childWard}, ${campaign?.childDistrict}, ${campaign?.childProvince}`}
                                     </p>
                                     <p className="text-lg text-gray-700 mt-2">
                                         <strong>Tình trạng:</strong>{' '}
-                                        {campaign?.childProfile.status === 0 ? 'Chưa bảo trợ' : 'Đã bảo trợ'}
+                                        {campaign?.childStatus === 0 ? 'Chưa bảo trợ' : 'Đã bảo trợ'}
                                     </p>
                                     <a
-                                        href={campaign?.childProfile.identificationInformationFile}
+                                        href={campaign?.childIdentificationInformationFile}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="text-teal-500 underline mt-2 block italic"
@@ -239,7 +239,9 @@ const CampaignOverview = () => {
                             <DollarSign className="text-teal-500 mr-2" />
                             <span className="font-semibold">Tổng số tiền quyên góp: </span>
                             <span className="font-semibold text-teal-500 ml-2">
-                                {campaign?.disbursementPlans[0]?.totalPlannedAmount} VND
+                                {campaign?.disbursementPlans[0]?.totalPlannedAmount
+                                    ? formatNumber(campaign.disbursementPlans[0].totalPlannedAmount.toString()) + ' VND'
+                                    : '0 VND'}
                             </span>
                         </div>
                     </div>
@@ -268,9 +270,8 @@ const CampaignOverview = () => {
                     {campaign?.disbursementPlans[0]?.stages.map((stage, index) => (
                         <div
                             key={stage.stageNumber}
-                            className={`flex justify-between items-center w-full mb-16 ${
-                                index % 2 === 0 ? 'flex-row' : 'flex-row-reverse'
-                            }`}
+                            className={`flex justify-between items-center w-full mb-16 ${index % 2 === 0 ? 'flex-row' : 'flex-row-reverse'
+                                }`}
                         >
                             <div className="w-5/12">
                                 <div className="bg-white p-6 rounded shadow-lg">
@@ -280,7 +281,7 @@ const CampaignOverview = () => {
                                     </h3>
                                     <p className="mt-2 text-gray-600 font-semibold">Số tiền giải ngân:</p>
                                     <p className="mt-2 text-md font-bold text-teal-500">
-                                        {stage.disbursementAmount} VND
+                                        {formatNumber(stage.disbursementAmount.toString())} VND
                                     </p>
                                     <p className="mt-4 text-gray-500">
                                         Trạng thái:{' '}
