@@ -17,6 +17,7 @@ import {
 import { Carousel, CarouselPrevious, CarouselNext, CarouselContent, CarouselItem } from '@/components/ui/carousel';
 import { useSelector } from 'react-redux';
 import { formatNumber } from '@/lib/utils';
+import { ScrollArea } from '@radix-ui/react-scroll-area';
 
 const CampaignOverview = () => {
     const { id } = useParams();
@@ -32,6 +33,8 @@ const CampaignOverview = () => {
     //     toast.success('Đã gửi yêu cầu bảo lãnh thành công!');
     //     setIsDialogOpen(false);
     // };
+    console.log(campaign);
+
 
     const handleSendRequest = async () => {
         try {
@@ -43,7 +46,7 @@ const CampaignOverview = () => {
                 raiseAmount: campaign?.raiseAmount || 0,
                 thumbnailUrl: campaign?.thumbnailUrl || '',
                 imagesFolderUrl: campaign?.imagesFolderUrl || '',
-                rejectionReason: 'null',
+                userID: user?.userID || '',
             };
 
             console.log('Data to send to backend:', JSON.stringify(dataToUpdate, null, 2));
@@ -116,7 +119,7 @@ const CampaignOverview = () => {
                         <img
                             src={campaign?.thumbnailUrl}
                             alt={campaign.title}
-                            className="w-full object-cover mb-4 rounded-lg"
+                            className="w-full h-[500px] object-cover mb-4 rounded-lg"
                         />
                         <Carousel className="my-6" opts={{ loop: true }}>
                             <CarouselPrevious />
@@ -195,14 +198,18 @@ const CampaignOverview = () => {
                             </div>
                         </div>
 
-                        <div className="mt-6  bg-white bg-opacity-80 rounded-lg shadow-md">
+                        <div className="mt-6 bg-white bg-opacity-80 rounded-lg shadow-md">
                             <h2 className="text-xl font-bold text-center mb-4 p-4 text-gray-800 bg-rose-100 rounded-tl-lg rounded-tr-lg">
-                                “Câu chuyện”
+                                Câu chuyện
                             </h2>
-                            <p className="text-lg text-gray-600 leading-relaxed p-4">
-                                {campaign?.story.replace(/<\/?p[^>]*>/g, '')}
-                            </p>
+                            <div className="h-[400px] overflow-y-auto rounded-lg">
+                                <div
+                                    className="prose max-w-none text-lg p-6"
+                                    dangerouslySetInnerHTML={{ __html: campaign?.story?.replace(/<\/?p[^>]*>/g, '') }}
+                                />
+                            </div>
                         </div>
+
                     </div>
                 </div>
             </div>

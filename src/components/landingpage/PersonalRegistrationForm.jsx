@@ -3,7 +3,7 @@ import banner from '@/assets/images/b_personal.png';
 import { useSelector } from 'react-redux';
 import { toast } from 'sonner';
 import { useForm } from 'react-hook-form';
-import { ArrowBigUpDash, CheckCircle, Upload, X } from 'lucide-react';
+import { ArrowBigUpDash, CheckCircle, LoaderCircle, Upload, X } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
     Dialog,
@@ -30,6 +30,9 @@ const PersonalRegistrationForm = ({ onSubmit }) => {
     const backCIInputRef = useRef(null);
     const [frontCI, setFrontCI] = useState(null);
     const [backCI, setBackCI] = useState(null);
+    const [isScanning, setIsScanning] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
     const [cccdData, setCccdData] = useState({
         id: '',
         name: '',
@@ -209,16 +212,25 @@ const PersonalRegistrationForm = ({ onSubmit }) => {
             console.error('Failed to recognize CCCD:', error);
         }
     };
-
     const handleScanCCCD = async () => {
-        if (frontCI?.file) {
-            await uploadCCCDAndRecognize(frontCI.file, 'front');
+        if (!frontCI?.file && !backCI?.file) return;
+
+        setIsScanning(true);
+        try {
+            if (frontCI?.file) {
+                await uploadCCCDAndRecognize(frontCI.file, 'front');
+            }
+            if (backCI?.file) {
+                await uploadCCCDAndRecognize(backCI.file, 'back');
+            }
+            setIsScanned(true);
+        } catch (error) {
+            console.error('Scan failed:', error);
+        } finally {
+            setIsScanning(false);
         }
-        if (backCI?.file) {
-            await uploadCCCDAndRecognize(backCI.file, 'back');
-        }
-        setIsScanned(true);
     };
+
 
     const removeImage = (setImage, image, inputRef, type) => {
         if (image) {
@@ -252,6 +264,7 @@ const PersonalRegistrationForm = ({ onSubmit }) => {
     };
 
     const handleSubmitForm = async () => {
+        setIsSubmitting(true);
         try {
             const { uploadedUrls, frontCIUrl, backCIUrl } = await handleUploadAllImages();
 
@@ -291,6 +304,9 @@ const PersonalRegistrationForm = ({ onSubmit }) => {
             if (onSubmit) {
                 onSubmit();
             }
+
+            window.location.reload();
+
         } catch (error) {
             console.error('Error while registering:', error);
             if (error.data) {
@@ -300,6 +316,8 @@ const PersonalRegistrationForm = ({ onSubmit }) => {
                 }
             }
             toast.error('Đã có lỗi xảy ra khi đăng ký!');
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -464,12 +482,21 @@ const PersonalRegistrationForm = ({ onSubmit }) => {
                             </div>
                         </div>
                     </div>
+
+
                     <Button
                         onClick={handleScanCCCD}
-                        className="mt-4 bg-secondary text-white hover:bg-normal"
-                        disabled={!frontCI || !backCI}
+                        className="mt-4 bg-secondary text-white"
+                        disabled={isScanning || !frontCI || !backCI}
                     >
-                        Scan CCCD
+                        {isScanning ? (
+                            <>
+                                <LoaderCircle className="animate-spin -ml-1 mr-3 h-5 w-5 inline" />
+                                Đang quét...
+                            </>
+                        ) : (
+                            'Scan CCCD'
+                        )}
                     </Button>
 
                     {isScanned && (
@@ -720,10 +747,16 @@ const PersonalRegistrationForm = ({ onSubmit }) => {
                                 variant="solid"
                                 className="bg-gradient-to-b from-teal-400 to-teal-600 text-white px-6 py-2 rounded-lg shadow"
                                 onClick={handleSubmitForm}
-                                className="bg-teal-600 text-white"
-                                disabled={isLoading || !isScanned}
+                                disabled={isSubmitting || !isScanned}
                             >
-                                {isLoading ? 'Đang đăng ký...' : 'Đăng ký'}
+                                {isSubmitting ? (
+                                    <>
+                                        <LoaderCircle className="animate-spin -ml-1 mr-3 h-5 w-5 inline" />
+                                        Đang xử lý...
+                                    </>
+                                ) : (
+                                    'Đăng ký'
+                                )}
                             </Button>
                         </DialogFooter>
                     </DialogContent>
