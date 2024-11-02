@@ -26,8 +26,8 @@ import CampaignGuaranteeDetail from '@/components/guarantee/campaign/CampaignGua
 import VisitEvents from '@/components/landingpage/VisitEvents';
 import EventDetail from '@/components/landingpage/EventDetail';
 
-import DisbursementRequest from '@/components/guarantee/campaign/DisbursementRequest';
-import CreateDisbursementRequest from '@/components/guarantee/campaign/CreateDisbursementRequest';
+import DisbursementRequest from '@/components/guarantee/disbursement/DisbursementRequest';
+import CreateDisbursementRequest from '@/components/guarantee/disbursement/CreateDisbursementRequest';
 import CampaignInfo from '@/components/guarantee/campaign/CampaignInfo';
 
 const Loadable = (Component) => {

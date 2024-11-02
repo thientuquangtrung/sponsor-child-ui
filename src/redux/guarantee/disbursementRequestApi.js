@@ -9,7 +9,9 @@ export const disbursementRequestApi = baseApi.injectEndpoints({
         getDisbursementRequestByGuaranteeId: builder.query({
             query: (guaranteeID) => `/disbursementRequest/by-guarantee/${guaranteeID}`,
         }),
-
+        canCreateDisbursementRequest: builder.query({
+            query: (stageID) => `/disbursementRequest/can-create-request/${stageID}`,
+        }),
         createDisbursementRequest: builder.mutation({
             query: (data) => ({
                 url: '/disbursementRequest',
@@ -20,4 +22,4 @@ export const disbursementRequestApi = baseApi.injectEndpoints({
     }),
 });
 
-export const { useGetDisbursementRequestByIdQuery, useGetDisbursementRequestByGuaranteeIdQuery, useCreateDisbursementRequestMutation } = disbursementRequestApi;
+export const { useGetDisbursementRequestByIdQuery, useGetDisbursementRequestByGuaranteeIdQuery, useCreateDisbursementRequestMutation, useCanCreateDisbursementRequestQuery } = disbursementRequestApi;

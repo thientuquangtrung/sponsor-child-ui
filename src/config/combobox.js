@@ -34,6 +34,24 @@ export const organizationTypes = [
     { value: 4, label: 'Tổ chức kinh tế, Doanh nghiệp' },
 ];
 
+export const bankNames = [
+    { value: 0, label: 'Vietcombank' },
+    { value: 1, label: 'Techcombank' },
+    { value: 2, label: 'VietinBank' },
+    { value: 3, label: 'BIDV' },
+    { value: 4, label: 'Agribank' },
+    { value: 5, label: 'Sacombank' },
+    { value: 6, label: 'MB' },
+    { value: 7, label: 'ACB' },
+    { value: 8, label: 'VPBank' },
+    { value: 9, label: 'HDBank' },
+    { value: 10, label: 'TPBank' },
+    { value: 11, label: 'VIB' },
+    { value: 12, label: 'SHB' },
+    { value: 13, label: 'Eximbank' },
+    { value: 14, label: 'OceanBank' }
+];
+
 //child profile
 export const guaranteeRelation = [
     { value: 0, label: 'Cha mẹ' },

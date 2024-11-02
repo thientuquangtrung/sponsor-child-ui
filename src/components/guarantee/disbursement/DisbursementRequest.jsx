@@ -1,19 +1,25 @@
 import * as React from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { flexRender, getCoreRowModel, getSortedRowModel, useReactTable } from '@tanstack/react-table';
-import { Badge } from '@/components/ui/badge';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { DataTableColumnHeader } from '@/components/datatable/DataTableColumnHeader';
-import { useGetDisbursementRequestByGuaranteeIdQuery } from '@/redux/guarantee/disbursementRequestApi';
-import LoadingScreen from '@/components/common/LoadingScreen';
+import { CircleFadingPlus, Eye, MoreHorizontal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { CircleFadingPlus } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import LoadingScreen from '@/components/common/LoadingScreen';
+import { DataTableColumnHeader } from '@/components/datatable/DataTableColumnHeader';
+import { flexRender, getCoreRowModel, getSortedRowModel, useReactTable } from '@tanstack/react-table';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { useGetDisbursementRequestByGuaranteeIdQuery } from '@/redux/guarantee/disbursementRequestApi';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 const getRequestStatusVariant = (status) => {
     switch (status) {
         case 0:
-            return 'bg-yellow-500 text-white hover:bg-normal';
+            return 'bg-yellow-500 text-yellow-100 hover:bg-normal';
         case 1:
             return 'bg-teal-500 text-white hover:bg-normal';
         case 2:
@@ -39,7 +45,12 @@ const getRequestStatusLabel = (status) => {
 export function DisbursementRequests() {
     const { user } = useSelector((state) => state.auth);
     const guaranteeID = user?.userID;
-    const { data: disbursementRequests, isLoading, error } = useGetDisbursementRequestByGuaranteeIdQuery(guaranteeID);
+    const {
+        data: disbursementRequests,
+        isLoading,
+        error,
+        refetch,
+    } = useGetDisbursementRequestByGuaranteeIdQuery(guaranteeID);
     const [sorting, setSorting] = React.useState([{ id: 'requestDate', desc: true }]);
     const navigate = useNavigate();
 
@@ -74,6 +85,10 @@ export function DisbursementRequests() {
                 );
             },
         },
+        {
+            id: 'actions',
+            cell: ({ row }) => <ActionMenu row={row} />,
+        },
     ];
 
     const table = useReactTable({
@@ -95,6 +110,30 @@ export function DisbursementRequests() {
         return <div className="text-center py-4 text-red-500">Đã có lỗi khi tải dữ liệu</div>;
     }
 
+    const ActionMenu = ({ row }) => {
+        const navigate = useNavigate();
+        const stageID = row.original.disbursementStage?.stageID;
+        const handleViewDetails = () => {
+            navigate(`/guarantee/create-disbursement-request?stageID=${stageID}`);
+        };
+        return (
+            <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="h-8 w-8 p-0 hover:bg-normal">
+                        <span className="sr-only">Mở menu</span>
+                        <MoreHorizontal className="h-4 w-4" />
+                    </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                    <DropdownMenuItem onClick={handleViewDetails}>
+                        <Eye className="mr-2 h-4 w-4" />
+                        Xem chi tiết
+                    </DropdownMenuItem>
+                </DropdownMenuContent>
+            </DropdownMenu>
+        );
+    };
+
     return (
         <div className="w-full space-y-4">
             <h1 className="text-4xl text-center font-bold py-4 bg-gradient-to-b from-teal-500 to-rose-300 text-transparent bg-clip-text">
@@ -112,7 +151,6 @@ export function DisbursementRequests() {
                     </Button>
                 </div>
             </div>
-
 
             <div className="rounded-md border">
                 <Table>
