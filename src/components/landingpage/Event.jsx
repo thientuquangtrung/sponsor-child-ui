@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Heart, ExternalLink, Calendar, MapPin, Users, CheckCircle, Clock } from 'lucide-react';
+import { ExternalLink, Calendar, MapPin, Users, CheckCircle, Clock } from 'lucide-react';
 
 const Event = () => {
     const [events, setEvents] = useState([
@@ -10,9 +10,7 @@ const Event = () => {
             date: "2023-09-15",
             location: "Công viên Thống Nhất, Hà Nội",
             participants: 500,
-            interested: 120,
             image: "https://sonapharm.vn/wp-content/uploads/2023/10/BANNER-CHAY-LANG-SON-02-1-1.jpg",
-            isInterested: false,
             isOngoing: true,
         },
         {
@@ -21,9 +19,7 @@ const Event = () => {
             date: "2023-10-01",
             location: "Bãi biển Mỹ Khê, Đà Nẵng",
             participants: 200,
-            interested: 85,
             image: "https://thanhnien.mediacdn.vn/Uploaded/huydat/2022_10_02/thanh-nien-don-rac-sau-bao-4-1195.jpg",
-            isInterested: false,
             isOngoing: false,
         },
         {
@@ -32,18 +28,11 @@ const Event = () => {
             date: "2023-11-20",
             location: "Huyện Mèo Vạc, Hà Giang",
             participants: 50,
-            interested: 40,
             image: "https://file1.dangcongsan.vn/data/0/images/2023/09/05/upload_2677/anh-5.jpg",
-            isInterested: false,
             isOngoing: false,
         },
     ]);
 
-    const toggleInterest = (id) => {
-        setEvents(events.map(event =>
-            event.id === id ? { ...event, isInterested: !event.isInterested } : event
-        ));
-    };
 
     const shareEvent = (event) => {
     };
@@ -78,25 +67,17 @@ const Event = () => {
                                 <Users className="w-4 h-4 mr-2 text-gray-500" />
                                 <span>{event.participants} người tham gia</span>
                             </div>
-                            <div className="flex items-center mb-4 ">
-                                {event.isOngoing ? (
-                                    <CheckCircle className="w-4 h-4 mr-2 text-green-500" />
-                                ) : (
-                                    <Clock className="w-4 h-4 mr-2 text-primary" />
-                                )}
-                                <span className={`font-semibold ${event.isOngoing ? 'text-green-500' : 'text-primary'}`}>
-                                    {event.isOngoing ? 'Đang diễn ra' : 'Sắp tới'}
-                                </span>
-                            </div>
-
                             <div className="flex justify-between items-center">
-                                <button
-                                    onClick={() => toggleInterest(event.id)}
-                                    className={`flex items-center ${event.isInterested ? 'text-red-500' : 'text-gray-500'} hover:text-red-600 transition-colors`}
-                                >
-                                    <Heart className={`w-5 h-5 mr-1 ${event.isInterested ? 'fill-current' : ''}`} />
-                                    <span>{event.isInterested ? 'Đã quan tâm' : 'Quan tâm'} ({event.interested})</span>
-                                </button>
+                                <div className="flex items-center">
+                                    {event.isOngoing ? (
+                                        <CheckCircle className="w-4 h-4 mr-2 text-green-500" />
+                                    ) : (
+                                        <Clock className="w-4 h-4 mr-2 text-sky-500" />
+                                    )}
+                                    <span className={`font-semibold ${event.isOngoing ? 'text-green-500' : 'text-sky-500'}`}>
+                                        {event.isOngoing ? 'Đang diễn ra' : 'Sắp tới'}
+                                    </span>
+                                </div>
                                 <button
                                     onClick={() => shareEvent(event)}
                                     className="flex items-center text-blue-500 hover:text-blue-600 transition-colors"
@@ -104,6 +85,9 @@ const Event = () => {
                                     <ExternalLink className="w-5 h-5 mr-1" />
                                 </button>
                             </div>
+
+
+
                         </div>
                     </div>
                 ))}

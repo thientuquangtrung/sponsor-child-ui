@@ -92,7 +92,7 @@ const EventDetail = () => {
         date: "2024-11-15",
         time: "08:00 - 17:00",
         isEnded: false,
-        organizerName: "Tổ chức Thiện nguyện XYZ",
+        organizerName: "Tổ chức Thiện nguyện SponsorChild",
         organizerLogo: "/api/placeholder/100/100",
         schedule: [
             { time: "08:00 - 08:30", activity: "Tập trung và điểm danh" },

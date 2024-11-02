@@ -398,18 +398,17 @@ const CampaignInfo = () => {
                             <div className="flex justify-center">
                                 <Button
                                     type="submit"
-                                    className={`w-1/2 ${
-                                        isUploading || isCreatingCampaign ? 'bg-gray-400' : 'bg-[#2fabab]'
-                                    } hover:bg-[#287176] text-white py-2 rounded-lg`}
+                                    className={`w-1/2 ${isUploading || isCreatingCampaign ? 'bg-gray-400' : 'bg-[#2fabab]'
+                                        } hover:bg-[#287176] text-white py-2 rounded-lg`}
                                     disabled={isUploading || isCreatingCampaign}
                                 >
                                     {isUploading || isCreatingCampaign ? (
                                         <div className="flex items-center gap-2">
                                             <Loader2 className="animate-spin" size={18} />
-                                            {isUploading ? 'Đang Tạo...' : 'Đang Tạo Hồ Sơ...'}
+                                            {isUploading ? 'Đang Tạo...' : 'Đang Tạo Chiến Dịch...'}
                                         </div>
                                     ) : (
-                                        'Tạo Hồ Sơ'
+                                        'Tạo Chiến Dịch'
                                     )}
                                 </Button>
                             </div>
