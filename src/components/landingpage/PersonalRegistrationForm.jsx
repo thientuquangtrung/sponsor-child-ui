@@ -76,7 +76,6 @@ const PersonalRegistrationForm = ({ onSubmit }) => {
     const [createIndividualGuarantee, { isLoading, isSuccess, isError }] = useCreateIndividualGuaranteeMutation();
     const { data: bankNames, isLoading: isLoadingBanks } = useGetBankNamesQuery();
 
-
     const uploadToCloudinary = async (file, folder) => {
         const formData = new FormData();
         formData.append('file', file);
@@ -181,7 +180,7 @@ const PersonalRegistrationForm = ({ onSubmit }) => {
             const response = await fetch('https://api.fpt.ai/vision/idr/vnm', {
                 method: 'POST',
                 headers: {
-                    'api-key': 'KRosD34JKZa60M99NSynhncVZH2wELaU',
+                    'api-key': 'CXOOmOxGb7Y8jLIbVFhACpvWoi4tOfEI',
                 },
                 body: formData,
             });
@@ -232,6 +231,24 @@ const PersonalRegistrationForm = ({ onSubmit }) => {
             }
             inputRef.current.value = '';
         }
+    };
+
+    const isFormComplete = () => {
+        return (
+            frontCI &&
+            backCI &&
+            cccdData.id &&
+            cccdData.name &&
+            cccdData.dob &&
+            cccdData.address &&
+            cccdData.issue_date &&
+            cccdData.issue_location &&
+            personalData.householdRegistrationAddress &&
+            personalData.permanentAddress &&
+            personalData.bankAccountNumber &&
+            personalData.bankName &&
+            personalData.socialMediaLinks
+        );
     };
 
     const handleSubmitForm = async () => {
@@ -362,6 +379,10 @@ const PersonalRegistrationForm = ({ onSubmit }) => {
 
             <Card className="mb-4">
                 <CardContent className="bg-white rounded-md p-4 shadow-sm">
+                    <p className="text-gray-500 my-4 italic">
+                        * Cam kết ảnh CCCD chỉ được sử dụng cho mục đích xác minh danh tính và không chia sẻ với bên thứ
+                        ba.
+                    </p>
                     <div className="flex flex-col md:flex-row space-x-4">
                         {/* Mặt trước CCCD */}
                         <div className="w-full md:w-1/2">
@@ -443,7 +464,11 @@ const PersonalRegistrationForm = ({ onSubmit }) => {
                             </div>
                         </div>
                     </div>
-                    <Button onClick={handleScanCCCD} className="mt-4 bg-secondary text-white">
+                    <Button
+                        onClick={handleScanCCCD}
+                        className="mt-4 bg-secondary text-white hover:bg-normal"
+                        disabled={!frontCI || !backCI}
+                    >
                         Scan CCCD
                     </Button>
 
@@ -667,7 +692,7 @@ const PersonalRegistrationForm = ({ onSubmit }) => {
                     variant="solid"
                     className="bg-gradient-to-b from-teal-400 to-teal-600 text-white px-6 py-2 rounded-lg shadow"
                     onClick={handleFinish}
-                    disabled={isLoading}
+                    disabled={isLoading || !isFormComplete()}
                 >
                     {isLoading ? 'Đang đăng ký...' : 'Đăng ký'}
                 </Button>
@@ -693,11 +718,11 @@ const PersonalRegistrationForm = ({ onSubmit }) => {
                             </Button>
                             <Button
                                 variant="solid"
+                                className="bg-gradient-to-b from-teal-400 to-teal-600 text-white px-6 py-2 rounded-lg shadow"
                                 onClick={handleSubmitForm}
-                                className="bg-teal-600 text-white"
                                 disabled={isLoading}
                             >
-                                {isLoading ? 'Đang đăng ký...' : 'ĐĂNG KÝ'}
+                                {isLoading ? 'Đang đăng ký...' : 'Đăng ký'}
                             </Button>
                         </DialogFooter>
                     </DialogContent>
