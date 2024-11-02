@@ -3,11 +3,7 @@ import { Header } from './Header';
 import { Footer } from './Footer';
 import Chat from './Chat';
 
-export function Applayout() {
-    // const { user } = useSelector((state) => state.auth);
-
-    // if (!user) return <Navigate to="/auth/login" replace />;
-
+export function AppLayout() {
     return (
         <>
             <div id="payment-container" style={{ position: 'fixed', zIndex: 99999999 }}></div>
