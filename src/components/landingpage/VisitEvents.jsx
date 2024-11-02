@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Heart, Share2, MapPin, Users, Search } from 'lucide-react';
+import { Heart, Share2, MapPin, Users, Search, Calendar, XCircle, CheckCircle } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import useDebounce from '@/hooks/useDebounce';
 import banner from '@/assets/images/banner.png';
@@ -149,18 +149,7 @@ const VisitEvents = () => {
         }
     ];
 
-    const handleInterested = (e, eventId) => {
-        e.stopPropagation();
-        setInterestedEvents(prev => {
-            const newSet = new Set(prev);
-            if (newSet.has(eventId)) {
-                newSet.delete(eventId);
-            } else {
-                newSet.add(eventId);
-            }
-            return newSet;
-        });
-    };
+
 
     const handleShare = (eventId) => {
         e.stopPropagation();
@@ -169,8 +158,8 @@ const VisitEvents = () => {
         navigate(`/event/${eventId}`);
     };
 
+
     const filterButtons = [
-        { id: 'featured', label: 'Nổi bật' },
         { id: 'nearby', label: 'Gần Tôi' },
         { id: 'following', label: 'Theo dõi' },
         { id: 'ended', label: 'Đã kết thúc' }
@@ -184,7 +173,6 @@ const VisitEvents = () => {
         if (!matchesSearch) return false;
 
         if (activeFilter === 'ended') return event.isEnded;
-        if (activeFilter === 'featured') return event.isFeatured;
         if (activeFilter === 'nearby') return event.location === 'Hà Nội';
         if (activeFilter === 'following') return interestedEvents.has(event.id);
 
@@ -196,7 +184,7 @@ const VisitEvents = () => {
     const EmptyState = () => (
         <div className="flex flex-col items-center justify-center py-16 px-4">
             <div className="w-32 h-32 bg-gray-100 rounded-full flex items-center justify-center mb-6">
-                <Heart className="w-16 h-16 text-gray-300" />
+                <Calendar className="w-16 h-16 text-gray-300" />
             </div>
             <h3 className="text-xl font-semibold text-gray-700 mb-2">
                 Chưa có sự kiện nào được quan tâm
@@ -223,56 +211,61 @@ const VisitEvents = () => {
                 <img
                     src={event.thumbnailUrl}
                     alt={event.title}
-                    className="w-full h-48 object-cover hover:scale-105 transition-transform duration-300"
+                    className="w-full h-48 object-cover"
                 />
-                <div className="absolute bottom-2 right-2 bg-white/90 backdrop-blur-sm rounded-full px-3 py-1 text-sm flex items-center gap-1 shadow-sm">
-                    <MapPin className="w-4 h-4 text-teal-500" />
-                    <span className="text-gray-700">{event.location}</span>
-                </div>
-                <div className={`absolute top-2 left-2 px-3 py-1 rounded-full text-sm font-medium ${event.isEnded
-                    ? 'bg-red-100 text-red-600'
-                    : 'bg-green-100 text-green-600'
-                    }`}
-                >
-                    {event.isEnded ? 'Đã kết thúc' : 'Đang diễn ra'}
-                </div>
             </div>
+
             <div className="p-5">
                 <h3 className="font-semibold text-lg line-clamp-1 mb-4 text-gray-800 hover:text-teal-600 transition-colors">
                     {event.title}
                 </h3>
-                <div className="flex justify-between items-center mb-4">
-                    <div className="flex items-center gap-2 text-gray-600">
-                        <Users className="w-4 h-4 text-teal-500" />
+
+                <div className="flex justify-between items-center text-gray-600 mb-4">
+                    <div className="flex items-center">
+                        <Calendar className="w-4 h-4 mr-2 text-gray-500" />
+                        <span>{event.date}</span>
+                    </div>
+                    <div className="flex items-center">
+                        <Users className="w-4 h-4 mr-2 text-gray-500" />
                         <span>{event.participantsCount} người tham gia</span>
                     </div>
-                    <div className="flex items-center gap-2 text-gray-600">
-                        <Heart className="w-4 h-4 text-teal-500" />
-                        <span>{event.interestedCount} quan tâm</span>
-                    </div>
                 </div>
-                <div className="flex justify-between gap-3">
-                    <Button
-                        onClick={(e) => handleInterested(e, event.id)}
-                        className={`flex-1 ${interestedEvents.has(event.id)
-                            ? 'bg-teal-500 text-white hover:bg-teal-600'
-                            : 'bg-teal-500 text-white hover:bg-teal-600'
-                            }`}
-                    >
-                        <Heart className={`w-4 h-4 mr-2 ${interestedEvents.has(event.id) ? "fill-current" : ""}`} />
-                        {interestedEvents.has(event.id) ? "Đã quan tâm" : "Quan tâm"}
-                    </Button>
+
+                <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-2">
+                        {event.isEnded ? (
+                            <XCircle className="w-4 h-4 text-red-600" />
+                        ) : (
+                            <CheckCircle className="w-4 h-4 text-green-600" />
+                        )}
+                        <span
+                            className={`text-sm font-medium ${event.isEnded ? 'text-red-600' : 'text-green-600'
+                                }`}
+                        >
+                            {event.isEnded ? 'Đã kết thúc' : 'Đang diễn ra'}
+                        </span>
+                    </div>
+
+
+                </div>
+
+                <div className="flex justify-between items-start relative">
+                    <div className="flex items-center gap-1  py-1 rounded-full">
+                        <MapPin className="w-4 h-4 text-teal-500" />
+                        <span className="text-sm text-gray-700">{event.location}</span>
+                    </div>
                     <Button
                         onClick={(e) => handleShare(e, event.id)}
                         variant="outline"
-                        className="px-4 border border-teal-500 hover:bg-teal-50 hover:border-teal-600"
+                        className="px-4 border border-teal-500 hover:bg-teal-50 hover:border-teal-600 absolute bottom-2 right-4"
                     >
-                        <Share2 className="w-4 h-4 text-teal-500" />
+                        <Share2 className="w-5 h-5 text-teal-500" />
                     </Button>
                 </div>
             </div>
         </div>
     );
+
 
     return (
         <div className="mx-auto py-8 px-4 bg-gray-50 min-h-screen">
@@ -292,47 +285,18 @@ const VisitEvents = () => {
                         <TabsList className="grid w-full grid-cols-2 bg-transparent gap-2">
                             <TabsTrigger
                                 value="discover"
-                                className="relative px-4 py-2 rounded-none transition-colors duration-200
-                    data-[state=active]:bg-transparent
-                    data-[state=active]:text-teal-500
-                    hover:text-teal-500
-                    after:content-['']
-                    after:absolute
-                    after:bottom-0
-                    after:left-0
-                    after:w-full
-                    after:h-0.5
-                    after:bg-teal-500
-                    after:scale-x-0
-                    data-[state=active]:after:scale-x-100
-                    after:transition-transform
-                    after:duration-300"
+                                className="relative px-4 py-2 rounded-none transition-colors duration-200 data-[state=active]:bg-transparent data-[state=active]:text-teal-500 hover:text-teal-500 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-teal-500 after:scale-x-0 data-[state=active]:after:scale-x-100 after:transition-transform after:duration-300"
                             >
                                 Khám phá
                             </TabsTrigger>
                             <TabsTrigger
                                 value="interested"
-                                className="relative px-4 py-2 rounded-none transition-colors duration-200
-                    data-[state=active]:bg-transparent 
-                    data-[state=active]:text-teal-500
-                    hover:text-teal-500
-                    after:content-['']
-                    after:absolute
-                    after:bottom-0
-                    after:left-0
-                    after:w-full
-                    after:h-0.5
-                    after:bg-teal-500
-                    after:scale-x-0
-                    data-[state=active]:after:scale-x-100
-                    after:transition-transform
-                    after:duration-300"
+                                className="relative px-4 py-2 rounded-none transition-colors duration-200 data-[state=active]:bg-transparent data-[state=active]:text-teal-500 hover:text-teal-500 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-teal-500 after:scale-x-0 data-[state=active]:after:scale-x-100 after:transition-transform after:duration-300"
                             >
                                 Đã quan tâm
                             </TabsTrigger>
                         </TabsList>
                     </div>
-
 
                     <div className="flex justify-between items-center mb-8">
                         <div className="flex gap-2 flex-wrap">
@@ -371,12 +335,13 @@ const VisitEvents = () => {
                                 <EventCard key={event.id} event={event} />
                             ))}
                         </div>
+
                         {filteredEvents.length > 6 && !showMore && (
                             <div className="flex justify-center mt-12">
                                 <Button
                                     onClick={() => setShowMore(true)}
                                     variant="outline"
-                                    className="px-8 py-6 text-lg bg-teal-700 text-white hover:bg-teal-600 transition-colors"
+                                    className="px-8 py-6 text-lg bg-teal-500 text-white hover:bg-teal-600 transition-colors"
                                 >
                                     Xem thêm
                                 </Button>
@@ -399,7 +364,7 @@ const VisitEvents = () => {
                     </TabsContent>
                 </Tabs>
             </div>
-        </div >
+        </div>
     );
 };
 

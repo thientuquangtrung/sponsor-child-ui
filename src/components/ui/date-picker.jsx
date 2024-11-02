@@ -185,7 +185,7 @@ export { DatePicker };
 // <DatePicker
 //     date={birthDate}
 //     onDateSelect={handleBirthDateSelect}
-//     disableFutureDates={true} // Tùy chọn: không cho chọn ngày trong tương lai
+//     disableFutureDates={true}
 // />
 
 // // Form selects a specific time period

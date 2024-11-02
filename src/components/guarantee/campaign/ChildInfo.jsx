@@ -3,12 +3,13 @@ import { FormField, FormItem, FormLabel, FormControl, FormDescription, FormMessa
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { X, Upload } from 'lucide-react';
-import { CustomDropzone } from './CustomDropzone';
+import { CustomDropzone } from '@/components/guarantee/campaign/CustomDropzone';
+import { YearPicker } from '@/components/ui/year-picker';
 
 const ChildInfo = ({ form, provinces, districts, wards, handleProvinceChange, handleDistrictChange, handleWardChange, childFile, onDropChildFile, removeChildFile }) => {
     return (
         <>
-            <h2 className="text-2xl font-semibold">Thông Tin Trẻ Em</h2>
+            <h2 className="text-xl font-semibold">Thông Tin Trẻ Em</h2>
 
             <div className="grid grid-cols-2 gap-4">
                 <FormField
@@ -24,18 +25,18 @@ const ChildInfo = ({ form, provinces, districts, wards, handleProvinceChange, ha
                         </FormItem>
                     )}
                 />
-
                 <FormField
                     control={form.control}
                     name="childBirthYear"
                     render={({ field }) => (
-                        <FormItem>
+                        <FormItem >
                             <FormLabel>Năm Sinh</FormLabel>
                             <FormControl>
-                                <Input
-                                    type="number"
-                                    {...field}
-                                    onChange={(e) => field.onChange(parseInt(e.target.value))}
+                                <YearPicker
+                                    date={field.value ? new Date(field.value, 0, 1) : undefined}
+                                    onYearSelect={(date) => field.onChange(date.getFullYear())}
+                                    fromYear={new Date().getFullYear() - 16}
+                                    toYear={new Date().getFullYear()}
                                 />
                             </FormControl>
                             <FormMessage />
@@ -51,7 +52,7 @@ const ChildInfo = ({ form, provinces, districts, wards, handleProvinceChange, ha
                     <FormItem>
                         <FormLabel>Địa Chỉ</FormLabel>
                         <FormControl>
-                            <Input placeholder="Nhập số nhà, tên đường" {...field} />
+                            <Input placeholder="Nhập địa chỉ của trẻ" {...field} />
                         </FormControl>
                         <FormMessage />
                     </FormItem>
