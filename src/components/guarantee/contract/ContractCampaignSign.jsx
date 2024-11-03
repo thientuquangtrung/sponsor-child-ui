@@ -1,17 +1,17 @@
 import React, { useState, useRef } from 'react';
 import SignatureCanvas from 'react-signature-canvas';
-import html2canvas from 'html2canvas';
-import { jsPDF } from 'jspdf';
-import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Save, Send, Trash } from 'lucide-react';
-import "react-datepicker/dist/react-datepicker.css";
 import { useGetContractByIdQuery, useUpdateContractMutation } from '@/redux/contract/contractApi';
 import { useSelector } from 'react-redux';
-import { formatInTimeZone } from 'date-fns-tz'
+import { formatInTimeZone } from 'date-fns-tz';
 import { Toaster, toast } from 'sonner';
+
+import 'react-datepicker/dist/react-datepicker.css';
+import { Button } from '@/components/ui/button';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { useGetCampaignByIdQuery } from '@/redux/campaign/campaignApi';
 import ContractCampaignContent from '@/components/guarantee/contract/ContractCampaignContent';
+import { generatePDF } from '@/lib/utils';
 
 const signDate = formatInTimeZone(new Date(), 'Asia/Ho_Chi_Minh', "yyyy-MM-dd'T'HH:mm:ss.SSSxxx");
 
@@ -47,13 +47,13 @@ const ContractCampaignSign = ({ onSign, onContractSent, campaignId, contractId }
                     </div>
                     <h2 className="text-2xl font-bold text-gray-800 mb-4">
                         {contractDetails.status === 1
-                            ? "Hợp đồng đã được ký chờ xác nhận!"
-                            : "Hợp đồng đã được ký hoàn tất!"}
+                            ? 'Hợp đồng đã được ký chờ xác nhận!'
+                            : 'Hợp đồng đã được ký hoàn tất!'}
                     </h2>
                     <p className="text-gray-600 mb-6">
                         {contractDetails.status === 1
-                            ? "Chữ ký của bạn đã được gửi. Vui lòng chờ phản hồi từ phía Admin."
-                            : "Hợp đồng của bạn đã được xử lý hoàn tất."}
+                            ? 'Chữ ký của bạn đã được gửi. Vui lòng chờ phản hồi từ phía Admin.'
+                            : 'Hợp đồng của bạn đã được xử lý hoàn tất.'}
                     </p>
                 </div>
             </div>
@@ -78,52 +78,15 @@ const ContractCampaignSign = ({ onSign, onContractSent, campaignId, contractId }
         formData.append('upload_preset', import.meta.env.VITE_UPLOAD_PRESET_NAME);
         formData.append('folder', folder);
 
-        const response = await fetch(
-            `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUD_NAME}/raw/upload`,
-            {
-                method: 'POST',
-                body: formData,
-            }
-        );
+        const response = await fetch(`https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUD_NAME}/raw/upload`, {
+            method: 'POST',
+            body: formData,
+        });
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
 
         return await response.json();
-    };
-
-    const generatePDF = async () => {
-        const element = contractRef.current;
-        const canvas = await html2canvas(element, {
-            scale: 2,
-            logging: false,
-            useCORS: true,
-            scrollY: -window.scrollY
-        });
-        const imgData = canvas.toDataURL('image/png');
-        const pdf = new jsPDF({
-            orientation: 'portrait',
-            unit: 'mm',
-            format: 'a4',
-            compress: true
-        });
-        const imgProps = pdf.getImageProperties(imgData);
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-        let heightLeft = pdfHeight;
-        let position = 0;
-
-        pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
-        heightLeft -= pdf.internal.pageSize.getHeight();
-
-        while (heightLeft >= 0) {
-            position = heightLeft - pdfHeight;
-            pdf.addPage();
-            pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
-            heightLeft -= pdf.internal.pageSize.getHeight();
-        }
-
-        return pdf;
     };
 
     const handleUpload = async () => {
@@ -139,17 +102,14 @@ const ContractCampaignSign = ({ onSign, onContractSent, campaignId, contractId }
                     const signatureBlob = await (await fetch(signature)).blob();
                     const signatureData = await uploadToCloudinary(
                         signatureBlob,
-                        `user_${partyBID}/guarantee/signatures_campaign`
+                        `user_${partyBID}/guarantee/signatures_campaign`,
                     );
                     const signatureUrl = signatureData.secure_url;
 
                     // Generate and upload PDF
-                    const pdf = await generatePDF();
+                    const pdf = await generatePDF(contractRef.current);
                     const pdfBlob = pdf.output('blob');
-                    const pdfData = await uploadToCloudinary(
-                        pdfBlob,
-                        `user_${partyBID}/guarantee/contracts_campaign`
-                    );
+                    const pdfData = await uploadToCloudinary(pdfBlob, `user_${partyBID}/guarantee/contracts_campaign`);
                     const pdfUrl = pdfData.secure_url;
 
                     await updateContract({
@@ -162,9 +122,9 @@ const ContractCampaignSign = ({ onSign, onContractSent, campaignId, contractId }
                         signDate: signDate,
                         status: 1, // pending Admin sign
                         softContractUrl: pdfUrl,
-                        hardContractUrl: "",
+                        hardContractUrl: '',
                         partyBSignatureUrl: signatureUrl,
-                        campaignID: contractDetails.campaignID
+                        campaignID: contractDetails.campaignID,
                     }).unwrap();
 
                     onSign(pdfUrl);
@@ -181,7 +141,7 @@ const ContractCampaignSign = ({ onSign, onContractSent, campaignId, contractId }
                 loading: 'Đang gửi hợp đồng...',
                 success: (message) => message,
                 error: 'Gửi hợp đồng thất bại. Vui lòng thử lại.',
-            }
+            },
         );
     };
 
@@ -197,10 +157,7 @@ const ContractCampaignSign = ({ onSign, onContractSent, campaignId, contractId }
                         </div>
                     ) : (
                         <div ref={contractRef}>
-                            <ContractCampaignContent
-                                signature={signature}
-                                campaignDetails={campaignDetails}
-                            />
+                            <ContractCampaignContent signature={signature} campaignDetails={campaignDetails} />
                         </div>
                     )}
                 </ScrollArea>

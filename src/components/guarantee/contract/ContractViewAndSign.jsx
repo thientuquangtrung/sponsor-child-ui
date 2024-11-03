@@ -1,17 +1,18 @@
 import React, { useState, useRef, useEffect } from 'react';
 import SignatureCanvas from 'react-signature-canvas';
-import html2canvas from 'html2canvas';
-import { jsPDF } from 'jspdf';
-import { Button } from '@/components/ui/button';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { Save, Send, Trash } from 'lucide-react';
-import 'react-datepicker/dist/react-datepicker.css';
-import { useGetContractsByTypeAndPartyBQuery, useUpdateContractMutation } from '@/redux/contract/contractApi';
 import { useSelector } from 'react-redux';
 import { format, parseISO } from 'date-fns';
-
 import { formatInTimeZone } from 'date-fns-tz';
 import { toast } from 'sonner';
+
+import { Button } from '@/components/ui/button';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import 'react-datepicker/dist/react-datepicker.css';
+import { useGetContractsByTypeAndPartyBQuery, useUpdateContractMutation } from '@/redux/contract/contractApi';
+import { UPLOAD_FOLDER, UPLOAD_NAME, uploadFile } from '@/lib/cloudinary';
+import { generatePDF } from '@/lib/utils';
+
 const formatDate = (dateString) => {
     if (!dateString) return '.....................';
     return format(new Date(dateString), 'dd/MM/yyyy');
@@ -115,7 +116,6 @@ const ContractContent = ({ guaranteeProfile, signature }) => {
                                 <span className="inline-block w-36">Số điện thoại:</span>{' '}
                                 {guaranteeProfile.organizationPhoneNumber}
                             </p>
-
                         </div>
                     </div>
                     <p className="mt-2">
@@ -305,12 +305,14 @@ const ContractViewAndSign = ({ onSign, onContractSent, guaranteeProfile, onNextS
     const [updateContract, { isLoading: isUpdatingContract }] = useUpdateContractMutation();
     const [currentContractId, setCurrentContractId] = useState(null);
     const [contractStatus, setContractStatus] = useState(null);
+
     useEffect(() => {
         if (contracts && contracts.length > 0) {
             setCurrentContractId(contracts[0].contractID);
             setContractStatus(contracts[0].status);
         }
     }, [contracts]);
+
     if (contractStatus !== null && contractStatus !== 0) {
         return (
             <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
@@ -331,14 +333,12 @@ const ContractViewAndSign = ({ onSign, onContractSent, guaranteeProfile, onNextS
                         </svg>
                     </div>
                     <h2 className="text-2xl font-bold text-gray-800 mb-4">
-                        {contractStatus === 1
-                            ? "Hợp đồng đã được ký chờ xác nhận!"
-                            : "Hợp đồng đã được ký hoàn tất!"}
+                        {contractStatus === 1 ? 'Hợp đồng đã được ký chờ xác nhận!' : 'Hợp đồng đã được ký hoàn tất!'}
                     </h2>
                     <p className="text-gray-600 mb-6">
                         {contractStatus === 1
-                            ? "Chữ ký của bạn đã được gửi. Vui lòng chờ phản hồi từ phía Admin."
-                            : "Hợp đồng của bạn đã được xử lý hoàn tất."}
+                            ? 'Chữ ký của bạn đã được gửi. Vui lòng chờ phản hồi từ phía Admin.'
+                            : 'Hợp đồng của bạn đã được xử lý hoàn tất.'}
                     </p>
                 </div>
             </div>
@@ -357,83 +357,33 @@ const ContractViewAndSign = ({ onSign, onContractSent, guaranteeProfile, onNextS
         onSign(sigCanvas.current.toDataURL());
     };
 
-    const generatePDF = async () => {
-        const element = contractRef.current;
-        const canvas = await html2canvas(element, {
-            scale: 2,
-            logging: false,
-            useCORS: true,
-            scrollY: -window.scrollY,
-        });
-
-        const imgData = canvas.toDataURL('image/png');
-        const pdf = new jsPDF({
-            orientation: 'portrait',
-            unit: 'mm',
-            format: 'a4',
-            compress: true,
-        });
-
-        const imgProps = pdf.getImageProperties(imgData);
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-        let heightLeft = pdfHeight;
-        let position = 0;
-
-        pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
-        heightLeft -= pdf.internal.pageSize.getHeight();
-
-        while (heightLeft >= 0) {
-            position = heightLeft - pdfHeight;
-            pdf.addPage();
-            pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
-            heightLeft -= pdf.internal.pageSize.getHeight();
-        }
-
-        return pdf;
-    };
-    const uploadToCloudinary = async (file, folder) => {
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('upload_preset', import.meta.env.VITE_UPLOAD_PRESET_NAME);
-        formData.append('folder', folder);
-
-        const response = await fetch(`https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUD_NAME}/raw/upload`, {
-            method: 'POST',
-            body: formData,
-        });
-
-        if (!response.ok) {
-            throw new Error(`Upload failed: ${response.statusText}`);
-        }
-
-        return response.json();
-    };
     const handleUpload = async () => {
         setUploadLoading(true);
         toast.promise(
             async () => {
                 try {
-                    const pdf = await generatePDF();
+                    const pdf = await generatePDF(contractRef.current);
                     const pdfBlob = pdf.output('blob');
                     const partyBID = user.userID;
 
                     // Upload signature
                     const signatureBlob = await (await fetch(signature)).blob();
-                    const signatureData = await uploadToCloudinary(
-                        signatureBlob,
-                        `user_${partyBID}/guarantee/signatures_guaranteed`,
-                    );
+                    const signatureData = await uploadFile({
+                        file: signatureBlob,
+                        folder: UPLOAD_FOLDER.getGuaranteeContractFolder(partyBID),
+                        customFilename: UPLOAD_NAME.SIGNATURE_GUARANTEE,
+                        resourceType: 'raw',
+                    });
                     const signatureUrl = signatureData.secure_url;
 
                     // Upload PDF
-                    const pdfData = await uploadToCloudinary(
-                        pdfBlob,
-                        `user_${partyBID}/guarantee/contracts_guaranteed`,
-                    );
+                    const pdfData = await uploadFile({
+                        file: pdfBlob,
+                        folder: UPLOAD_FOLDER.getGuaranteeContractFolder(partyBID),
+                        customFilename: UPLOAD_NAME.REGISTRATION_CONTRACT_SOFT,
+                        resourceType: 'raw',
+                    });
                     const pdfUrl = pdfData.secure_url;
-
-
 
                     await updateContract({
                         contractId: currentContractId,
@@ -447,6 +397,7 @@ const ContractViewAndSign = ({ onSign, onContractSent, guaranteeProfile, onNextS
                         hardContractUrl: '',
                         partyBSignatureUrl: signatureUrl,
                     }).unwrap();
+
                     onSign(pdfUrl);
                     onContractSent();
                     onNextStep();

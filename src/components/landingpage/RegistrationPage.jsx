@@ -14,7 +14,9 @@ const RegistrationPage = () => {
     const navigate = useNavigate();
     const [showForm, setShowForm] = useState(false);
     const [formType, setFormType] = useState('');
-    const { data: guaranteeStatus, isLoading } = useCheckGuaranteeStatusQuery(user?.userID, { skip: !user?.userID });
+    const { data: guaranteeStatus, isLoading, refetch } = useCheckGuaranteeStatusQuery(user?.userID, {
+        skip: !user?.userID,
+    });
 
     const progressStep = useMemo(() => {
         if (guaranteeStatus) {
@@ -42,6 +44,7 @@ const RegistrationPage = () => {
 
     const handleFormSubmit = () => {
         setShowForm(false);
+        refetch();
     };
 
     const calculateProgressPercentage = (status) => {

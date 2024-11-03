@@ -1,11 +1,9 @@
 import React, { useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Download } from 'lucide-react';
-import html2canvas from 'html2canvas';
-import { jsPDF } from 'jspdf';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { useSelector } from 'react-redux';
 import { format, parseISO } from 'date-fns';
+import { generatePDF } from '@/lib/utils';
 
 const ContractContent = ({ guaranteeProfile }) => {
     const today = new Date();
@@ -287,46 +285,10 @@ const SendHardContract = ({ signedContract, guaranteeProfile }) => {
     const contractRef = useRef(null);
     const [isGenerating, setIsGenerating] = useState(false);
 
-    const generatePDF = async () => {
-        const element = contractRef.current;
-        const canvas = await html2canvas(element, {
-            scale: 2,
-            logging: false,
-            useCORS: true,
-            scrollY: -window.scrollY,
-        });
-
-        const imgData = canvas.toDataURL('image/png');
-        const pdf = new jsPDF({
-            orientation: 'portrait',
-            unit: 'mm',
-            format: 'a4',
-            compress: true,
-        });
-
-        const imgProps = pdf.getImageProperties(imgData);
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-        let heightLeft = pdfHeight;
-        let position = 0;
-
-        pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
-        heightLeft -= pdf.internal.pageSize.getHeight();
-
-        while (heightLeft >= 0) {
-            position = heightLeft - pdfHeight;
-            pdf.addPage();
-            pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
-            heightLeft -= pdf.internal.pageSize.getHeight();
-        }
-
-        return pdf;
-    };
-
     const handleDownloadPDF = async () => {
         setIsGenerating(true);
         try {
-            const pdf = await generatePDF();
+            const pdf = await generatePDF(contractRef.current);
             pdf.save('contract_unsigned.pdf');
         } catch (error) {
             console.error('PDF generation failed:', error);
@@ -349,7 +311,7 @@ const SendHardContract = ({ signedContract, guaranteeProfile }) => {
             <div className="w-full lg:w-1/3 p-4 bg-white shadow-md pt-20 font-sans">
                 <h2 className="text-2xl font-bold mb-6 text-center">Hướng Dẫn Gửi Hợp Đồng</h2>
                 <ol className="list-decimal list-inside space-y-2 font-sans">
-                    <li>Tải xuống file PDF hợp đồng bằng cách nhấn nút "Tải PDF" bên dưới.</li>
+                    <li>Tải xuống file PDF hợp đồng bằng cách nhấn nút &quot;Tải PDF&quot; bên dưới.</li>
                     <li>In hợp đồng ra giấy.</li>
                     <li>Đọc kỹ nội dung và ký tên vào các vị trí được đánh dấu trong hợp đồng.</li>
                     <li>Gửi hợp đồng đã ký qua chuyển phát đến địa chỉ:</li>
