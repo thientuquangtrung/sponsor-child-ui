@@ -32,13 +32,13 @@ const getRequestStatusVariant = (status) => {
 const getRequestStatusLabel = (status) => {
     switch (status) {
         case 0:
-            return 'Requested';
+            return 'Đã gửi yêu cầu';
         case 1:
-            return 'Approved';
+            return 'Đã phê duyệt';
         case 2:
-            return 'Rejected';
+            return 'Đã từ chối';
         default:
-            return 'Unknown';
+            return 'Không xác định';
     }
 };
 
@@ -69,6 +69,15 @@ export function DisbursementRequests() {
             accessorKey: 'requestDate',
             header: ({ column }) => <DataTableColumnHeader column={column} title="Ngày yêu cầu" />,
             cell: ({ row }) => <div>{new Date(row.getValue('requestDate')).toLocaleDateString('vi-VN')}</div>,
+        },
+        {
+            accessorFn: (row) => row.disbursementStage?.scheduledDate,
+            id: 'customScheduledDate', 
+            header: ({ column }) => <DataTableColumnHeader column={column} title="Ngày dự kiến" />,
+            cell: ({ row }) => {
+                const date = row.getValue('customScheduledDate');
+                return date ? new Date(date).toLocaleDateString('vi-VN') : 'N/A';
+            },
         },
         {
             accessorKey: 'bankName',
@@ -111,11 +120,6 @@ export function DisbursementRequests() {
     }
 
     const ActionMenu = ({ row }) => {
-        const navigate = useNavigate();
-        const stageID = row.original.disbursementStage?.stageID;
-        const handleViewDetails = () => {
-            navigate(`/guarantee/create-disbursement-request?stageID=${stageID}`);
-        };
         return (
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -125,7 +129,7 @@ export function DisbursementRequests() {
                     </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={handleViewDetails}>
+                    <DropdownMenuItem onClick={() => navigate(`/guarantee/disbursement-request-detail/${row.original.id}`)}>
                         <Eye className="mr-2 h-4 w-4" />
                         Xem chi tiết
                     </DropdownMenuItem>
@@ -140,7 +144,7 @@ export function DisbursementRequests() {
                 Danh sách yêu cầu giải ngân
             </h1>
 
-            <div className="flex justify-end pb-4">
+            {/* <div className="flex justify-end pb-4">
                 <div className="h-auto w-[220px] bg-gradient-to-r from-teal-500 via-gray-400 to-rose-300 p-[2px] rounded-md">
                     <Button
                         onClick={() => navigate('/guarantee/create-disbursement-request')}
@@ -150,7 +154,7 @@ export function DisbursementRequests() {
                         Tạo yêu cầu giải ngân
                     </Button>
                 </div>
-            </div>
+            </div> */}
 
             <div className="rounded-md border">
                 <Table>

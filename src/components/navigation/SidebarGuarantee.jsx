@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Home, LayoutDashboard, BarChart2, Newspaper, User, PanelsTopLeft, Menu, History, ReceiptText, CircleDollarSign } from 'lucide-react';
+import { Home, LayoutDashboard, BarChart2, Newspaper, User, PanelsTopLeft, Menu, History, ReceiptText, CircleDollarSign, MessageSquareDot } from 'lucide-react';
 import { Icons } from "@/components/icons";
 
 const SidebarGuarantee = () => {
@@ -18,7 +18,9 @@ const SidebarGuarantee = () => {
         { icon: Newspaper, label: 'Tin Tức & Cập Nhật', path: '/guarantee/news' },
         { icon: User, label: 'Hồ Sơ Người Bảo Lãnh', path: '/guarantee/profile' },
         { icon: ReceiptText, label: 'Hợp đồng', path: '/guarantee/contracts' },
-        { icon: CircleDollarSign, label: 'Yêu cầu giải ngân', path: '/guarantee/disbursement-requests' }
+        { icon: CircleDollarSign, label: 'Yêu cầu giải ngân', path: '/guarantee/disbursement-requests' },
+        { icon: MessageSquareDot, label: 'Báo cáo giải ngân', path: '/guarantee/disbursement-reports' }
+
     ];
 
     const SidebarContent = ({ isMobile = false }) => (
