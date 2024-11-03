@@ -9,10 +9,11 @@ import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from '@
 import { useGetDisbursementStageByStageIdQuery } from '@/redux/guarantee/disbursementStageApi';
 import { useCreateDisbursementRequestMutation } from '@/redux/guarantee/disbursementRequestApi';
 import { useCanCreateDisbursementRequestQuery } from '@/redux/guarantee/disbursementRequestApi';
-import { Calendar, CalendarDays, CircleDollarSign, Pill } from 'lucide-react';
-import DisbursementRequestDetail from './DisbursementRequestDetail';
+import { Calendar, CalendarDays, CircleDollarSign, Pill, Undo2 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 export default function CreateDisbursementRequest() {
+    const navigate = useNavigate();
     const queryParams = new URLSearchParams(location.search);
     const stageID = queryParams.get('stageID');
     const { data: disbursementStage, isLoading, isError } = useGetDisbursementStageByStageIdQuery(stageID);
@@ -104,7 +105,7 @@ export default function CreateDisbursementRequest() {
                             </div>
                             <div className="flex items-center">
                                 <Calendar className="mr-2 h-5 w-5 text-teal-500" />
-                                <p>Ngày yêu cầu giải ngân:</p>
+                                <p>Ngày dự kiến giải ngân:</p>
                                 <span className="ml-2 text-teal-500 font-semibold">
                                     {new Date(disbursementStage?.disbursementStage?.scheduledDate).toLocaleDateString(
                                         'vi-VN',
@@ -198,7 +199,16 @@ export default function CreateDisbursementRequest() {
                     </div>
                 </form>
             ) : (
-                <DisbursementRequestDetail hasRequestBeenSent={hasRequestBeenSent} />
+                <div className='flex flex-col items-center'>
+                    <div className="text-center py-4 text-gray-500">Yêu cầu giải ngân đã được tạo!</div>
+                    <Button
+                        onClick={() => navigate(`/guarantee/disbursement-requests`)}
+                        className="mt-4"
+                    >
+                        <Undo2 className="mr-2 h-4 w-4" />
+                        Trở lại
+                    </Button>
+                </div>
             )}
         </>
     );
