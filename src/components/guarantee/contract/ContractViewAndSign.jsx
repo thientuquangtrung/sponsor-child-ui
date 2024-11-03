@@ -1,18 +1,18 @@
 import React, { useState, useRef, useEffect } from 'react';
 import SignatureCanvas from 'react-signature-canvas';
-import html2canvas from 'html2canvas';
-import { jsPDF } from 'jspdf';
-import { Button } from '@/components/ui/button';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { Save, Send, Trash } from 'lucide-react';
-import 'react-datepicker/dist/react-datepicker.css';
-import { useGetContractsByTypeAndPartyBQuery, useUpdateContractMutation } from '@/redux/contract/contractApi';
 import { useSelector } from 'react-redux';
 import { format, parseISO } from 'date-fns';
-
 import { formatInTimeZone } from 'date-fns-tz';
 import { toast } from 'sonner';
+
+import { Button } from '@/components/ui/button';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import 'react-datepicker/dist/react-datepicker.css';
+import { useGetContractsByTypeAndPartyBQuery, useUpdateContractMutation } from '@/redux/contract/contractApi';
 import { UPLOAD_FOLDER, UPLOAD_NAME, uploadFile } from '@/lib/cloudinary';
+import { generatePDF } from '@/lib/utils';
+
 const formatDate = (dateString) => {
     if (!dateString) return '.....................';
     return format(new Date(dateString), 'dd/MM/yyyy');
@@ -357,48 +357,12 @@ const ContractViewAndSign = ({ onSign, onContractSent, guaranteeProfile, onNextS
         onSign(sigCanvas.current.toDataURL());
     };
 
-    const generatePDF = async () => {
-        const element = contractRef.current;
-        const canvas = await html2canvas(element, {
-            scale: 2,
-            logging: false,
-            useCORS: true,
-            scrollY: -window.scrollY,
-        });
-
-        const imgData = canvas.toDataURL('image/png');
-        const pdf = new jsPDF({
-            orientation: 'portrait',
-            unit: 'mm',
-            format: 'a4',
-            compress: true,
-        });
-
-        const imgProps = pdf.getImageProperties(imgData);
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-        let heightLeft = pdfHeight;
-        let position = 0;
-
-        pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
-        heightLeft -= pdf.internal.pageSize.getHeight();
-
-        while (heightLeft >= 0) {
-            position = heightLeft - pdfHeight;
-            pdf.addPage();
-            pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
-            heightLeft -= pdf.internal.pageSize.getHeight();
-        }
-
-        return pdf;
-    };
-
     const handleUpload = async () => {
         setUploadLoading(true);
         toast.promise(
             async () => {
                 try {
-                    const pdf = await generatePDF();
+                    const pdf = await generatePDF(contractRef.current);
                     const pdfBlob = pdf.output('blob');
                     const partyBID = user.userID;
 
