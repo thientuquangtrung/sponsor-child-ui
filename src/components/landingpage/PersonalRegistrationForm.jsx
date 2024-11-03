@@ -4,6 +4,8 @@ import { useSelector } from 'react-redux';
 import { toast } from 'sonner';
 import { useForm } from 'react-hook-form';
 import { ArrowBigUpDash, CheckCircle, LoaderCircle, Upload, X } from 'lucide-react';
+import { parse, format } from 'date-fns';
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
     Dialog,
@@ -20,7 +22,6 @@ import { Form, FormItem, FormLabel, FormControl, FormMessage } from '@/component
 import { useCreateIndividualGuaranteeMutation } from '@/redux/guarantee/guaranteeApi';
 import { useGetBankNamesQuery } from '@/redux/guarantee/getEnumApi';
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from '@/components/ui/select';
-import { parse, format } from 'date-fns';
 
 const PersonalRegistrationForm = ({ onSubmit }) => {
     const { user } = useSelector((state) => state.auth);
@@ -231,7 +232,6 @@ const PersonalRegistrationForm = ({ onSubmit }) => {
         }
     };
 
-
     const removeImage = (setImage, image, inputRef, type) => {
         if (image) {
             URL.revokeObjectURL(image.preview);
@@ -306,7 +306,6 @@ const PersonalRegistrationForm = ({ onSubmit }) => {
             }
 
             window.location.reload();
-
         } catch (error) {
             console.error('Error while registering:', error);
             if (error.data) {
@@ -398,8 +397,8 @@ const PersonalRegistrationForm = ({ onSubmit }) => {
             <Card className="mb-4">
                 <CardContent className="bg-white rounded-md p-4 shadow-sm">
                     <p className="text-gray-500 my-4 italic">
-                        * Cam kết ảnh CCCD chỉ được sử dụng cho mục đích xác minh danh tính và không chia sẻ với bên thứ
-                        ba.
+                        * Chúng tôi cam kết thông tin CCCD chỉ được sử dụng cho mục đích xác minh danh tính và không
+                        chia sẻ với bên thứ ba.
                     </p>
                     <div className="flex flex-col md:flex-row space-x-4">
                         {/* Mặt trước CCCD */}
@@ -482,7 +481,6 @@ const PersonalRegistrationForm = ({ onSubmit }) => {
                             </div>
                         </div>
                     </div>
-
 
                     <Button
                         onClick={handleScanCCCD}
