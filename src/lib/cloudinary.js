@@ -6,6 +6,18 @@ const CLOUD_NAME = import.meta.env.VITE_CLOUD_NAME;
 const CLOUDINARY_API_KEY = import.meta.env.VITE_CLOUDINARY_APIKEY;
 const CLOUDINARY_SECRET = import.meta.env.VITE_CLOUDINARY_SECRET;
 
+const UPLOAD_FOLDER = {
+    getUserProfileFolder: (userID) => `users/${userID}`,
+    getUserIdentificationDocFolder: (userID) => `users/${userID}/identification_docs`,
+    getUserExperienceFolder: (userID) => `users/${userID}/experiences`,
+};
+
+const UPLOAD_NAME = {
+    PROFILE_PICTURE: 'profile_picture',
+    CCCD_FRONT: 'cccd_front',
+    CCCD_BACK: 'cccd_back',
+};
+
 // Create a Cloudinary instance and set your cloud name.
 const cld = new Cloudinary({
     cloud: {
@@ -42,11 +54,11 @@ async function getSignatureAndTimestamp({ ...searchParams }) {
  * @returns {Promise<Object>} Cloudinary upload response
  * @throws {Error} If upload fails
  */
-async function uploadFile({ file, folder = '', tag = '', resourceType = 'image', customFilename = null }) {
+async function uploadFile({ file, folder = '', tags = '', resourceType = 'image', customFilename = null }) {
     try {
         const { signature, timestamp } = await getSignatureAndTimestamp({
             folder,
-            tag,
+            tags,
             public_id: customFilename,
             upload_preset: UPLOAD_PRESET_NAME,
         });
@@ -62,8 +74,8 @@ async function uploadFile({ file, folder = '', tag = '', resourceType = 'image',
             formData.append('folder', folder);
         }
 
-        if (tag) {
-            formData.append('tag', tag);
+        if (tags) {
+            formData.append('tags', tags);
         }
 
         if (customFilename) {
@@ -90,22 +102,22 @@ async function uploadFile({ file, folder = '', tag = '', resourceType = 'image',
  * @param {string} [params.folder=''] - Cloudinary folder path
  */
 async function uploadMultipleFiles({ files, folder = '' }) {
-    const tag = folder;
+    const tags = folder.replaceAll('/', '_');
     const uploadPromises = files.map((file, index) =>
-        uploadFile({ file, folder, tag, resourceType: file.type.split('/')[0], customFilename: index.toString() }),
+        uploadFile({ file, folder, tags, resourceType: file.type.split('/')[0], customFilename: index.toString() }),
     );
     return await Promise.all(uploadPromises);
 }
 
 /**
  * Retrieves a list of assets within a folder
- * @param {string} tag - Tag to filter assets
- * @param {string} [resourceType='image'] - Resource type to filter
+ * @param {string} tags - Tag to filter assets
+ * @param {string} [resourceType='any'] - Resource type to filter
  * @returns {Promise<Array>} Array of matching resources
  * @throws {Error} If asset retrieval fails
  */
-async function getAssetsList(tag, resourceType = 'image') {
-    const url = `https://res.cloudinary.com/${import.meta.env.VITE_CLOUD_NAME}/${resourceType}/list/${tag}.json`;
+async function getAssetsList(tags, resourceType = 'any') {
+    const url = `https://res.cloudinary.com/${import.meta.env.VITE_CLOUD_NAME}/${resourceType}/list/${tags}.json`;
 
     try {
         const response = await fetch(url);
@@ -192,7 +204,6 @@ async function deleteAsset({ publicId, resourceType = 'image' }) {
 }
 
 export {
-    cld,
     uploadFile,
     uploadMultipleFiles,
     getAssetsList,
@@ -200,4 +211,6 @@ export {
     resizeAsset,
     getSecureUrl,
     deleteAsset,
+    UPLOAD_FOLDER,
+    UPLOAD_NAME,
 };
