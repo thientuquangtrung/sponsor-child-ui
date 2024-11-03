@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
+import { ArrowBigRight, ArrowLeft, ArrowRight } from 'lucide-react';
+import { useSelector } from 'react-redux';
+
 import SendHardContract from '@/components/guarantee/contract/SendHardContract';
 import ContractSentConfirmation from '@/components/guarantee/contract/ContractSentConfirmation';
 import { Button } from '@/components/ui/button';
-import { ArrowBigRight, ArrowLeft, ArrowRight } from 'lucide-react';
 import ContractSigningGuide from '@/components/guarantee/contract/ContractSigningGuide';
 import ContractViewAndSign from '@/components/guarantee/contract/ContractViewAndSign';
 import { useGetGuaranteeProfileQuery } from '@/redux/guarantee/guaranteeApi';
-import { useSelector } from 'react-redux';
 import LoadingScreen from '@/components/common/LoadingScreen';
 
 const steps = ['Hướng dẫn', 'Xem và Ký hợp đồng', 'Gửi bản cứng hợp đồng', 'Xác nhận'];
@@ -32,13 +33,8 @@ const ContractGuarantee = () => {
     }
 
     const nextStep = () => {
-        // if (currentStep === 1 && (!signedContract || !contractSent)) {
-        //     alert('Vui lòng ký và gửi hợp đồng trước khi tiếp tục.');
-        //     return;
-        // }
         setCurrentStep((prev) => Math.min(prev + 1, steps.length - 1));
     };
-
 
     const handleContractSign = (signedData) => {
         setSignedContract(signedData);
@@ -77,14 +73,16 @@ const ContractGuarantee = () => {
                     {steps.map((step, index) => (
                         <li
                             key={index}
-                            className={`flex items-center ${currentStep === index ? 'text-green-600 dark:text-green-500' : ''
-                                }`}
+                            className={`flex items-center ${
+                                currentStep === index ? 'text-green-600 dark:text-green-500' : ''
+                            }`}
                         >
                             <span
-                                className={`flex items-center justify-center w-5 h-5 mr-2 text-xl border ${currentStep === index
-                                    ? 'border-green-600 dark:border-green-500'
-                                    : 'border-gray-500 dark:border-gray-400'
-                                    } rounded-full shrink-0`}
+                                className={`flex items-center justify-center w-5 h-5 mr-2 text-xl border ${
+                                    currentStep === index
+                                        ? 'border-green-600 dark:border-green-500'
+                                        : 'border-gray-500 dark:border-gray-400'
+                                } rounded-full shrink-0`}
                             >
                                 {index + 1}
                             </span>
