@@ -4,6 +4,8 @@ import { useSelector } from 'react-redux';
 import { toast } from 'sonner';
 import { useForm } from 'react-hook-form';
 import { ArrowBigUpDash, CheckCircle, LoaderCircle, Upload, X } from 'lucide-react';
+import { parse, format } from 'date-fns';
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
     Dialog,
@@ -20,7 +22,7 @@ import { Form, FormItem, FormLabel, FormControl, FormMessage } from '@/component
 import { useCreateIndividualGuaranteeMutation } from '@/redux/guarantee/guaranteeApi';
 import { useGetBankNamesQuery } from '@/redux/guarantee/getEnumApi';
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from '@/components/ui/select';
-import { parse, format } from 'date-fns';
+import { UPLOAD_FOLDER, UPLOAD_NAME, uploadFile, uploadMultipleFiles } from '@/lib/cloudinary';
 
 const PersonalRegistrationForm = ({ onSubmit }) => {
     const { user } = useSelector((state) => state.auth);
@@ -32,6 +34,9 @@ const PersonalRegistrationForm = ({ onSubmit }) => {
     const [backCI, setBackCI] = useState(null);
     const [isScanning, setIsScanning] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isScanned, setIsScanned] = useState(false);
+    const [uploadedFiles, setUploadedFiles] = useState([]);
+    const [showConfirmation, setShowConfirmation] = useState(false);
 
     const [cccdData, setCccdData] = useState({
         id: '',
@@ -41,28 +46,6 @@ const PersonalRegistrationForm = ({ onSubmit }) => {
         issue_date: '',
         issue_location: '',
     });
-
-    const convertToISOString = (dateString) => {
-        if (!dateString) return null;
-
-        try {
-            const parsedDate = parse(dateString, 'dd/MM/yyyy', new Date());
-            return format(parsedDate, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-        } catch (error) {
-            console.error('Error converting date:', error);
-            return null;
-        }
-    };
-    const [isScanned, setIsScanned] = useState(false);
-    const [uploadedFiles, setUploadedFiles] = useState([]);
-    const [showConfirmation, setShowConfirmation] = useState(false);
-
-    const steps = [
-        { name: 'Điền đơn đăng ký', status: 'active' },
-        { name: 'Chờ Admin duyệt', status: 'pending' },
-        { name: 'Ký hợp đồng', status: 'pending' },
-        { name: 'Hoàn tất đăng ký', status: 'pending' },
-    ];
 
     const [personalData, setPersonalData] = useState({
         bankAccountNumber: '', // số tài khoản ngân hàng
@@ -79,30 +62,24 @@ const PersonalRegistrationForm = ({ onSubmit }) => {
     const [createIndividualGuarantee, { isLoading, isSuccess, isError }] = useCreateIndividualGuaranteeMutation();
     const { data: bankNames, isLoading: isLoadingBanks } = useGetBankNamesQuery();
 
-    const uploadToCloudinary = async (file, folder) => {
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('upload_preset', import.meta.env.VITE_UPLOAD_PRESET_NAME);
-        formData.append('folder', folder);
+    const convertToISOString = (dateString) => {
+        if (!dateString) return null;
 
         try {
-            const response = await fetch(
-                `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUD_NAME}/image/upload`,
-                {
-                    method: 'POST',
-                    body: formData,
-                },
-            );
-            const result = await response.json();
-            if (!response.ok) {
-                throw new Error(result.error.message);
-            }
-            return result.secure_url;
+            const parsedDate = parse(dateString, 'dd/MM/yyyy', new Date());
+            return format(parsedDate, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
         } catch (error) {
-            console.error('Upload failed:', error);
-            throw error;
+            console.error('Error converting date:', error);
+            return null;
         }
     };
+
+    const steps = [
+        { name: 'Điền đơn đăng ký', status: 'active' },
+        { name: 'Chờ Admin duyệt', status: 'pending' },
+        { name: 'Ký hợp đồng', status: 'pending' },
+        { name: 'Hoàn tất đăng ký', status: 'pending' },
+    ];
 
     const handleButtonAddFile = () => {
         fileInputRef.current.click();
@@ -144,31 +121,41 @@ const PersonalRegistrationForm = ({ onSubmit }) => {
 
     const handleUploadAllImages = async () => {
         try {
-            let uploadedUrls = [];
-
-            const experienceFolder = `user_001/guarantee/experiences`;
-            const cccdFolder = `user_001/guarantee/cccd`;
+            let experienceUrls = '';
 
             if (uploadedFiles.length > 0) {
-                for (const file of uploadedFiles) {
-                    const url = await uploadToCloudinary(file, experienceFolder);
-                    uploadedUrls.push(url);
-                }
+                const res = await uploadMultipleFiles({
+                    files: uploadedFiles,
+                    folder: UPLOAD_FOLDER.getUserExperienceFolder(user?.userID),
+                });
+                experienceUrls = res.map((file) => file.secure_url).join(',');
             }
 
             let frontCIUrl = '';
             if (frontCI?.file) {
-                frontCIUrl = await uploadToCloudinary(frontCI.file, `${cccdFolder}/front`);
+                frontCIUrl = (
+                    await uploadFile({
+                        file: frontCI.file,
+                        folder: UPLOAD_FOLDER.getUserIdentificationDocFolder(user?.userID),
+                        customFilename: UPLOAD_NAME.CCCD_FRONT,
+                    })
+                ).secure_url;
                 setPersonalData((prev) => ({ ...prev, frontCIImageUrl: frontCIUrl }));
             }
 
             let backCIUrl = '';
             if (backCI?.file) {
-                backCIUrl = await uploadToCloudinary(backCI.file, `${cccdFolder}/back`);
+                backCIUrl = (
+                    await uploadFile({
+                        file: backCI.file,
+                        folder: UPLOAD_FOLDER.getUserIdentificationDocFolder(user?.userID),
+                        customFilename: UPLOAD_NAME.CCCD_BACK,
+                    })
+                ).secure_url;
                 setPersonalData((prev) => ({ ...prev, backCIImageUrl: backCIUrl }));
             }
 
-            return { uploadedUrls, frontCIUrl, backCIUrl };
+            return { experienceUrls, frontCIUrl, backCIUrl };
         } catch (error) {
             console.error('Lỗi khi lưu ảnh:', error);
             throw error;
@@ -212,6 +199,7 @@ const PersonalRegistrationForm = ({ onSubmit }) => {
             console.error('Failed to recognize CCCD:', error);
         }
     };
+
     const handleScanCCCD = async () => {
         if (!frontCI?.file && !backCI?.file) return;
 
@@ -230,7 +218,6 @@ const PersonalRegistrationForm = ({ onSubmit }) => {
             setIsScanning(false);
         }
     };
-
 
     const removeImage = (setImage, image, inputRef, type) => {
         if (image) {
@@ -266,13 +253,13 @@ const PersonalRegistrationForm = ({ onSubmit }) => {
     const handleSubmitForm = async () => {
         setIsSubmitting(true);
         try {
-            const { uploadedUrls, frontCIUrl, backCIUrl } = await handleUploadAllImages();
+            const { experienceUrls, frontCIUrl, backCIUrl } = await handleUploadAllImages();
 
             const updatedData = {
                 ...personalData,
                 frontCIImageUrl: frontCIUrl,
                 backCIImageUrl: backCIUrl,
-                volunteerExperienceFiles: uploadedUrls.join(','),
+                volunteerExperienceFiles: experienceUrls,
                 citizenIdentification: cccdData.id,
                 issue_date: cccdData.issue_date,
                 issue_location: cccdData.issue_location,
@@ -293,10 +280,7 @@ const PersonalRegistrationForm = ({ onSubmit }) => {
                 volunteerExperienceFiles: updatedData.volunteerExperienceFiles,
             };
 
-            console.log('Payload being sent:', payload);
-
-            const response = await createIndividualGuarantee(payload).unwrap();
-            console.log('Response from server:', response);
+            await createIndividualGuarantee(payload).unwrap();
 
             setShowConfirmation(false);
             toast.success('Đăng ký thành công!');
@@ -304,18 +288,12 @@ const PersonalRegistrationForm = ({ onSubmit }) => {
             if (onSubmit) {
                 onSubmit();
             }
-
-            window.location.reload();
-
         } catch (error) {
-            console.error('Error while registering:', error);
-            if (error.data) {
-                console.error('Error details from server:', error.data);
-                if (error.data.errors) {
-                    console.error('Validation errors:', error.data.errors);
-                }
-            }
             toast.error('Đã có lỗi xảy ra khi đăng ký!');
+            console.error('Error while registering:', error);
+            if (error.data && error.data.errors) {
+                console.error('Validation errors:', error.data.errors);
+            }
         } finally {
             setIsSubmitting(false);
         }
@@ -398,8 +376,8 @@ const PersonalRegistrationForm = ({ onSubmit }) => {
             <Card className="mb-4">
                 <CardContent className="bg-white rounded-md p-4 shadow-sm">
                     <p className="text-gray-500 my-4 italic">
-                        * Cam kết ảnh CCCD chỉ được sử dụng cho mục đích xác minh danh tính và không chia sẻ với bên thứ
-                        ba.
+                        * Chúng tôi cam kết thông tin CCCD chỉ được sử dụng cho mục đích xác minh danh tính và không
+                        chia sẻ với bên thứ ba.
                     </p>
                     <div className="flex flex-col md:flex-row space-x-4">
                         {/* Mặt trước CCCD */}
@@ -482,7 +460,6 @@ const PersonalRegistrationForm = ({ onSubmit }) => {
                             </div>
                         </div>
                     </div>
-
 
                     <Button
                         onClick={handleScanCCCD}

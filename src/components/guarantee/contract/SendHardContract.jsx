@@ -4,7 +4,6 @@ import { Download } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { useSelector } from 'react-redux';
 import { format, parseISO } from 'date-fns';
 
 const ContractContent = ({ guaranteeProfile }) => {
@@ -349,7 +348,7 @@ const SendHardContract = ({ signedContract, guaranteeProfile }) => {
             <div className="w-full lg:w-1/3 p-4 bg-white shadow-md pt-20 font-sans">
                 <h2 className="text-2xl font-bold mb-6 text-center">Hướng Dẫn Gửi Hợp Đồng</h2>
                 <ol className="list-decimal list-inside space-y-2 font-sans">
-                    <li>Tải xuống file PDF hợp đồng bằng cách nhấn nút "Tải PDF" bên dưới.</li>
+                    <li>Tải xuống file PDF hợp đồng bằng cách nhấn nút &quot;Tải PDF&quot; bên dưới.</li>
                     <li>In hợp đồng ra giấy.</li>
                     <li>Đọc kỹ nội dung và ký tên vào các vị trí được đánh dấu trong hợp đồng.</li>
                     <li>Gửi hợp đồng đã ký qua chuyển phát đến địa chỉ:</li>

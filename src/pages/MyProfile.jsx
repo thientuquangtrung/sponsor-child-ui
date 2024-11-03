@@ -9,7 +9,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { useUpdateUserMutation } from '@/redux/user/userApi';
-import { getAssetsList, uploadFile } from '@/lib/cloudinary';
+import { uploadFile, UPLOAD_FOLDER, UPLOAD_NAME } from '@/lib/cloudinary';
 import ButtonLoading from '@/components/ui/loading-button';
 import { toast } from 'sonner';
 import { UpdateUser } from '@/redux/auth/authActionCreators';
@@ -59,15 +59,12 @@ export default function MyProfile() {
             let newAvatarUrl;
             if (newAvatarSrc) {
                 setIsImgUploading(true);
-                // Define the folder structure
-                const folderName = `users/profile_pictures`;
 
                 // Upload new avatar
                 const uploadResponse = await uploadFile({
                     file: newAvatarSrc,
-                    resourceType: 'image',
-                    folder: folderName,
-                    customFilename: `${user?.userID}_profile`,
+                    folder: UPLOAD_FOLDER.getUserProfileFolder(user?.userID),
+                    customFilename: UPLOAD_NAME.PROFILE_PICTURE,
                 });
 
                 newAvatarUrl = uploadResponse.secure_url;
