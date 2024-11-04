@@ -19,6 +19,7 @@ import { useCreateOrganizationGuaranteeMutation } from '@/redux/guarantee/guaran
 import { useGetBankNamesQuery } from '@/redux/guarantee/getEnumApi';
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from '@/components/ui/select';
 import { organizationTypes } from '@/config/combobox';
+import { UPLOAD_FOLDER, uploadMultipleFiles } from '@/lib/cloudinary';
 
 const OrganizationRegistrationForm = ({ onSubmit }) => {
     const { user } = useSelector((state) => state.auth);
@@ -49,31 +50,6 @@ const OrganizationRegistrationForm = ({ onSubmit }) => {
     const [createOrganizationGuarantee, { isLoading, isSuccess, isError }] = useCreateOrganizationGuaranteeMutation();
     const { data: bankNames, isLoading: isLoadingBanks } = useGetBankNamesQuery();
 
-    const uploadToCloudinary = async (file, folder) => {
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('upload_preset', import.meta.env.VITE_UPLOAD_PRESET_NAME);
-        formData.append('folder', folder);
-
-        try {
-            const response = await fetch(
-                `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUD_NAME}/image/upload`,
-                {
-                    method: 'POST',
-                    body: formData,
-                },
-            );
-            const result = await response.json();
-            if (!response.ok) {
-                throw new Error(result.error.message);
-            }
-            return result.secure_url;
-        } catch (error) {
-            console.error('Upload failed:', error);
-            throw error;
-        }
-    };
-
     const handleFileChange = (event) => {
         const files = Array.from(event.target.files);
         const maxFileSize = 20 * 1024 * 1024;
@@ -98,15 +74,17 @@ const OrganizationRegistrationForm = ({ onSubmit }) => {
 
     const handleSaveImages = async () => {
         try {
-            let uploadedUrls = [];
-            const dynamicFolder = `user_001/guarantee/experiences`;
+            let experienceUrls = '';
 
-            for (const file of uploadedFiles) {
-                const url = await uploadToCloudinary(file, `${dynamicFolder}`);
-                uploadedUrls.push(url);
+            if (uploadedFiles.length > 0) {
+                const res = await uploadMultipleFiles({
+                    files: uploadedFiles,
+                    folder: UPLOAD_FOLDER.getUserExperienceFolder(user?.userID),
+                });
+                experienceUrls = res.map((file) => file.secure_url).join(',');
             }
 
-            return uploadedUrls;
+            return experienceUrls;
         } catch (error) {
             console.error('Lỗi khi lưu ảnh:', error);
             throw error;
@@ -118,7 +96,7 @@ const OrganizationRegistrationForm = ({ onSubmit }) => {
 
             const updatedData = {
                 ...organizationData,
-                volunteerExperienceFiles: uploadedUrls.join(','),
+                volunteerExperienceFiles: uploadedUrls || '',
             };
 
             const payload = {
@@ -135,24 +113,19 @@ const OrganizationRegistrationForm = ({ onSubmit }) => {
                 bankAccountNumber: updatedData.bankAccountNumber,
             };
 
-            console.log('Payload being sent:', payload);
+            await createOrganizationGuarantee(payload).unwrap();
 
-            const response = await createOrganizationGuarantee(payload).unwrap();
-            console.log('Response from server:', response);
             setShowConfirmation(false);
             toast.success('Đăng ký thành công!');
             if (onSubmit) {
                 onSubmit();
             }
         } catch (error) {
-            console.error('Error while registering:', error);
-            if (error.data) {
-                console.error('Error details from server:', error.data);
-                if (error.data.errors) {
-                    console.error('Validation errors:', error.data.errors);
-                }
-            }
             toast.error('Đã có lỗi xảy ra khi đăng ký!');
+            console.error('Error while registering:', error);
+            if (error.data && error.data.errors) {
+                console.error('Validation errors:', error.data.errors);
+            }
         }
     };
 
