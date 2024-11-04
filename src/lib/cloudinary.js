@@ -26,12 +26,12 @@ const UPLOAD_NAME = {
     SIGNATURE_GUARANTEE: 'signature_guarantee',
     REGISTRATION_CONTRACT_SOFT: 'registration_contract_soft',
     REGISTRATION_CONTRACT_HARD: 'registration_contract_hard',
+
     //campaign
     THUMBNAIL: 'thumbnail',
     CAMPAIGN_CONTRACT_SOFT: 'campaign_contract_soft',
     CAMPAIGN_CONTRACT_HARD: 'campaign_contract_hard',
     IDENTIFICATION_FILE: 'identification_file',
-
 };
 
 // Create a Cloudinary instance and set your cloud name.

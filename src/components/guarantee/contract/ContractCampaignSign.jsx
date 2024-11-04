@@ -12,6 +12,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { useGetCampaignByIdQuery } from '@/redux/campaign/campaignApi';
 import ContractCampaignContent from '@/components/guarantee/contract/ContractCampaignContent';
 import { generatePDF } from '@/lib/utils';
+import { UPLOAD_FOLDER, UPLOAD_NAME, uploadFile } from '@/lib/cloudinary';
 
 const signDate = formatInTimeZone(new Date(), 'Asia/Ho_Chi_Minh', "yyyy-MM-dd'T'HH:mm:ss.SSSxxx");
 
@@ -72,23 +73,6 @@ const ContractCampaignSign = ({ onSign, onContractSent, campaignId, contractId }
         onSign(sigCanvas.current.toDataURL());
     };
 
-    const uploadToCloudinary = async (file, folder) => {
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('upload_preset', import.meta.env.VITE_UPLOAD_PRESET_NAME);
-        formData.append('folder', folder);
-
-        const response = await fetch(`https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUD_NAME}/raw/upload`, {
-            method: 'POST',
-            body: formData,
-        });
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        return await response.json();
-    };
-
     const handleUpload = async () => {
         if (!contractDetails) return;
 
@@ -96,20 +80,25 @@ const ContractCampaignSign = ({ onSign, onContractSent, campaignId, contractId }
         toast.promise(
             async () => {
                 try {
-                    const partyBID = user.userID;
-
                     // Upload signature to Cloudinary
                     const signatureBlob = await (await fetch(signature)).blob();
-                    const signatureData = await uploadToCloudinary(
-                        signatureBlob,
-                        `user_${partyBID}/guarantee/signatures_campaign`,
-                    );
+                    const signatureData = await uploadFile({
+                        file: signatureBlob,
+                        folder: UPLOAD_FOLDER.getCampaignDocumentFolder(campaignId),
+                        customFilename: UPLOAD_NAME.SIGNATURE_GUARANTEE,
+                        resourceType: 'raw',
+                    });
                     const signatureUrl = signatureData.secure_url;
 
                     // Generate and upload PDF
                     const pdf = await generatePDF(contractRef.current);
                     const pdfBlob = pdf.output('blob');
-                    const pdfData = await uploadToCloudinary(pdfBlob, `user_${partyBID}/guarantee/contracts_campaign`);
+                    const pdfData = await uploadFile({
+                        file: pdfBlob,
+                        folder: UPLOAD_FOLDER.getCampaignDocumentFolder(campaignId),
+                        customFilename: UPLOAD_NAME.CAMPAIGN_CONTRACT_SOFT,
+                        resourceType: 'raw',
+                    });
                     const pdfUrl = pdfData.secure_url;
 
                     await updateContract({
