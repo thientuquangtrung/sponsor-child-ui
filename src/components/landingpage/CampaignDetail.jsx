@@ -11,6 +11,7 @@ import { useGetCampaignByIdQuery } from '@/redux/campaign/campaignApi';
 import { useGetDonationsByCampaignIdQuery, useGetTotalDonationsByCampaignIdQuery } from '@/redux/donation/donationApi';
 import { Dialog, DialogClose, DialogContent } from '@/components/ui/dialog';
 import { getAssetsList } from '@/lib/cloudinary';
+import Activity from '@/components/landingpage/Activity';
 
 const partners = [
     {
@@ -93,9 +94,8 @@ const CampaignDetail = () => {
 
                 //gen urls
                 const imageUrls = resources.map((resource) => {
-                    return `https://res.cloudinary.com/${import.meta.env.VITE_CLOUD_NAME}/image/${resource.type}/${
-                        resource.public_id
-                    }.${resource.format}`;
+                    return `https://res.cloudinary.com/${import.meta.env.VITE_CLOUD_NAME}/image/${resource.type}/${resource.public_id
+                        }.${resource.format}`;
                 });
                 setImages(imageUrls);
             } catch (error) {
@@ -192,7 +192,7 @@ const CampaignDetail = () => {
                         </TabsContent>
 
                         <TabsContent value="activities" className="p-4">
-                            <p className="text-gray-400 italic text-center mt-8">Chiến dịch chưa có hoạt động</p>
+                            <Activity />
                         </TabsContent>
 
                         <TabsContent value="donations" className="p-4">
@@ -258,10 +258,10 @@ const CampaignDetail = () => {
                                     <div className="text-sm font-semibold">Thời gian còn lại</div>
                                     <div className="text-lg font-bold text-[#69A6B8]">
                                         {Math.ceil((new Date(campaign?.endDate) - new Date()) / (1000 * 60 * 60 * 24)) >
-                                        0
+                                            0
                                             ? `Còn ${Math.ceil(
-                                                  (new Date(campaign?.endDate) - new Date()) / (1000 * 60 * 60 * 24),
-                                              )} ngày`
+                                                (new Date(campaign?.endDate) - new Date()) / (1000 * 60 * 60 * 24),
+                                            )} ngày`
                                             : 'Hết hạn'}
                                     </div>
                                 </div>
