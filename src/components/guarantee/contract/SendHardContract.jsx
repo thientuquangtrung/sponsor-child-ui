@@ -8,6 +8,14 @@ import { generatePDF } from '@/lib/utils';
 const ContractContent = ({ guaranteeProfile }) => {
     const today = new Date();
     const formattedToday = format(today, "dd' tháng 'MM' năm 'yyyy");
+    const calculateExpiryDate = (startDate) => {
+        const expiryDate = new Date(startDate);
+        expiryDate.setFullYear(expiryDate.getFullYear() + 2);
+        return expiryDate;
+    };
+    const expiryDate = calculateExpiryDate(today);
+
+    const formattedExpiryDate = expiryDate.toLocaleDateString('vi-VN');
     const renderPartyB = () => {
         if (!guaranteeProfile) {
             return (
@@ -125,7 +133,9 @@ const ContractContent = ({ guaranteeProfile }) => {
             <h3 className="text-lg font-semibold text-center mb-8">HỢP ĐỒNG THAM GIA BẢO LÃNH </h3>
             <div className="ml-6 text-sm">
                 <p className="mb-4">Số: 100/HĐ-BLCD</p>
-                <p className="mb-6">Hôm nay, {formattedToday}, tại ....................</p>
+                <p className="mb-6">
+                    Hôm nay, ngày {formattedToday}, tại TP. Hồ Chí Minh <br />
+                </p>
                 <p className="font-semibold mb-4">Chúng tôi gồm có:</p>
 
                 <div className="mb-6">
@@ -253,6 +263,21 @@ const ContractContent = ({ guaranteeProfile }) => {
                         hai bên cam kết thực hiện đầy đủ các điều khoản đã thỏa thuận.
                     </p>
                 </div>
+                <div className="mb-6 mt-2">
+                    <h4 className="font-semibold">Điều 8: Thời hạn hợp đồng</h4>
+                    <p>
+                        8.1. <strong>Hiệu lực hợp đồng:</strong> <br />
+                        - Hợp đồng có hiệu lực kể từ ngày {formattedToday} và kéo dài trong thời hạn 02 (hai) năm. <br />
+                        - Ngày hết hiệu lực: {formattedExpiryDate}
+                        <br />
+                        <br />
+                        8.2. <strong>Gia hạn hợp đồng:</strong> <br />
+                        - Trước khi hết hạn 30 ngày, hai bên sẽ đánh giá việc thực hiện hợp đồng và thảo luận về việc gia hạn. <br />
+                        - Việc gia hạn hợp đồng sẽ được thực hiện thông qua phụ lục hợp đồng hoặc ký kết hợp đồng mới.
+                    </p>
+                </div>
+
+
 
                 <div className="flex justify-between mt-12 mb-40">
                     <div className="text-center">
