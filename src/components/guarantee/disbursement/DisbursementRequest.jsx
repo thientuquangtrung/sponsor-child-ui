@@ -19,11 +19,17 @@ import {
 const getRequestStatusVariant = (status) => {
     switch (status) {
         case 0:
-            return 'bg-yellow-500 text-yellow-100 hover:bg-normal';
+            return 'bg-sky-500 text-white hover:bg-normal';
         case 1:
             return 'bg-teal-500 text-white hover:bg-normal';
         case 2:
+            return 'bg-red-500 text-white hover:bg-normal';
+        case 3:
+            return 'bg-yellow-500 text-white hover:bg-normal';
+        case 4:
             return 'bg-secondary text-white hover:bg-normal';
+        case 5:
+            return 'bg-green-500 text-white hover:bg-normal';
         default:
             return 'bg-gray-200 text-gray-800 hover:bg-normal';
     }
@@ -37,6 +43,12 @@ const getRequestStatusLabel = (status) => {
             return 'Đã phê duyệt';
         case 2:
             return 'Đã từ chối';
+        case 3:
+            return 'Yêu cầu chỉnh sửa';
+        case 4:
+            return 'Yêu cầu hoàn thành báo cáo';
+        case 5:
+            return 'Đã hoàn thành';
         default:
             return 'Không xác định';
     }

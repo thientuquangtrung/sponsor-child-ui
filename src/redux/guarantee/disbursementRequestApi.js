@@ -21,7 +21,19 @@ export const disbursementRequestApi = baseApi.injectEndpoints({
                 body: data,
             }),
         }),
+
+        getDisbursementRequestByIdSimplified: builder.query({
+            query: (id) => `/disbursementRequest/${id}/simplified`,
+        }),
+
+        updateDisbursementRequest: builder.mutation({
+            query: ({ id, data }) => ({
+                url: `/disbursementRequest/${id}`,
+                method: 'PUT',
+                body: data,
+            }),
+        }),
     }),
 });
 
-export const { useGetDisbursementRequestByIdQuery, useGetDisbursementRequestByGuaranteeIdQuery, useCreateDisbursementRequestMutation, useCanCreateDisbursementRequestQuery } = disbursementRequestApi;
+export const { useGetDisbursementRequestByIdQuery, useGetDisbursementRequestByGuaranteeIdQuery, useCreateDisbursementRequestMutation, useCanCreateDisbursementRequestQuery, useGetDisbursementRequestByIdSimplifiedQuery, useUpdateDisbursementRequestMutation } = disbursementRequestApi;

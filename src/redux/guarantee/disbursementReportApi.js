@@ -26,12 +26,26 @@ export const disbursementReportApi = baseApi.injectEndpoints({
         }),
 
         updateDisbursementReport: builder.mutation({
-            query: ({ reportId, data }) => ({
-                url: `/disbursementReport/${reportId}`,
+            query: ({ reportDetailId, data }) => ({
+                url: `/disbursementReport/details/${reportDetailId}`,
                 method: 'PUT',
-                body: data,
+                headers: {
+                    'Content-Type': 'application/json', 
+                },
+                body: JSON.stringify(data), 
             }),
         }),
+        updateMultipleDisbursementReportDetails: builder.mutation({
+            query: (data) => ({
+                url: '/disbursementReport/multiple-details',
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json', 
+                },
+                body: JSON.stringify(data),
+            }),
+        }),
+        
     }),
 });
 
@@ -42,4 +56,5 @@ export const {
     useGetDisbursementReportByGuaranteeIdQuery,
     useGetDisbursementReportByReportIdQuery,
     useUpdateDisbursementReportMutation,
+    useUpdateMultipleDisbursementReportDetailsMutation
 } = disbursementReportApi;
