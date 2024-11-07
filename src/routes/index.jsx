@@ -30,9 +30,6 @@ import DisbursementRequest from '@/components/guarantee/disbursement/Disbursemen
 import CreateDisbursementRequest from '@/components/guarantee/disbursement/CreateDisbursementRequest';
 import CampaignInfo from '@/components/guarantee/campaign/CampaignInfo';
 import DisbursementRequestDetail from '@/components/guarantee/disbursement/DisbursementRequestDetail';
-import CreateDisbursementReport from '@/components/guarantee/disbursement/CreateDisbursementReport';
-import DisbursementReport from '@/components/guarantee/disbursement/DisbursementReport';
-import DisbursementReportDetail from '@/components/guarantee/disbursement/DisbursementReportDetail';
 
 const Loadable = (Component) => {
     const LoadableComponent = (props) => {
@@ -78,9 +75,6 @@ export default function Router() {
                 { element: <DisbursementRequest />, path: 'disbursement-requests' },
                 { element: <DisbursementRequestDetail />, path: 'disbursement-request-detail/:id' },
                 { element: <CreateDisbursementRequest />, path: 'create-disbursement-request' },
-                { element: <DisbursementReport />, path: 'disbursement-reports' },
-                { element: <CreateDisbursementReport />, path: 'create-disbursement-report' },
-                { element: <DisbursementReportDetail />, path: 'disbursement-report-detail/:id' },
                 { element: <Page404 />, path: '404' },
                 { path: '*', element: <Navigate to="404" replace /> },
             ],
