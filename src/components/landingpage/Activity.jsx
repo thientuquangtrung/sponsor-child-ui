@@ -8,7 +8,8 @@ import {
     ChevronUp,
     FileText,
     Webcam,
-    Target
+    Target,
+    Goal
 } from 'lucide-react';
 import {
     Card,
@@ -30,41 +31,8 @@ const Activity = () => {
 
     const activityPeriods = [
         {
-            id: 1,
-            title: 'Đợt bảo trợ 1',
-            startDate: '01/03/2024',
-            endDate: '15/03/2024',
-            totalAmount: 25000000,
-            usedAmount: 25000000,
-            activities: [
-                {
-                    id: 'act-1',
-                    title: 'Thanh toán học phí học kỳ 1',
-                    amount: 15000000,
-                    date: '05/03/2024',
-                    description: 'Thanh toán học phí học kỳ 1 năm học 2024-2025',
-                    status: 'Đã thanh toán',
-                    attachments: [
-                        { name: 'Biên lai học phí.pdf', url: '#' },
-                        { name: 'Hợp đồng đào tạo.pdf', url: '#' }
-                    ]
-                },
-                {
-                    id: 'act-2',
-                    title: 'Chi phí sinh hoạt tháng 3',
-                    amount: 1000000,
-                    date: '10/03/2024',
-                    description: 'Chi phí ăn uống và sinh hoạt cơ bản',
-                    status: 'Đã thanh toán',
-                    attachments: [
-                        { name: 'Báo cáo chi tiêu.xlsx', url: '#' }
-                    ]
-                }
-            ]
-        },
-        {
             id: 2,
-            title: "Đợt bảo trợ 2",
+            title: "Hoạt động giải ngân đợt 2",
             startDate: "16/03/2024",
             endDate: "31/03/2024",
             totalAmount: 30000000,
@@ -94,14 +62,48 @@ const Activity = () => {
                     ]
                 }
             ]
+        },
+        {
+            id: 1,
+            title: 'Hoạt động giải ngân đợt 1',
+            startDate: '01/03/2024',
+            endDate: '15/03/2024',
+            totalAmount: 25000000,
+            usedAmount: 25000000,
+            activities: [
+                {
+                    id: 'act-1',
+                    title: 'Thanh toán học phí học kỳ 1',
+                    amount: 15000000,
+                    date: '05/03/2024',
+                    description: 'Thanh toán học phí học kỳ 1 năm học 2024-2025',
+                    status: 'Đã thanh toán',
+                    attachments: [
+                        { name: 'Biên lai học phí.pdf', url: '#' },
+                        { name: 'Hợp đồng đào tạo.pdf', url: '#' }
+                    ]
+                },
+                {
+                    id: 'act-2',
+                    title: 'Chi phí sinh hoạt tháng 3',
+                    amount: 1000000,
+                    date: '10/03/2024',
+                    description: 'Chi phí ăn uống và sinh hoạt cơ bản',
+                    status: 'Đã thanh toán',
+                    attachments: [
+                        { name: 'Báo cáo chi tiêu.xlsx', url: '#' }
+                    ]
+                }
+            ]
         }
-
     ];
 
+    const sortedActivities = activityPeriods.flatMap(period => period.activities)
+        .sort((a, b) => new Date(b.date) - new Date(a.date));
+
     return (
-        <ScrollArea className="h-[600px] pr-4">
-            <div className="space-y-6 mb-8">
-                <h2 className="text-2xl font-bold text-gray-900">Tổng quan hoạt động</h2>
+        <ScrollArea className="h-[900px] pr-4">
+            {/* <div className="space-y-6 mb-8">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {activityPeriods.map(period => (
                         <Card key={`summary-${period.id}`} className="overflow-hidden border-none shadow-lg">
@@ -140,7 +142,7 @@ const Activity = () => {
                         </Card>
                     ))}
                 </div>
-            </div>
+            </div> */}
 
             <div className="relative">
                 <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-teal-100"></div>
@@ -149,7 +151,7 @@ const Activity = () => {
                     {activityPeriods.map((period) => (
                         <div key={period.id} className="relative ml-12">
                             <div className="absolute -left-[44px] p-2 bg-white rounded-full border-2 border-teal-500">
-                                <Webcam className="w-6 h-6 text-teal-500" />
+                                <Goal className="w-6 h-6 text-teal-500" />
                             </div>
 
                             <Card className="border-none shadow-lg">
@@ -185,46 +187,47 @@ const Activity = () => {
 
                                     {expandedActivities[period.id] && (
                                         <div className="mt-6 space-y-4">
-                                            {period.activities.map((activity) => (
-                                                <div
-                                                    key={activity.id}
-                                                    className="border-l-2 border-teal-200 pl-4 ml-2 relative"
-                                                >
-                                                    <div className="absolute -left-[5px] top-3 w-2 h-2 rounded-full bg-teal-500"></div>
-                                                    <div className="bg-gray-50 rounded-xl p-4 hover:bg-gray-100 transition-colors">
-                                                        <div className="flex justify-between items-start mb-3">
-                                                            <h4 className="font-semibold text-gray-900">{activity.title}</h4>
-                                                            <span className="text-sm font-medium text-teal-600">
-                                                                {activity.amount.toLocaleString()}đ
-                                                            </span>
-                                                        </div>
-                                                        <p className="text-sm text-gray-600 mb-3">{activity.description}</p>
-                                                        <div className="flex justify-between items-center text-sm text-gray-500">
-                                                            <div className="flex items-center space-x-2">
-                                                                <Calendar className="w-4 h-4" />
-                                                                <span>{activity.date}</span>
+                                            {sortedActivities.filter(activity => period.activities.some(a => a.id === activity.id))
+                                                .map((activity) => (
+                                                    <div
+                                                        key={activity.id}
+                                                        className="border-l-2 border-teal-200 pl-4 ml-2 relative"
+                                                    >
+                                                        <div className="absolute -left-[5px] top-3 w-2 h-2 rounded-full bg-teal-500"></div>
+                                                        <div className="bg-gray-50 rounded-xl p-4 hover:bg-gray-100 transition-colors">
+                                                            <div className="flex justify-between items-start mb-3">
+                                                                <h4 className="font-semibold text-gray-900">{activity.title}</h4>
+                                                                <span className="text-sm font-medium text-teal-600">
+                                                                    {activity.amount.toLocaleString()}đ
+                                                                </span>
                                                             </div>
-                                                            <span className="px-3 py-1 bg-teal-50 text-teal-600 rounded-full text-xs font-medium">
-                                                                {activity.status}
-                                                            </span>
-                                                        </div>
-                                                        {activity.attachments.length > 0 && (
-                                                            <div className="mt-3 pt-3 border-t border-gray-200 space-y-2">
-                                                                {activity.attachments.map((attachment, index) => (
-                                                                    <a
-                                                                        key={index}
-                                                                        href={attachment.url}
-                                                                        className="flex items-center space-x-2 text-sm text-teal-600 hover:text-teal-700 transition-colors"
-                                                                    >
-                                                                        <FileText className="w-4 h-4" />
-                                                                        <span>{attachment.name}</span>
-                                                                    </a>
-                                                                ))}
+                                                            <p className="text-sm text-gray-600 mb-3">{activity.description}</p>
+                                                            <div className="flex justify-between items-center text-sm text-gray-500">
+                                                                <div className="flex items-center space-x-2">
+                                                                    <Calendar className="w-4 h-4" />
+                                                                    <span>{activity.date}</span>
+                                                                </div>
+                                                                <span className="px-3 py-1 bg-teal-50 text-teal-600 rounded-full text-xs font-medium">
+                                                                    {activity.status}
+                                                                </span>
                                                             </div>
-                                                        )}
+                                                            {activity.attachments.length > 0 && (
+                                                                <div className="mt-3 pt-3 border-t border-gray-200 space-y-2">
+                                                                    {activity.attachments.map((attachment, index) => (
+                                                                        <a
+                                                                            key={index}
+                                                                            href={attachment.url}
+                                                                            className="flex items-center space-x-2 text-sm text-teal-600 hover:text-teal-700 transition-colors"
+                                                                        >
+                                                                            <FileText className="w-4 h-4" />
+                                                                            <span>{attachment.name}</span>
+                                                                        </a>
+                                                                    ))}
+                                                                </div>
+                                                            )}
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            ))}
+                                                ))}
                                         </div>
                                     )}
                                 </CardContent>
