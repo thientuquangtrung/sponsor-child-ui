@@ -30,6 +30,7 @@ import DisbursementRequest from '@/components/guarantee/disbursement/Disbursemen
 import CreateDisbursementRequest from '@/components/guarantee/disbursement/CreateDisbursementRequest';
 import CampaignInfo from '@/components/guarantee/campaign/CampaignInfo';
 import DisbursementRequestDetail from '@/components/guarantee/disbursement/DisbursementRequestDetail';
+import ListDisbursementCampaign from '@/components/guarantee/disbursement/ListDisbursementCampaign';
 
 const Loadable = (Component) => {
     const LoadableComponent = (props) => {
@@ -73,6 +74,7 @@ export default function Router() {
                 { element: <ContractCampaign />, path: 'contract/contract-campaign/:contractID/:campaignID' },
                 { element: <ContractDetail />, path: 'contract/:id' },
                 { element: <DisbursementRequest />, path: 'disbursement-requests' },
+                { element: <ListDisbursementCampaign />, path: 'disbursement-campaigns' },
                 { element: <DisbursementRequestDetail />, path: 'disbursement-request-detail/:id' },
                 { element: <CreateDisbursementRequest />, path: 'create-disbursement-request' },
                 { element: <Page404 />, path: '404' },

@@ -84,7 +84,7 @@ export function DisbursementRequests() {
         },
         {
             accessorFn: (row) => row.disbursementStage?.scheduledDate,
-            id: 'customScheduledDate', 
+            id: 'customScheduledDate',
             header: ({ column }) => <DataTableColumnHeader column={column} title="Ngày dự kiến" />,
             cell: ({ row }) => {
                 const date = row.getValue('customScheduledDate');
@@ -155,18 +155,15 @@ export function DisbursementRequests() {
             <h1 className="text-4xl text-center font-bold py-4 bg-gradient-to-b from-teal-500 to-rose-300 text-transparent bg-clip-text">
                 Danh sách yêu cầu giải ngân
             </h1>
-
-            {/* <div className="flex justify-end pb-4">
-                <div className="h-auto w-[220px] bg-gradient-to-r from-teal-500 via-gray-400 to-rose-300 p-[2px] rounded-md">
-                    <Button
-                        onClick={() => navigate('/guarantee/create-disbursement-request')}
-                        className="bg-white text-black text-md font-semibold rounded-md flex items-center space-x-2 h-full w-full hover:bg-normal"
-                    >
-                        <CircleFadingPlus className="mr-2 h-4 w-4" />
-                        Tạo yêu cầu giải ngân
-                    </Button>
-                </div>
-            </div> */}
+            <div className="flex justify-end items-center mb-6">
+                <Button
+                    className="bg-gradient-to-l from-secondary to-primary text-white"
+                    onClick={() => navigate('/guarantee/disbursement-campaigns')}
+                >
+                    <CircleFadingPlus className="w-4 h-4 mr-2" />
+                    Tạo yêu cầu giải ngân
+                </Button>
+            </div>
 
             <div className="rounded-md border">
                 <Table>

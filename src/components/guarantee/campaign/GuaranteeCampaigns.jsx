@@ -85,7 +85,6 @@ export function GuaranteeCampaigns() {
         { id: 'startDate', desc: true }
     ]);
 
-    console.log(campaigns);
 
     const columns = [
         {
