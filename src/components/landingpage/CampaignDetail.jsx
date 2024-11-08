@@ -190,9 +190,8 @@ const CampaignDetail = () => {
                             </p>
                             <p className="text-lg text-gray-700 mt-2">{campaign?.story}</p>
                         </TabsContent>
-
                         <TabsContent value="activities" className="p-4">
-                            <Activity />
+                            <Activity campaign={campaign} />
                         </TabsContent>
 
                         <TabsContent value="donations" className="p-4">
