@@ -42,6 +42,10 @@ export const campaignApi = baseApi.injectEndpoints({
             query: (id) => `/campaign/by-guarantee/${id}`,
 
         }),
+        getCampaignEligibleForDisbursement: builder.query({
+            query: (id) => `/campaign/eligible-for-disbursement/${id}`,
+
+        }),
 
 
     }),
@@ -55,4 +59,5 @@ export const {
     useDeleteCampaignMutation,
     useFetchAllCampaignsQuery,
     useGetCampaignByGuaranteeIdQuery,
+    useGetCampaignEligibleForDisbursementQuery,
 } = campaignApi;

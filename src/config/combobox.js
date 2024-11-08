@@ -102,3 +102,29 @@ export const bankName = [
     { label: 'Eximbank', value: 13 },
     { label: 'OceanBank', value: 14 },
 ];
+
+//disbursement
+
+export const disbursementStageStatus = [
+    { label: 'Đã lên lịch', value: 0 },
+    { label: 'Đang tiến hành', value: 1 },
+    { label: 'Đã hoàn thành', value: 2 },
+    { label: 'Thất bại', value: 3 },
+    { label: 'Đã hủy', value: 4 },
+    { label: 'Đã thay thế', value: 5 },
+];
+export const disbursementRequestStatus = [
+    { label: 'Đã yêu cầu', value: 0 },
+    { label: 'Đã duyệt', value: 1 },
+    { label: 'Từ chối', value: 2 },
+    { label: 'Yêu cầu chỉnh sửa', value: 3 },
+    { label: 'Yêu cầu báo cáo', value: 4 },
+    { label: 'Hoàn thành', value: 5 },
+];
+//activity 
+export const activityStatus = [
+    { label: 'Đã lên lịch', value: 0 },
+    { label: 'Đang tiến hành', value: 1 },
+    { label: 'Đã hoàn thành', value: 2 },
+    { label: 'Đã hủy', value: 3 },
+];
