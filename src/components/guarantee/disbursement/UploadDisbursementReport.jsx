@@ -4,6 +4,7 @@ import { toast } from 'sonner';
 import { Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { X } from 'lucide-react'; 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import LoadingScreen from '@/components/common/LoadingScreen';
 import { useGetDisbursementRequestByIdSimplifiedQuery } from '@/redux/guarantee/disbursementRequestApi';
@@ -18,6 +19,19 @@ export default function UploadDisbursementReport() {
     const [reportDetails, setReportDetails] = useState({});
     const [uploadedImages, setUploadedImages] = useState({});
 
+    const [isModalOpen, setModalOpen] = useState(false);
+    const [modalImage, setModalImage] = useState(null);
+
+    const openModal = (imageUrl) => {
+        setModalImage(imageUrl);
+        setModalOpen(true);
+    };
+
+    const closeModal = () => {
+        setModalOpen(false);
+        setModalImage(null);
+    };
+
     if (isLoading) return <LoadingScreen />;
     if (error) return <div className="text-center py-4 text-red-500">Đã có lỗi khi tải dữ liệu</div>;
     if (!disbursementRequests)
@@ -30,8 +44,8 @@ export default function UploadDisbursementReport() {
 
         const formData = new FormData();
         formData.append('file', file);
-        formData.append('upload_preset', 'sponsor_child_uploads'); 
-        formData.append('folder', folder); 
+        formData.append('upload_preset', 'sponsor_child_uploads');
+        formData.append('folder', folder);
 
         try {
             const response = await fetch(
@@ -89,19 +103,21 @@ export default function UploadDisbursementReport() {
     };
 
     const onSubmit = async () => {
-        const payload = Object.keys(reportDetails).map((detailId) => {
-            const detail = reportDetails[detailId];
-            if (!detail.comments || !detail.receiptUrl) {
-                toast.error(`Detail ID ${detailId}: Comments and Receipt URL are required.`);
-                return null;
-            }
-            return {
-                reportDetailId: detailId,
-                actualAmountSpent: parseFloat(detail.actualAmountSpent.replace(/\./g, '').replace(/,/g, '')) || 0,
-                receiptUrl: detail.receiptUrl,
-                comments: detail.comments,
-            };
-        }).filter(Boolean); 
+        const payload = Object.keys(reportDetails)
+            .map((detailId) => {
+                const detail = reportDetails[detailId];
+                if (!detail.comments || !detail.receiptUrl) {
+                    toast.error(`Detail ID ${detailId}: Comments and Receipt URL are required.`);
+                    return null;
+                }
+                return {
+                    reportDetailId: detailId,
+                    actualAmountSpent: parseFloat(detail.actualAmountSpent.replace(/\./g, '').replace(/,/g, '')) || 0,
+                    receiptUrl: detail.receiptUrl,
+                    comments: detail.comments,
+                };
+            })
+            .filter(Boolean);
 
         try {
             await updateMultipleDisbursementReportDetails(payload).unwrap();
@@ -116,8 +132,22 @@ export default function UploadDisbursementReport() {
 
     return (
         <div>
-            <div className="w-full mx-auto p-4 space-y-4 flex flex-col">
-                <h3 className="text-xl text-center font-semibold mb-6 text-teal-500">Minh chứng sử dụng nguồn tiền đã giải ngân</h3>
+            <div className="w-full mx-auto p-2 space-y-4 flex flex-col">
+                <div className="flex flex-col items-center space-y-4">
+                    <h2 className="text-xl italic text-center">
+                        Hệ thống đã hoàn thành việc giải ngân. Dưới đây là hình ảnh minh chứng cho giao dịch giải ngân
+                        từ hệ thống.
+                    </h2>
+                    <img
+                        src={disbursementRequests?.disbursementStage?.transferReceiptUrl}
+                        alt="Hình ảnh minh chứng cho giao dịch giải ngân"
+                        className="w-32 cursor-pointer"
+                        onClick={() => openModal(disbursementRequests?.disbursementStage?.transferReceiptUrl)}
+                    />
+                </div>
+                <h3 className="text-xl text-center font-semibold mb-6 text-teal-500">
+                    Minh chứng sử dụng nguồn tiền đã giải ngân
+                </h3>
                 <div className="overflow-x-auto">
                     <Table className="border-collapse border-solid-2 border-slate-500 w-full bg-white shadow-lg rounded-lg overflow-hidden">
                         <TableHeader className="bg-gradient-to-l from-rose-100 to-teal-100 border-b border-slate-500">
@@ -134,9 +164,7 @@ export default function UploadDisbursementReport() {
                                 <TableHead className="border border-slate-300 text-center py-2 text-black">
                                     Hóa đơn
                                 </TableHead>
-                                <TableHead className="border border-slate-300 text-gray-black">
-                                    Comment
-                                </TableHead>
+                                <TableHead className="border border-slate-300 text-gray-black">Comment</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -232,6 +260,25 @@ export default function UploadDisbursementReport() {
                     Cập nhật báo cáo
                 </Button>
             </div>
+
+            {isModalOpen && (
+                <div
+                    className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50"
+                    onClick={closeModal}
+                >
+                    <div
+                        className="bg-white p-4 rounded-lg shadow-lg max-w-2xl relative"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <X
+                            className="absolute top-4 right-4 cursor-pointer text-gray-500 hover:text-gray-700"
+                            onClick={closeModal}
+                            size={24}
+                        />
+                        <img src={modalImage} alt="Biên lai lớn" className="max-w-full h-full" />
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
