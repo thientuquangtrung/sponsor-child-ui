@@ -84,3 +84,16 @@ export const generatePDF = async (element) => {
 
     return pdf;
 };
+/**
+ * Format date to Vietnamese date format
+ * @param {string} dateString - Date string to format
+ * @returns {string} - Formatted date string in 'DD/MM/YYYY' format
+ */
+export const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('vi-VN', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+    });
+};
