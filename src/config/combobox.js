@@ -128,3 +128,13 @@ export const activityStatus = [
     { label: 'Đã hoàn thành', value: 2 },
     { label: 'Đã hủy', value: 3 },
 ];
+//event-visit
+export const visitStatus = [
+    { label: 'Đã lên kế hoạch', value: 0 },
+    { label: 'Đang mở đăng ký', value: 1 },
+    { label: 'Đã đóng đăng ký', value: 2 },
+    { label: 'Đang chờ', value: 3 },
+    { label: 'Đã hoàn thành', value: 4 },
+    { label: 'Đã hủy', value: 5 },
+    { label: 'Đã hoãn', value: 6 },
+];

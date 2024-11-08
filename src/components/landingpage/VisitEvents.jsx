@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { X, ExternalLink, Calendar, MapPin, Users, CheckCircle, Clock } from 'lucide-react';
+import React, { useState } from 'react';
+import { X, ExternalLink, Calendar, MapPin, Users, CheckCircle, Clock, CalendarX, UserX, UserPlus, ClipboardList, XCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-
 import {
     Select,
     SelectContent,
@@ -12,142 +11,99 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import useDebounce from '@/hooks/useDebounce';
-import banner from '@/assets/images/banner.png';
 import useLocationVN from '@/hooks/useLocationVN';
+import banner from '@/assets/images/banner.png';
+import { useGetAllChildrenVisitTripsQuery, useGetChildrenVisitTripsByProvinceQuery } from '@/redux/childrenVisitTrips/childrenVisitTripsApi';
+import LoadingScreen from '@/components/common/LoadingScreen';
+import { visitStatus } from '@/config/combobox';
+import { formatDate } from '@/lib/utils';
+
 const VisitEvent = () => {
     const { provinces } = useLocationVN();
     const navigate = useNavigate();
 
-    const [events, setEvents] = useState([
-        {
-            id: 1,
-            title: "Chạy bộ gây quỹ cho trẻ em nghèo",
-            date: "2023-09-15",
-            location: "Công viên Thống Nhất, Hà Nội",
-            province: "Hà Nội",
-            participants: 500,
-            image: "https://sonapharm.vn/wp-content/uploads/2023/10/BANNER-CHAY-LANG-SON-02-1-1.jpg",
-            status: "ongoing",
-        },
-        {
-            id: 2,
-            title: "Dọn rác bãi biển Đà Nẵng",
-            date: "2023-10-01",
-            location: "Bãi biển Mỹ Khê, Đà Nẵng",
-            province: "Đà Nẵng",
-            participants: 200,
-            image: "https://thanhnien.mediacdn.vn/Uploaded/huydat/2022_10_02/thanh-nien-don-rac-sau-bao-4-1195.jpg",
-            status: "upcoming",
-        },
-        {
-            id: 3,
-            title: "Xây dựng thư viện cho trường học vùng cao",
-            date: "2023-11-20",
-            location: "Huyện Mèo Vạc, Hà Giang",
-            province: "Hà Giang",
-            participants: 50,
-            image: "https://file1.dangcongsan.vn/data/0/images/2023/09/05/upload_2677/anh-5.jpg",
-            status: "completed",
-        },
-
-        {
-            id: 4,
-            title: "Chạy bộ gây quỹ cho trẻ em nghèo",
-            date: "2023-09-15",
-            location: "Công viên Thống Nhất, Hà Nội",
-            province: "Hà Nội",
-            participants: 500,
-            image: "https://sonapharm.vn/wp-content/uploads/2023/10/BANNER-CHAY-LANG-SON-02-1-1.jpg",
-            status: "ongoing",
-        },
-        {
-            id: 5,
-            title: "Dọn rác bãi biển Đà Nẵng",
-            date: "2023-10-01",
-            location: "Bãi biển Mỹ Khê, Đà Nẵng",
-            province: "Đà Nẵng",
-            participants: 200,
-            image: "https://thanhnien.mediacdn.vn/Uploaded/huydat/2022_10_02/thanh-nien-don-rac-sau-bao-4-1195.jpg",
-            status: "upcoming",
-        },
-        {
-            id: 6,
-            title: "Xây dựng thư viện cho trường học vùng cao",
-            date: "2023-11-20",
-            location: "Huyện Mèo Vạc, Hà Giang",
-            province: "Hà Giang",
-            participants: 50,
-            image: "https://file1.dangcongsan.vn/data/0/images/2023/09/05/upload_2677/anh-5.jpg",
-            status: "completed",
-        },
-        {
-            id: 7,
-            title: "Chạy bộ gây quỹ cho trẻ em nghèo",
-            date: "2023-09-15",
-            location: "Công viên Thống Nhất, Hà Nội",
-            province: "Hà Nội",
-            participants: 500,
-            image: "https://sonapharm.vn/wp-content/uploads/2023/10/BANNER-CHAY-LANG-SON-02-1-1.jpg",
-            status: "ongoing",
-        },
-        {
-            id: 8,
-            title: "Dọn rác bãi biển Đà Nẵng",
-            date: "2023-10-01",
-            location: "Bãi biển Mỹ Khê, Đà Nẵng",
-            province: "Đà Nẵng",
-            participants: 200,
-            image: "https://thanhnien.mediacdn.vn/Uploaded/huydat/2022_10_02/thanh-nien-don-rac-sau-bao-4-1195.jpg",
-            status: "upcoming",
-        },
-        {
-            id: 9,
-            title: "Xây dựng thư viện cho trường học vùng cao",
-            date: "2023-11-20",
-            location: "Huyện Mèo Vạc, Hà Giang",
-            province: "Hà Giang",
-            participants: 50,
-            image: "https://file1.dangcongsan.vn/data/0/images/2023/09/05/upload_2677/anh-5.jpg",
-            status: "completed",
-        },
-    ]);
-
-
     const [searchTerm, setSearchTerm] = useState("");
     const [statusFilter, setStatusFilter] = useState("");
     const [provinceFilter, setProvinceFilter] = useState("");
-    const [filteredEvents, setFilteredEvents] = useState(events);
+    const [visibleEvents, setVisibleEvents] = useState(9);
 
-    useEffect(() => {
-        let filtered = events;
+    const { data: allEvents, isLoading } = useGetAllChildrenVisitTripsQuery();
 
-        if (searchTerm) {
-            filtered = filtered.filter(event =>
-                event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                event.location.toLowerCase().includes(searchTerm.toLowerCase())
-            );
+    const { data: provinceEvents } = useGetChildrenVisitTripsByProvinceQuery(provinceFilter, {
+        skip: !provinceFilter,
+    });
+
+    const events = provinceFilter ? provinceEvents : allEvents;
+
+    const filteredEvents = events?.filter(event => {
+        const matchesSearch = !searchTerm ||
+            event.description.toLowerCase().includes(searchTerm.toLowerCase());
+
+        const matchesStatus = !statusFilter || event.status === parseInt(statusFilter);
+
+        return matchesSearch && matchesStatus;
+    }) || [];
+
+
+    const handleLoadMore = () => {
+        setVisibleEvents(prev => prev + 9);
+    };
+
+    const displayedEvents = filteredEvents.slice(0, visibleEvents);
+    const hasMoreEvents = filteredEvents.length > visibleEvents;
+
+    const getStatusColor = (status) => {
+        switch (status) {
+            case 0: // Đã lên kế hoạch
+                return 'text-rose-300';
+            case 1: // Đang mở đăng ký
+                return 'text-sky-500';
+            case 2: // Đã đóng đăng ký
+                return 'text-yellow-500';
+            case 3: // Đang chờ
+                return 'text-orange-500';
+            case 4: // Đã hoàn thành
+                return 'text-green-500';
+            case 5: // Đã hủy
+                return 'text-red-500';
+            case 6: // Đã hoãn
+                return 'text-purple-500';
+            default:
+                return 'text-gray-500';
         }
+    };
 
-        if (statusFilter) {
-            filtered = filtered.filter(event => event.status === statusFilter);
+    const getStatusIcon = (status) => {
+        switch (status) {
+            case 0:
+                return <ClipboardList className="w-4 h-4 mr-2 text-rose-300" />;
+            case 1:
+                return <UserPlus className="w-4 h-4 mr-2 text-sky-500" />;
+            case 2:
+                return <UserX className="w-4 h-4 mr-2 text-yellow-500" />;
+            case 3:
+                return <Clock className="w-4 h-4 mr-2 text-orange-500" />;
+            case 4:
+                return <CheckCircle className="w-4 h-4 mr-2 text-green-500" />;
+            case 5:
+                return <XCircle className="w-4 h-4 mr-2 text-red-500" />;
+            case 6:
+                return <CalendarX className="w-4 h-4 mr-2 text-purple-500" />;
+            default:
+                return <AlertCircle className="w-4 h-4 mr-2 text-gray-500" />;
         }
-
-        if (provinceFilter) {
-            filtered = filtered.filter(event => event.province === provinceFilter);
-        }
-
-        setFilteredEvents(filtered);
-    }, [searchTerm, statusFilter, provinceFilter, events]);
-
-
-    const handleShare = (eventId) => {
-        e.stopPropagation();
     };
     const handleNavigateToDetail = (eventId) => {
         navigate(`/event/${eventId}`);
     };
 
+    const handleShare = (e, eventId) => {
+        e.stopPropagation();
+    };
+
+    if (isLoading) {
+        return <div><LoadingScreen /></div>;
+    }
 
     return (
         <div className="mx-auto py-8">
@@ -159,9 +115,7 @@ const VisitEvent = () => {
                 <div className="border-t-2 border-teal-500 w-16"></div>
                 <h1 className="text-2xl font-semibold mx-4 text-gray-800">Sự kiện chuyến thăm trẻ</h1>
                 <div className="border-t-2 border-teal-500 w-16"></div>
-
             </div>
-
 
             <div className="flex justify-between items-center mb-4 flex-wrap">
                 <div className="flex space-x-2 flex-wrap">
@@ -169,15 +123,17 @@ const VisitEvent = () => {
                         value={statusFilter}
                         onValueChange={setStatusFilter}
                     >
-                        <SelectTrigger className="w-[150px]">
+                        <SelectTrigger className="w-[180px]">
                             <SelectValue placeholder="Chọn trạng thái" />
                         </SelectTrigger>
                         <SelectContent>
                             <SelectGroup>
                                 <SelectLabel>Trạng thái</SelectLabel>
-                                <SelectItem value="ongoing">Đang diễn ra</SelectItem>
-                                <SelectItem value="upcoming">Sắp tới</SelectItem>
-                                <SelectItem value="completed">Đã kết thúc</SelectItem>
+                                {visitStatus.map((status) => (
+                                    <SelectItem key={status.value} value={status.value.toString()}>
+                                        {status.label}
+                                    </SelectItem>
+                                ))}
                             </SelectGroup>
                         </SelectContent>
                     </Select>
@@ -241,52 +197,43 @@ const VisitEvent = () => {
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredEvents.map((event) => (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-6">
+                {displayedEvents.map((event) => (
                     <div
                         key={event.id}
                         className="bg-white rounded-lg shadow-lg overflow-hidden transition-transform transform hover:scale-105"
                         onClick={() => handleNavigateToDetail(event.id)}
                     >
                         <img
-                            src={event.image}
-                            alt={event.title}
+                            src={event.thumbnailUrl}
+                            alt={event.description}
                             className="w-full h-48 object-cover"
                         />
                         <div className="p-4">
-                            <h3 className="text-xl font-semibold mb-2 truncate">{event.title}</h3>
+                            <h3 className="text-xl font-semibold mb-2 truncate">{event.description}</h3>
                             <div className="flex items-center text-gray-600 mb-2">
                                 <Calendar className="w-4 h-4 mr-2 text-gray-500" />
-                                <span>{event.date}</span>
+                                <span>
+                                    {formatDate(event.startDate)} - {formatDate(event.endDate)}
+                                </span>
                             </div>
                             <div className="flex items-center text-gray-600 mb-2">
                                 <MapPin className="w-4 h-4 mr-2 text-gray-500" />
-                                <span>{event.location}</span>
+                                <span>{event.province}</span>
                             </div>
                             <div className="flex items-center text-gray-600 mb-4">
                                 <Users className="w-4 h-4 mr-2 text-gray-500" />
-                                <span>{event.participants} người tham gia</span>
+                                <span>{event.maxParticipants} người tham gia</span>
                             </div>
                             <div className="flex justify-between items-center">
                                 <div className="flex items-center">
-                                    {event.status === 'ongoing' ? (
-                                        <CheckCircle className="w-4 h-4 mr-2 text-green-500" />
-                                    ) : event.status === 'upcoming' ? (
-                                        <Clock className="w-4 h-4 mr-2 text-sky-500" />
-                                    ) : (
-                                        <Clock className="w-4 h-4 mr-2 text-gray-500" />
-                                    )}
-                                    <span className={`font-semibold ${event.status === 'ongoing' ? 'text-green-500' :
-                                        event.status === 'upcoming' ? 'text-sky-500' :
-                                            'text-gray-500'
-                                        }`}>
-                                        {event.status === 'ongoing' ? 'Đang diễn ra' :
-                                            event.status === 'upcoming' ? 'Sắp tới' :
-                                                'Đã kết thúc'}
+                                    {getStatusIcon(event.status)}
+                                    <span className={`font-semibold ${getStatusColor(event.status)}`}>
+                                        {visitStatus.find(s => s.value === event.status)?.label}
                                     </span>
                                 </div>
                                 <button
-                                    onClick={() => handleShare(event.id)}
+                                    onClick={(e) => handleShare(e, event.id)}
                                     className="flex items-center text-blue-500 hover:text-blue-600 transition-colors"
                                 >
                                     <ExternalLink className="w-5 h-5 mr-1" />
@@ -297,9 +244,23 @@ const VisitEvent = () => {
                 ))}
             </div>
 
+            {hasMoreEvents && (
+                <div className="flex justify-center mt-8">
+                    <button
+                        onClick={handleLoadMore}
+                        className="px-6 py-2 bg-teal-500 text-white rounded-full hover:bg-teal-600 transition-colors duration-200 flex items-center gap-2"
+                    >
+                        Xem thêm
+
+                    </button>
+                </div>
+            )}
+
             {filteredEvents.length === 0 && (
                 <div className="text-center py-8">
-                    <p className="text-gray-500">Không tìm thấy sự kiện nào phù hợp với tiêu chí tìm kiếm</p>
+                    <p className="text-gray-500">
+                        Không tìm thấy sự kiện nào phù hợp với tiêu chí tìm kiếm
+                    </p>
                 </div>
             )}
         </div>

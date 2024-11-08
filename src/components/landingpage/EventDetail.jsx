@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Heart, Share2, MapPin, Users, Calendar, Clock, CheckCircle2, Search, CheckCircle, UserPlus, CalendarCheck, Gift } from 'lucide-react';
+import { Share2, MapPin, Calendar, Clock, CheckCircle2, Search, CheckCircle, UserPlus, CalendarCheck, Gift, Users } from 'lucide-react';
 import {
     Dialog,
     DialogContent,
@@ -14,6 +14,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import GiftRegistration from './GiftRegistration';
 import { toast } from 'sonner';
+import { useParams } from 'react-router-dom';
+import LoadingScreen from '@/components/common/LoadingScreen';
+import { useGetChildrenVisitTripsByIdQuery } from '@/redux/childrenVisitTrips/childrenVisitTripsApi';
+import { formatDate } from '@/lib/utils';
+import { visitStatus } from '@/config/combobox';
 
 const PersonList = ({ people, searchTerm }) => {
     const filteredPeople = people.filter(person =>
@@ -61,13 +66,13 @@ const RegistrationDialog = ({ open, onClose }) => (
 );
 
 const EventDetail = () => {
-    const [isInterested, setIsInterested] = useState(false);
+    const { id } = useParams();
+    const { data: event, isLoading, error } = useGetChildrenVisitTripsByIdQuery(id);
     const [isRegistered, setIsRegistered] = useState(false);
     const [showSuccessDialog, setShowSuccessDialog] = useState(false);
     const [searchInterested, setSearchInterested] = useState('');
     const [searchParticipants, setSearchParticipants] = useState('');
     const [showGiftDialog, setShowGiftDialog] = useState(false);
-
     const interestedPeople = [
         { id: 1, name: "Nguyễn Văn A", avatar: "/api/placeholder/40/40" },
         { id: 2, name: "Trần Thị B", avatar: "/api/placeholder/40/40" },
@@ -79,57 +84,62 @@ const EventDetail = () => {
         { id: 1, name: "Hoàng Văn X", avatar: "/api/placeholder/40/40" },
         { id: 2, name: "Nguyễn Thị Y", avatar: "/api/placeholder/40/40" },
     ];
-
-    const event = {
-        id: 1,
-        title: "Thăm và tặng quà trẻ em tại Làng ABC",
-        description: "Chương trình thăm và tặng quà cho các em nhỏ tại Làng trẻ em ABC, nơi đang nuôi dưỡng hơn 100 trẻ em có hoàn cảnh đặc biệt. Chúng tôi sẽ tổ chức các hoạt động vui chơi, giao lưu văn nghệ và tặng quà cho các em.",
-        thumbnailUrl: "https://suckhoedoisong.qltns.mediacdn.vn/324455921873985536/2023/9/28/thu-tuong-trung-thu-vien-huyet-hoc-5-16959075130811546794883.jpg",
-        interestedCount: 150,
-        participantsCount: 45,
-        maxParticipants: 60,
-        location: "Làng trẻ em ABC, Quận Hoàng Mai, Hà Nội",
-        date: "2024-11-15",
-        time: "08:00 - 17:00",
-        isEnded: false,
-        organizerName: "Tổ chức Thiện nguyện SponsorChild",
-        organizerLogo: "/api/placeholder/100/100",
-        schedule: [
-            { time: "08:00 - 08:30", activity: "Tập trung và điểm danh" },
-            { time: "08:30 - 09:00", activity: "Phổ biến chương trình" },
-            { time: "09:00 - 11:30", activity: "Hoạt động giao lưu và vui chơi cùng các em" },
-            { time: "11:30 - 13:30", activity: "Nghỉ trưa" },
-            { time: "13:30 - 15:30", activity: "Tổ chức văn nghệ" },
-            { time: "15:30 - 16:30", activity: "Trao quà và giao lưu" },
-            { time: "16:30 - 17:00", activity: "Tổng kết chương trình" }
-        ],
-        requirements: [
-            "Có tinh thần thiện nguyện và yêu trẻ",
-            "Cam kết tham gia đầy đủ thời gian",
-            "Mang theo giấy tờ tùy thân"
-        ],
-        materials: [
-            "Áo đồng phục tình nguyện viên (sẽ được cung cấp)",
-            "Giày dép phù hợp để vận động",
-            "Bình nước cá nhân",
-            "Khẩu trang"
-        ]
+    const getStatusColor = (status) => {
+        switch (status) {
+            case 0: // Đã lên kế hoạch
+                return 'text-rose-300';
+            case 1: // Đang mở đăng ký
+                return 'text-sky-500';
+            case 2: // Đã đóng đăng ký
+                return 'text-yellow-500';
+            case 3: // Đang chờ
+                return 'text-orange-500';
+            case 4: // Đã hoàn thành
+                return 'text-red-500';
+            case 5: // Đã hủy
+                return 'text-gray-500';
+            case 6: // Đã hoãn
+                return 'text-purple-500';
+            default:
+                return 'text-gray-500';
+        }
     };
+    if (isLoading) {
+        return (
+            <div><LoadingScreen /></div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <div className="text-center text-red-500">
+                    <p className="text-xl font-semibold">Đã có lỗi xảy ra</p>
+                    <p className="text-gray-600">Vui lòng thử lại sau</p>
+                </div>
+            </div>
+        );
+    }
+
+    if (!event) {
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <div className="text-center text-gray-500">
+                    <p className="text-xl font-semibold">Không tìm thấy sự kiện</p>
+                </div>
+            </div>
+        );
+    }
 
     const handleRegister = () => {
         setIsRegistered(true);
         setShowSuccessDialog(true);
     };
-
-    const handleInterested = () => {
-        setIsInterested(!isInterested);
-    };
-
     const handleShare = async () => {
         try {
             if (navigator.share) {
                 await navigator.share({
-                    title: event.title,
+                    title: event.description,
                     text: event.description,
                     url: window.location.href,
                 });
@@ -152,38 +162,37 @@ const EventDetail = () => {
             <CardContent className="p-0">
                 <img
                     src={event.thumbnailUrl}
-                    alt={event.title}
+                    alt={event.description}
                     className="w-full h-[400px] object-cover rounded-t-lg"
                 />
                 <div className="p-6 space-y-4">
                     <div className="flex justify-between items-start">
-                        <h1 className="text-2xl font-bold text-gray-900">{event.title}</h1>
-                        <Badge variant="outline" className={`${event.isEnded ? 'text-red-500 border-red-500' : 'text-green-500 border-green-500'}`}>
-                            {event.isEnded ? 'Đã kết thúc' : 'Đang diễn ra'}
+                        <h1 className="text-2xl font-bold text-gray-900">{event.description}</h1>
+                        <Badge
+                            variant="outline"
+                            className={`${getStatusColor(event.status)}`}
+                        >
+                            {visitStatus.find(status => status.value === event.status).label}
                         </Badge>
                     </div>
                     <div className="flex items-center gap-6 text-gray-600">
                         <div className="flex items-center gap-2">
                             <MapPin className="w-5 h-5 text-teal-500" />
-                            <span>{event.location}</span>
+                            <span>{event.province}</span>
                         </div>
                         <div className="flex items-center gap-2">
                             <Calendar className="w-5 h-5 text-teal-500" />
-                            <span>{new Date(event.date).toLocaleDateString('vi-VN')}</span>
+                            <span>{new Date(event.startDate).toLocaleDateString('vi-VN')} - {new Date(event.endDate).toLocaleDateString('vi-VN')}</span>
                         </div>
                         <div className="flex items-center gap-2">
                             <Clock className="w-5 h-5 text-teal-500" />
-                            <span>{event.time}</span>
+                            <span>Xem lịch trình</span>
                         </div>
                     </div>
                     <div className="flex gap-4">
                         <div className="flex items-center gap-2 text-gray-600">
                             <Users className="w-5 h-5 text-teal-500" />
                             <span>{event.participantsCount}/{event.maxParticipants} người tham gia</span>
-                        </div>
-                        <div className="flex items-center gap-2 text-gray-600">
-                            <Heart className="w-5 h-5 text-teal-500" />
-                            <span>{event.interestedCount} quan tâm</span>
                         </div>
                     </div>
                 </div>
@@ -196,20 +205,20 @@ const EventDetail = () => {
             <CardContent className="p-6 space-y-6">
                 <div className="flex items-center gap-4">
                     <img
-                        src={event.organizerLogo}
-                        alt={event.organizerName}
+                        src={event.imagesFolderUrl + "/logo.png"}
+                        alt="Organization Logo"
                         className="w-12 h-12 rounded-full"
                     />
                     <div>
                         <h3 className="font-medium text-gray-900">Đơn vị tổ chức</h3>
-                        <p className="text-gray-600">{event.organizerName}</p>
+                        <p className="text-gray-600">Quỹ từ thiện SponsorChild</p>
                     </div>
                 </div>
                 <div className="space-y-6 p-6 bg-gradient-to-r from-teal-50 to-rose-50 rounded-xl shadow-sm">
-                    <div className="flex justify-center">
+                    <div className="flex gap-4 justify-center">
                         <Button
                             onClick={handleRegister}
-                            disabled={isRegistered || event.isEnded}
+                            disabled={isRegistered || event.status === 0}
                             className={`h-14 text-lg font-medium rounded-xl transition-all duration-300 ${isRegistered
                                 ? 'bg-gray-100 text-gray-500 cursor-not-allowed'
                                 : 'bg-teal-500 hover:bg-teal-600 hover:shadow-lg hover:scale-[1.02] text-white'
@@ -227,24 +236,10 @@ const EventDetail = () => {
                                 </span>
                             )}
                         </Button>
-                    </div>
-
-                    <div className="flex gap-4 justify-center">
-                        <Button
-                            onClick={handleInterested}
-                            variant="outline"
-                            className={`flex-1 h-12 rounded-xl border-2 text-teal-500 border-teal-500 hover:bg-pink-100 transition-all duration-300 hover:scale-[1.02] ${isInterested
-                                ? 'border-pink-300 text-pink-400 hover:bg-pink-50'
-                                : 'hover:border-pink-300 hover:text-pink-400'
-                                }`}
-                        >
-                            <Heart className={`w-5 h-5 mr-2   transition-colors ${isInterested ? 'fill-pink-400 text-pink-400' : ''}`} />
-                            {isInterested ? 'Đã quan tâm' : 'Quan tâm'}
-                        </Button>
                         <Button
                             onClick={handleShare}
                             variant="outline"
-                            className="flex-1 h-12 rounded-xl border-2 text-teal-500 border-teal-500 hover:bg-teal-100 hover:border-teal-300 hover:text-teal-400 transition-all duration-300 hover:scale-[1.02]"
+                            className="w-40 h-14 flex items-center justify-center rounded-xl border-2 text-teal-500 border-teal-500 hover:bg-teal-100 hover:border-teal-300 hover:text-teal-400 transition-all duration-300 hover:scale-[1.02]"
                         >
                             <Share2 className="w-5 h-5 mr-2" />
                             Chia sẻ
@@ -259,15 +254,16 @@ const EventDetail = () => {
                         <ul className="space-y-3 text-gray-600">
                             <li className="flex items-center gap-2">
                                 <Calendar className="w-4 h-4 text-rose-400" />
-                                Hạn đăng ký: <span className="font-medium">{new Date(event.date).toLocaleDateString('vi-VN')}</span>
+                                Hạn đăng ký: <span className="font-medium">{formatDate(event.endDate)}</span>
                             </li>
+
                             <li className="flex items-center gap-2">
                                 <Users className="w-4 h-4 text-rose-400" />
                                 Số lượng còn nhận: <span className="font-medium">{event.maxParticipants - event.participantsCount} người</span>
                             </li>
                             <li className="flex items-center gap-2">
                                 <Gift className="w-4 h-4 text-rose-400" />
-                                <span className="text-teal-600 font-medium">Miễn phí tham gia</span>
+                                <span className="text-teal-600 font-medium">Lệ phí tham gia: {event.visitCost.toLocaleString()} VND</span>
                             </li>
                         </ul>
                         <div className="flex justify-center">
@@ -286,19 +282,36 @@ const EventDetail = () => {
     );
 
     const renderScheduleTab = () => (
-        <Card>
-            <CardContent className="p-6">
-                <h2 className="text-xl font-semibold mb-4 text-teal-600">Lịch trình</h2>
-                <div className="space-y-4">
-                    {event.schedule.map((item, index) => (
-                        <div key={index} className="flex border-l-4 border-teal-500 pl-4 bg-teal-50 hover:bg-teal-100 transition-colors">
-                            <div className="w-32 font-medium text-teal-700">{item.time}</div>
-                            <div className="flex-1 text-gray-700">{item.activity}</div>
+        <>
+            <Card>
+                <CardContent className="p-6">
+                    <h2 className="text-xl font-semibold mb-4 text-teal-600">Lịch trình</h2>
+                    <div className="space-y-4">
+                        {event.travelItineraryDetails[0].activities.map((item, index) => (
+                            <div key={index} className="flex border-l-4 border-teal-500 pl-4 bg-teal-50 hover:bg-teal-100 transition-colors">
+                                <div className="w-32 font-medium text-teal-700">{item.startTime} - {item.endTime}</div>
+                                <div className="flex-1 text-gray-700">{item.description}</div>
+                            </div>
+                        ))}
+                    </div>
+                </CardContent>
+            </Card>
+            <Card>
+                <CardContent className="space-y-4 p-6">
+                    <h2 className="text-xl font-semibold mb-4 text-teal-600">Quà tặng đề xuất</h2>
+                    {event.giftRequestDetails.map((gift, index) => (
+                        <div key={index} className="flex items-center justify-between">
+                            <div className="text-gray-700">
+                                <h4 className="font-medium">{gift.giftType}</h4>
+                            </div>
+                            <div className="text-teal-500 font-medium">
+                                {gift.amount} {gift.unit}
+                            </div>
                         </div>
                     ))}
-                </div>
-            </CardContent>
-        </Card>
+                </CardContent>
+            </Card>
+        </>
     );
 
     const renderRequirementsAndMaterials = () => (
@@ -307,20 +320,20 @@ const EventDetail = () => {
                 <CardContent className="p-6">
                     <h2 className="font-semibold mb-4 text-teal-600">Yêu cầu</h2>
                     <ul className="list-disc list-inside space-y-2 text-gray-700 text-sm">
-                        {event.requirements.map((req, index) => (
-                            <li key={index} className="hover:text-teal-600 transition-colors">{req}</li>
-                        ))}
+                        <li className="hover:text-teal-600 transition-colors">Đăng ký trước để ban tổ chức nắm rõ số lượng và lên kế hoạch cho sự kiện.
+                        </li>
+                        <li className="hover:text-teal-600 transition-colors">Có tinh thần thiện nguyện và yêu trẻ</li>
+                        <li className="hover:text-teal-600 transition-colors">Tuân thủ các quy định của ban tổ chức</li>
                     </ul>
                 </CardContent>
             </Card>
-
             <Card>
                 <CardContent className="p-6">
                     <h2 className="font-semibold mb-4 text-teal-600">Chuẩn bị</h2>
                     <ul className="list-disc list-inside space-y-2 text-gray-700 text-sm">
-                        {event.materials.map((item, index) => (
-                            <li key={index} className="hover:text-teal-600 transition-colors">{item}</li>
-                        ))}
+                        <li className="hover:text-teal-600 transition-colors">Trang phục thoải mái, gọn gàng và phù hợp với tính chất của sự kiện</li>
+                        <li className="hover:text-teal-600 transition-colors">Đồ dùng cá nhân </li>
+                        <li className="hover:text-teal-600 transition-colors">Lưu lại thông tin liên lạc của người phụ trách để kịp thời giải quyết những vấn đề phát sinh.</li>
                     </ul>
                 </CardContent>
             </Card>
@@ -401,7 +414,7 @@ const EventDetail = () => {
     );
 
     return (
-        <div className="min-h-screen bg-gray-50 pt-8">
+        <div className="min-h-screen bg-gray-50 py-8">
             <div className="max-w-7xl mx-auto px-4">
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     <div className="lg:col-span-2 space-y-6">
