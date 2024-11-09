@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Check, Copy } from 'lucide-react';
+import { Check, Copy, LoaderCircle } from 'lucide-react';
 import { usePayOS } from 'payos-checkout';
 import { toast } from 'sonner';
 
@@ -42,6 +42,7 @@ const DonationInformation = () => {
     const [createDonation, { isLoading: isCreatingDonation }] = useCreateDonationMutation();
     const [cancelDonation, { isLoading: isCancellingDonation }] = useCancelDonationByOrderCodeMutation();
     const [isTermsDialogOpen, setIsTermsDialogOpen] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const [payOSConfig, setPayOSConfig] = useState({
         RETURN_URL: window.location.origin, // required
@@ -125,8 +126,9 @@ const DonationInformation = () => {
     };
 
     const onSubmit = async (data) => {
-        const amountValue = parseInt(amount.replace(/\./g, ''), 10);
-
+        setIsSubmitting(true); 
+    
+        const amountValue = parseInt(amount.replace(/,/g, ''), 10);
         const donationData = {
             donorID: user?.userID,
             campaignID: id,
@@ -135,21 +137,22 @@ const DonationInformation = () => {
             cancelUrl: window.location.origin,
             returnUrl: window.location.origin,
         };
-
+    
         try {
             const response = await createDonation(donationData).unwrap();
-
+    
             setPayOSConfig((oldConfig) => ({
                 ...oldConfig,
                 CHECKOUT_URL: response.paymentLink.checkoutUrl,
             }));
-
-            // setOpenDialog(true);
         } catch (error) {
             console.error('Error creating donation:', error);
             console.log('Sending donation data:', donationData);
+        } finally {
+            setIsSubmitting(false);
         }
     };
+    
 
     if (isLoading) {
         return <p>Đang tải thông tin chiến dịch...</p>;
@@ -357,9 +360,17 @@ const DonationInformation = () => {
 
                             <Button
                                 type="submit"
+                                disabled={isSubmitting}
                                 className="w-full text-xl py-3 bg-gradient-to-r from-primary to-secondary text-white font-bold rounded-lg"
                             >
-                                Ủng hộ
+                                {isSubmitting ? (
+                                    <>
+                                        <LoaderCircle className="animate-spin -ml-1 mr-3 h-5 w-5 inline" />
+                                        Đang xử lý...
+                                    </>
+                                ) : (
+                                    'Ủng hộ'
+                                )}
                             </Button>
 
                             <p className="text-center mt-4 font-normal text-md">
