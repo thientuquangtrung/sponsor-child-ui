@@ -28,7 +28,7 @@ export default function CreateDisbursementRequest() {
         reportDetails: [{ itemDescription: '', amountSpent: '' }],
         totalAmountUsed: 0,
     });
-    const [error, setError] = useState(''); 
+    const [error, setError] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     useEffect(() => {
@@ -75,8 +75,8 @@ export default function CreateDisbursementRequest() {
     };
 
     const handleReportDetailChange = (index, field, value) => {
-        const updatedDetails = guaranteeInfo.reportDetails.map((detail, i) => 
-            i === index ? { ...detail, [field]: value } : detail
+        const updatedDetails = guaranteeInfo.reportDetails.map((detail, i) =>
+            i === index ? { ...detail, [field]: value } : detail,
         );
         setGuaranteeInfo((prevInfo) => ({
             ...prevInfo,
@@ -89,7 +89,7 @@ export default function CreateDisbursementRequest() {
 
     const calculateTotalAmountUsed = (details) => {
         const total = details.reduce((sum, detail) => {
-            const amount = parseFloat(detail.amountSpent.replace(/\./g, '')) || 0; 
+            const amount = parseFloat(detail.amountSpent.replace(/\./g, '')) || 0;
             return sum + amount;
         }, 0);
 
@@ -98,18 +98,27 @@ export default function CreateDisbursementRequest() {
             totalAmountUsed: total,
         }));
 
-        if (disbursementStage?.disbursementAmount !== undefined && total > parseFloat(disbursementStage.disbursementAmount)) {
-            setError(`Tổng số tiền không được vượt quá ${formatAmount(disbursementStage.disbursementAmount.toString())} VNĐ.`);
+        if (
+            disbursementStage?.disbursementAmount !== undefined &&
+            total > parseFloat(disbursementStage.disbursementAmount)
+        ) {
+            setError(
+                `Tổng số tiền không được vượt quá ${formatAmount(
+                    disbursementStage.disbursementAmount.toString(),
+                )} VNĐ.`,
+            );
         } else {
-            setError(''); 
+            setError('');
         }
     };
 
     const onSubmit = async (event) => {
-        event.preventDefault(); 
+        event.preventDefault();
+        setIsSubmitting(true);
 
         if (error) {
             toast.error(error);
+            setIsSubmitting(false);
             return;
         }
 
@@ -131,6 +140,8 @@ export default function CreateDisbursementRequest() {
         } catch (error) {
             console.error('Submit error:', error);
             toast.error('Có lỗi xảy ra khi gửi yêu cầu và báo cáo!');
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -229,7 +240,9 @@ export default function CreateDisbursementRequest() {
                                 <TableCell className="p-3 border border-slate-300">
                                     <Input
                                         value={detail.itemDescription}
-                                        onChange={(e) => handleReportDetailChange(index, 'itemDescription', e.target.value)}
+                                        onChange={(e) =>
+                                            handleReportDetailChange(index, 'itemDescription', e.target.value)
+                                        }
                                         placeholder="Mô tả"
                                     />
                                 </TableCell>
@@ -238,15 +251,19 @@ export default function CreateDisbursementRequest() {
                                         type="text"
                                         value={detail.amountSpent}
                                         onChange={(e) => {
-                                            const rawValue = e.target.value.replace(/\D/g, ''); 
-                                            const formattedValue = formatAmount(rawValue); 
+                                            const rawValue = e.target.value.replace(/\D/g, '');
+                                            const formattedValue = formatAmount(rawValue);
                                             handleReportDetailChange(index, 'amountSpent', formattedValue);
                                         }}
                                         placeholder="Nhập số tiền"
                                     />
                                 </TableCell>
                                 <TableCell className="p-3 border border-slate-300">
-                                    <Button type="button" onClick={() => removeReportDetail(index)} className="text-red-500 bg-normal hover:bg-normal">
+                                    <Button
+                                        type="button"
+                                        onClick={() => removeReportDetail(index)}
+                                        className="text-red-500 bg-normal hover:bg-normal"
+                                    >
                                         <Trash2 />
                                     </Button>
                                 </TableCell>
@@ -271,7 +288,11 @@ export default function CreateDisbursementRequest() {
                 </Table>
 
                 <div className="flex justify-end mt-4">
-                    <Button type="button" onClick={addReportDetail} className="bg-gray-100 px-4 py-2 rounded-md hover:bg-gray-200">
+                    <Button
+                        type="button"
+                        onClick={addReportDetail}
+                        className="bg-gray-100 px-4 py-2 rounded-md hover:bg-gray-200"
+                    >
                         <Plus className="h-4 w-4 mr-2" />
                         Thêm hoạt động
                     </Button>
@@ -279,7 +300,11 @@ export default function CreateDisbursementRequest() {
             </div>
 
             <div className="flex justify-center">
-                <Button type="submit" className="mt-4 bg-gradient-to-t from-teal-200 to-zinc-200" disabled={isSubmitting}>
+                <Button
+                    type="submit"
+                    className="mt-4 bg-gradient-to-t from-teal-200 to-zinc-200"
+                    disabled={isSubmitting}
+                >
                     {isSubmitting ? (
                         <div className="flex items-center">
                             <LoaderCircle className="mr-2 h-5 w-5 animate-spin" />
