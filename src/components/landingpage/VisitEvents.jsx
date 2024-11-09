@@ -206,11 +206,11 @@ const VisitEvent = () => {
                     >
                         <img
                             src={event.thumbnailUrl}
-                            alt={event.description}
+                            alt={event.title}
                             className="w-full h-48 object-cover"
                         />
                         <div className="p-4">
-                            <h3 className="text-xl font-semibold mb-2 truncate">{event.description}</h3>
+                            <h3 className="text-xl font-semibold mb-2 truncate">{event.title}</h3>
                             <div className="flex items-center text-gray-600 mb-2">
                                 <Calendar className="w-4 h-4 mr-2 text-gray-500" />
                                 <span>

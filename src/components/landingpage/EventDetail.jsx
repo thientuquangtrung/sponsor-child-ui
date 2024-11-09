@@ -19,6 +19,7 @@ import LoadingScreen from '@/components/common/LoadingScreen';
 import { useGetChildrenVisitTripsByIdQuery } from '@/redux/childrenVisitTrips/childrenVisitTripsApi';
 import { formatDate } from '@/lib/utils';
 import { visitStatus } from '@/config/combobox';
+import ImageGallery from './ImageGallery';
 
 const PersonList = ({ people, searchTerm }) => {
     const filteredPeople = people.filter(person =>
@@ -70,15 +71,9 @@ const EventDetail = () => {
     const { data: event, isLoading, error } = useGetChildrenVisitTripsByIdQuery(id);
     const [isRegistered, setIsRegistered] = useState(false);
     const [showSuccessDialog, setShowSuccessDialog] = useState(false);
-    const [searchInterested, setSearchInterested] = useState('');
     const [searchParticipants, setSearchParticipants] = useState('');
     const [showGiftDialog, setShowGiftDialog] = useState(false);
-    const interestedPeople = [
-        { id: 1, name: "Nguyễn Văn A", avatar: "/api/placeholder/40/40" },
-        { id: 2, name: "Trần Thị B", avatar: "/api/placeholder/40/40" },
-        { id: 3, name: "Lê Văn C", avatar: "/api/placeholder/40/40" },
-        { id: 4, name: "Phạm Thị D", avatar: "/api/placeholder/40/40" },
-    ];
+
 
     const participants = [
         { id: 1, name: "Hoàng Văn X", avatar: "/api/placeholder/40/40" },
@@ -160,14 +155,14 @@ const EventDetail = () => {
     const renderEventHeader = () => (
         <Card>
             <CardContent className="p-0">
-                <img
-                    src={event.thumbnailUrl}
-                    alt={event.description}
-                    className="w-full h-[400px] object-cover rounded-t-lg"
+
+                <ImageGallery
+                    thumbnailUrl={event.thumbnailUrl}
+                    imagesFolderUrl={event.imagesFolderUrl}
                 />
                 <div className="p-6 space-y-4">
                     <div className="flex justify-between items-start">
-                        <h1 className="text-2xl font-bold text-gray-900">{event.description}</h1>
+                        <h1 className="text-2xl font-bold text-gray-900">{event.title}</h1>
                         <Badge
                             variant="outline"
                             className={`${getStatusColor(event.status)}`}
@@ -195,6 +190,11 @@ const EventDetail = () => {
                             <span>{event.participantsCount}/{event.maxParticipants} người tham gia</span>
                         </div>
                     </div>
+
+                    <div
+                        className="prose max-w-none text-gray-600 rounded-lg p-6"
+                        dangerouslySetInnerHTML={{ __html: event.description }}
+                    />
                 </div>
             </CardContent>
         </Card>
@@ -205,7 +205,6 @@ const EventDetail = () => {
             <CardContent className="p-6 space-y-6">
                 <div className="flex items-center gap-4">
                     <img
-                        src={event.imagesFolderUrl + "/logo.png"}
                         alt="Organization Logo"
                         className="w-12 h-12 rounded-full"
                     />
@@ -218,7 +217,7 @@ const EventDetail = () => {
                     <div className="flex gap-4 justify-center">
                         <Button
                             onClick={handleRegister}
-                            disabled={isRegistered || event.status === 0}
+                            // disabled={isRegistered || event.status === 0}
                             className={`h-14 text-lg font-medium rounded-xl transition-all duration-300 ${isRegistered
                                 ? 'bg-gray-100 text-gray-500 cursor-not-allowed'
                                 : 'bg-teal-500 hover:bg-teal-600 hover:shadow-lg hover:scale-[1.02] text-white'
@@ -285,12 +284,28 @@ const EventDetail = () => {
         <>
             <Card>
                 <CardContent className="p-6">
-                    <h2 className="text-xl font-semibold mb-4 text-teal-600">Lịch trình</h2>
-                    <div className="space-y-4">
-                        {event.travelItineraryDetails[0].activities.map((item, index) => (
-                            <div key={index} className="flex border-l-4 border-teal-500 pl-4 bg-teal-50 hover:bg-teal-100 transition-colors">
-                                <div className="w-32 font-medium text-teal-700">{item.startTime} - {item.endTime}</div>
-                                <div className="flex-1 text-gray-700">{item.description}</div>
+                    <h2 className="text-xl font-semibold mb-6 text-teal-600">Lịch trình</h2>
+                    <div className="space-y-8">
+                        {event.travelItineraryDetails.map((day, dayIndex) => (
+                            <div key={dayIndex}>
+                                <h3 className="text-lg font-medium mb-4 text-teal-700 border-b pb-2">
+                                    Ngày {dayIndex + 1}: {formatDate(day.date)}
+                                </h3>
+                                <div className="space-y-4">
+                                    {day.activities.map((activity, actIndex) => (
+                                        <div
+                                            key={actIndex}
+                                            className="flex border-l-4 border-teal-500 pl-4 bg-teal-50 hover:bg-teal-100 transition-colors p-3 rounded-r-lg"
+                                        >
+                                            <div className="w-32 font-medium text-teal-700">
+                                                {activity.startTime} - {activity.endTime}
+                                            </div>
+                                            <div className="flex-1 text-gray-700">
+                                                {activity.description}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
                         ))}
                     </div>
@@ -347,7 +362,7 @@ const EventDetail = () => {
                     <img
                         src="https://i.pinimg.com/564x/75/ee/05/75ee0595862c4a0253a82e773cdfd9c1.jpg"
                         alt="No activities"
-                        className="mx-auto mb-4 w-32 h-32 object-cover rounded-full" // Thay đổi kích thước và kiểu
+                        className="mx-auto mb-4 w-32 h-32 object-cover rounded-full"
                     />
                     <h3 className="text-xl font-medium text-gray-900 mb-2">
                         Chưa có hoạt động nào
@@ -363,33 +378,14 @@ const EventDetail = () => {
     const renderResponsesList = () => (
         <Card>
             <CardContent className="p-6">
-                <Tabs defaultValue="interested">
+                <Tabs defaultValue="participants">
                     <TabsList className="space-x-2 bg-inherit">
-                        <TabsTrigger value="interested" className="relative py-1 px-4 text-md font-medium">
-                            Người quan tâm ({interestedPeople.length})
-                        </TabsTrigger>
+
                         <TabsTrigger value="participants" className="relative py-1 px-4 text-md font-medium">
                             Người tham gia ({participants.length})
                         </TabsTrigger>
                     </TabsList>
 
-                    <TabsContent value="interested" className="mt-6">
-                        <div className="space-y-4">
-                            <div className="relative">
-                                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                                <Input
-                                    placeholder="Tìm kiếm người quan tâm..."
-                                    value={searchInterested}
-                                    onChange={(e) => setSearchInterested(e.target.value)}
-                                    className="pl-10"
-                                />
-                            </div>
-                            <PersonList
-                                people={interestedPeople}
-                                searchTerm={searchInterested}
-                            />
-                        </div>
-                    </TabsContent>
 
                     <TabsContent value="participants" className="mt-6">
                         <div className="space-y-4">
@@ -423,7 +419,7 @@ const EventDetail = () => {
                         <Tabs defaultValue="details">
                             <TabsList className="flex space-x-2 bg-inherit">
                                 <TabsTrigger value="details" className="relative py-1 px-4 text-md font-medium">
-                                    Chi tiết sự kiện
+                                    Chi tiết chuyến thăm
                                 </TabsTrigger>
                                 <TabsTrigger value="activities" className="relative py-1 px-4 text-md font-medium">
                                     Hoạt động

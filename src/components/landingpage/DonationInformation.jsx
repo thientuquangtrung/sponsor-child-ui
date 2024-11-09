@@ -189,8 +189,8 @@ const DonationInformation = () => {
                         <p className="absolute top-[10px] left-[10px] text-sm text-gray-700 bg-white px-2 py-1 rounded-full">
                             {Math.ceil((new Date(campaign?.endDate) - new Date()) / (1000 * 60 * 60 * 24)) > 0
                                 ? `Còn ${Math.ceil(
-                                      (new Date(campaign?.endDate) - new Date()) / (1000 * 60 * 60 * 24),
-                                  )} ngày`
+                                    (new Date(campaign?.endDate) - new Date()) / (1000 * 60 * 60 * 24),
+                                )} ngày`
                                 : 'Hết hạn'}
                         </p>
                         <img
