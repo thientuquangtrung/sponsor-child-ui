@@ -2,7 +2,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Calendar, Clock, FileText, MapPin, User2, UserRoundSearch } from 'lucide-react';
+import { Calendar, Clock, FileText, MapPin, Receipt, User2, UserRoundSearch } from 'lucide-react';
 import { Progress } from "@/components/ui/progress";
 import { useGetCampaignByIdQuery } from '@/redux/campaign/campaignApi';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -11,16 +11,20 @@ import {
     campaignStatus,
     contractStatus,
     contractType,
-    campaignTypes
+    campaignTypes,
 } from '@/config/combobox';
 import LoadingScreen from '@/components/common/LoadingScreen';
 import { cn } from '@/lib/utils';
+import DisbursementPlan from './DisbursementPlan';
+import ImageGallery from '@/components/landingpage/ImageGallery';
 
 const CampaignGuaranteeDetail = () => {
     const { id } = useParams();
     const navigate = useNavigate();
 
     const { data: campaignData, isLoading, error } = useGetCampaignByIdQuery(id);
+    console.log(campaignData);
+
 
     const getStatusLabel = (status) => {
         return campaignStatus.find(s => s.value === status)?.label || 'Không xác định';
@@ -40,6 +44,7 @@ const CampaignGuaranteeDetail = () => {
     const getCampaignTypeLabel = (type) => {
         return campaignTypes.find(t => t.value === type)?.label || 'Không xác định';
     };
+
 
     if (isLoading) {
         return (
@@ -66,6 +71,7 @@ const CampaignGuaranteeDetail = () => {
             </div>
         );
     }
+    const { disbursementPlans } = campaignData;
 
     const progress = (campaignData.raisedAmount / campaignData.targetAmount) * 100;
 
@@ -99,17 +105,18 @@ const CampaignGuaranteeDetail = () => {
                                             "px-3 py-1 text-sm font-medium",
                                             campaignData.campaignType === 1
                                                 ? "bg-red-400 hover:bg-red-500 text-white"
-                                                : "bg-primary hover:bg-primary/90 text-primary-foreground"
+                                                : "bg-primary hover:bg-primary/90 text-teal-600-foreground"
                                         )}
                                     >
                                         {getCampaignTypeLabel(campaignData.campaignType)}
                                     </Badge>
                                 </div>
                             </div>
-                            <img
-                                src={campaignData.thumbnailUrl}
-                                alt={campaignData.title}
-                                className="w-100 h-100 rounded-xl object-cover shadow-lg transform hover:scale-105 transition-transform duration-300"
+
+                            <ImageGallery
+                                thumbnailUrl={campaignData.thumbnailUrl}
+                                imagesFolderUrl={campaignData.imagesFolderUrl}
+
                             />
                         </div>
                     </CardHeader>
@@ -120,12 +127,12 @@ const CampaignGuaranteeDetail = () => {
                         <div className="bg-gray-50 p-6 rounded-xl space-y-4">
                             <div className="flex justify-between text-sm font-medium">
                                 <span className="text-gray-600">Tiến độ gây quỹ</span>
-                                <span className="text-primary font-bold">{progress.toFixed(1)}%</span>
+                                <span className="text-teal-600 font-bold">{progress.toFixed(1)}%</span>
                             </div>
                             <Progress value={progress} className="h-3 rounded-full" />
                             <div className="flex justify-between items-center">
                                 <div className="space-y-1">
-                                    <span className="block text-2xl font-bold text-primary">
+                                    <span className="block text-2xl font-bold text-teal-600">
                                         {campaignData.raisedAmount.toLocaleString('vi-VN')}đ
                                     </span>
                                     <span className="text-sm text-gray-500">Đã quyên góp được</span>
@@ -140,11 +147,11 @@ const CampaignGuaranteeDetail = () => {
                             </div>
                             <div className="flex justify-between items-center text-gray-700">
                                 <div className="flex items-center gap-3">
-                                    <Calendar className="h-5 w-5 text-teal-500" />
+                                    <Calendar className="h-5 w-5 text-teal-600" />
                                     <span>Bắt đầu: {new Date(campaignData.startDate).toLocaleDateString('vi-VN')}</span>
                                 </div>
                                 <div className="flex items-center gap-3">
-                                    <Clock className="h-5 w-5 text-teal-500" />
+                                    <Clock className="h-5 w-5 text-teal-600" />
                                     <span>Kết thúc: {new Date(campaignData.endDate).toLocaleDateString('vi-VN')}</span>
                                 </div>
                             </div>
@@ -152,7 +159,7 @@ const CampaignGuaranteeDetail = () => {
                         </div>
 
                         <Card className="border border-gray-100 shadow-md hover:shadow-lg transition-shadow duration-300">
-                            <CardHeader className="bg-rose-50 border-b border-gray-100">
+                            <CardHeader className="bg-rose-200 border-b border-gray-100">
                                 <CardTitle className="text-lg flex items-center gap-2 text-gray-800">
                                     Thông tin trẻ em
                                 </CardTitle>
@@ -160,29 +167,29 @@ const CampaignGuaranteeDetail = () => {
                             <CardContent className="space-y-4 pt-6">
                                 <div className="grid grid-cols-3 gap-6 text-gray-700">
                                     <div className="flex items-center gap-3">
-                                        <User2 className="h-5 w-5 text-teal-500" />
+                                        <User2 className="h-5 w-5 text-teal-600" />
                                         <span>Tên: {campaignData.childName}</span>
                                     </div>
                                     <div className="flex items-center gap-3">
-                                        <Calendar className="h-5 w-5 text-teal-500" />
+                                        <Calendar className="h-5 w-5 text-teal-600" />
                                         <span>Năm sinh: {campaignData.childBirthYear}</span>
                                     </div>
                                     <div className="flex items-center gap-3">
-                                        <UserRoundSearch className="h-5 w-5 text-teal-500" />
+                                        <UserRoundSearch className="h-5 w-5 text-teal-600" />
                                         <span>Giới tính: {campaignData.childGender === 0 ? 'Nam' : 'Nữ'}</span>
                                     </div>
                                 </div>
 
                                 <div className="flex items-center gap-3 text-gray-700">
-                                    <MapPin className="h-5 w-5 text-teal-500" />
+                                    <MapPin className="h-5 w-5 text-teal-600" />
                                     <span>Địa chỉ: {`${campaignData.childLocation}, ${campaignData.childWard}, ${campaignData.childDistrict}, ${campaignData.childProvince}`}</span>
                                 </div>
                                 <div className="flex items-center gap-3 text-gray-700">
-                                    <FileText className="h-5 w-5 text-teal-500" />
+                                    <FileText className="h-5 w-5 text-teal-600" />
                                     <span>
                                         Ảnh hay giấy tờ liên quan đến trẻ:
                                         <a href={campaignData.childIdentificationInformationFile} target="_blank" rel="noopener noreferrer" className="text-blue-500 underline">
-                                            Tải xuống
+                                            Xem
                                         </a>
                                     </span>
                                 </div>
@@ -191,7 +198,7 @@ const CampaignGuaranteeDetail = () => {
 
 
                         <Card className="border border-gray-100 shadow-md hover:shadow-lg transition-shadow duration-300">
-                            <CardHeader className="bg-rose-50 border-b border-gray-100">
+                            <CardHeader className="bg-rose-200 border-b border-gray-100">
                                 <CardTitle className="text-lg text-gray-800">Câu chuyện</CardTitle>
                             </CardHeader>
                             <CardContent className="prose prose-sm max-w-none pt-6">
@@ -203,7 +210,7 @@ const CampaignGuaranteeDetail = () => {
                         </Card>
 
                         <Card className="border border-gray-100 shadow-md hover:shadow-lg transition-shadow duration-300">
-                            <CardHeader className="bg-rose-50 border-b border-gray-100">
+                            <CardHeader className="bg-rose-200 border-b border-gray-100">
                                 <CardTitle className="text-lg flex items-center gap-2 text-gray-800">
                                     Thông tin người bảo trợ
                                 </CardTitle>
@@ -217,66 +224,12 @@ const CampaignGuaranteeDetail = () => {
                             </CardContent>
                         </Card>
 
-                        <Card className="border border-gray-100 shadow-md hover:shadow-lg transition-shadow duration-300">
-                            <CardHeader className="bg-rose-50 border-b border-gray-100">
-                                <CardTitle className="text-lg flex items-center gap-2 text-gray-800">
-                                    Kế hoạch giải ngân
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent className="space-y-6 pt-6">
-                                {campaignData.disbursementPlans.map((plan, planIndex) => (
-                                    <div key={planIndex} className="space-y-4">
-                                        <div key={planIndex} className="space-y-4">
-                                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-700">
-                                                <div>
-                                                    <span className="font-medium">Bắt đầu:</span>{' '}
-                                                    {new Date(plan.plannedStartDate).toLocaleDateString('vi-VN')}
-                                                </div>
-                                                <div>
-                                                    <span className="font-medium">Kết thúc:</span>{' '}
-                                                    {new Date(plan.plannedEndDate).toLocaleDateString('vi-VN')}
-                                                </div>
-                                                <div>
-                                                    <span className="font-medium">Tổng số tiền:</span>{' '}
-                                                    {plan.totalPlannedAmount.toLocaleString('vi-VN')}đ
-                                                </div>
+                        <DisbursementPlan disbursementPlans={disbursementPlans} />
 
-                                            </div>
-                                        </div>
-
-                                        <div className="space-y-3">
-                                            <div className="font-medium text-gray-800">Các giai đoạn giải ngân:</div>
-                                            <div className="grid gap-3">
-                                                {[...plan.stages].sort((a, b) => a.stageNumber - b.stageNumber).map((stage, index) => (
-                                                    <div key={index} className="flex items-center justify-between bg-gray-50 p-3 rounded-lg">
-                                                        <div className="space-y-1">
-                                                            <div className="font-medium text-gray-700">
-                                                                Giai đoạn {stage.stageNumber}
-                                                            </div>
-                                                            <div className="text-sm text-gray-600">
-                                                                {new Date(stage.scheduledDate).toLocaleDateString('vi-VN')}
-                                                            </div>
-                                                        </div>
-                                                        <div className="text-right">
-                                                            <div className="font-medium text-primary">
-                                                                {stage.disbursementAmount.toLocaleString('vi-VN')}đ
-                                                            </div>
-                                                            <Badge variant={stage.status === 0 ? 'secondary' : 'success'}>
-                                                                {stage.status === 0 ? 'Chưa giải ngân' : 'Đã giải ngân'}
-                                                            </Badge>
-                                                        </div>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
-                            </CardContent>
-                        </Card>
 
 
                         <Card className="border border-gray-100 shadow-md hover:shadow-lg transition-shadow duration-300">
-                            <CardHeader className="bg-rose-50 border-b border-gray-100">
+                            <CardHeader className="bg-rose-200 border-b border-gray-100">
                                 <CardTitle className="text-lg flex items-center gap-2 text-gray-800">
                                     Thông tin hợp đồng
                                 </CardTitle>
