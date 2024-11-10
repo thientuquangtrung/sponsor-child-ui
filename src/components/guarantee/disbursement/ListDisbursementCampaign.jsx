@@ -6,36 +6,32 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
-import { MoreHorizontal, Smile } from 'lucide-react';
+import { Inbox, MoreHorizontal } from 'lucide-react';
 import { useGetCampaignEligibleForDisbursementQuery } from '@/redux/campaign/campaignApi';
 import LoadingScreen from '@/components/common/LoadingScreen';
 import { useNavigate } from 'react-router-dom';
+import { disbursementStageStatus } from '@/config/combobox';
 
 const ListDisbursementCampaign = () => {
     const { user } = useSelector((state) => state.auth);
     const guaranteeID = user?.userID;
     const { data: campaigns, isLoading, error } = useGetCampaignEligibleForDisbursementQuery(guaranteeID);
 
-    const getRequestStatusVariant = (status) => {
+    const getStageStatusVariant = (status) => {
         switch (status) {
-            case 0:
-                return 'bg-blue-500 text-white';
-            case 1:
-                return 'bg-yellow-500 text-white';
-            default:
-                return 'bg-gray-200 text-gray-800';
+            case 0: return 'bg-blue-500 text-white';
+            case 1: return 'bg-yellow-500 text-white';
+            case 2: return 'bg-green-500 text-white';
+            case 3: return 'bg-red-500 text-white';
+            case 4: return 'bg-gray-500 text-white';
+            case 5: return 'bg-orange-500 text-white';
+            default: return 'bg-gray-200 text-gray-800';
         }
     };
 
-    const getRequestStatusLabel = (status) => {
-        switch (status) {
-            case 0:
-                return 'Đang giải ngân';
-            case 1:
-                return 'Đang tiến hành';
-            default:
-                return 'Không xác định';
-        }
+    const getStageStatusLabel = (status) => {
+        const statusObj = disbursementStageStatus.find(item => item.value === status);
+        return statusObj ? statusObj.label : 'Không xác định';
     };
 
     const columns = [
@@ -77,7 +73,7 @@ const ListDisbursementCampaign = () => {
             cell: ({ row }) => {
                 const statusValue = row.original.nextDisbursementStage?.status;
                 return (
-                    <Badge className={getRequestStatusVariant(statusValue)}>{getRequestStatusLabel(statusValue)}</Badge>
+                    <Badge className={getStageStatusVariant(statusValue)}>{getStageStatusLabel(statusValue)}</Badge>
                 );
             },
         },
@@ -111,10 +107,13 @@ const ListDisbursementCampaign = () => {
         if (error.status === 404) {
             return (
                 <div className="flex flex-col items-center justify-center pt-14">
-                    <Smile className="w-16 h-16 text-yellow-400 mb-4" />
+                    <div className="bg-teal-50 p-4 rounded-full mb-4">
+                        <Inbox className="w-12 h-12 text-teal-600" />
+                    </div>
                     <p className="text-2xl text-teal-500">Hiện tại chưa có chiến dịch nào yêu cầu giải ngân.</p>
-                    <p className="text-blue-500 mt-2">Xin hãy quay lại sau nhé!</p>
-                </div>
+                    <p className="text-gray-600">
+                        (｡•́︿•̀｡) Hãy quay lại sau nhé! ✨
+                    </p>                </div>
             );
         } else {
             return <div className="text-center py-4 text-red-500">Đã xảy ra lỗi</div>;
@@ -156,7 +155,7 @@ const ListDisbursementCampaign = () => {
     return (
         <div className="w-full space-y-4">
             <h1 className="text-4xl text-center font-bold py-4 bg-gradient-to-b from-teal-500 to-rose-300 text-transparent bg-clip-text">
-                Danh sách chiến dịch yêu cần giải ngân
+                Danh sách chiến dịch yêu cầu giải ngân
             </h1>
 
             <div className="rounded-md border">

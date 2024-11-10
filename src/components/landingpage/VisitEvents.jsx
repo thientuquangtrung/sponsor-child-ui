@@ -223,7 +223,7 @@ const VisitEvent = () => {
                             </div>
                             <div className="flex items-center text-gray-600 mb-4">
                                 <Users className="w-4 h-4 mr-2 text-gray-500" />
-                                <span>{event.maxParticipants} người tham gia</span>
+                                <span>{event.participantsCount}/{event.maxParticipants} người tham gia</span>
                             </div>
                             <div className="flex justify-between items-center">
                                 <div className="flex items-center">
