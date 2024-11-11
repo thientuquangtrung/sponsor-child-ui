@@ -13,7 +13,7 @@ export const disbursementRequestApi = baseApi.injectEndpoints({
         canCreateDisbursementRequest: builder.query({
             query: (stageID) => `/disbursementRequest/can-create-request/${stageID}`,
         }),
-        
+
         createDisbursementRequest: builder.mutation({
             query: (data) => ({
                 url: '/disbursementRequest',
