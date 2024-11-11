@@ -31,10 +31,10 @@ export default function DisbursementRequestDetail() {
 
     useEffect(() => {
         const interval = setInterval(() => {
-            refetch(); 
-        }, 3000); 
+            refetch();
+        }, 3000);
 
-        return () => clearInterval(interval); 
+        return () => clearInterval(interval);
     }, [refetch]);
 
     if (isLoading) {
@@ -66,9 +66,8 @@ export default function DisbursementRequestDetail() {
                         .map((stage, index) => (
                             <div
                                 key={stage.stageID}
-                                className={`flex justify-between items-center w-full mb-8 ${
-                                    index % 2 === 0 ? 'flex-row' : 'flex-row-reverse'
-                                }`}
+                                className={`flex justify-between items-center w-full mb-8 ${index % 2 === 0 ? 'flex-row' : 'flex-row-reverse'
+                                    }`}
                             >
                                 <div className="w-5/12">
                                     <div className="bg-white p-6 rounded shadow-lg">
@@ -85,21 +84,20 @@ export default function DisbursementRequestDetail() {
                                         <p className="mt-2 text-black">
                                             Trạng thái:{' '}
                                             <span
-                                                className={`font-semibold ${
-                                                    stage.status === 0
-                                                        ? 'text-yellow-500'
-                                                        : stage.status === 1
+                                                className={`font-semibold ${stage.status === 0
+                                                    ? 'text-yellow-500'
+                                                    : stage.status === 1
                                                         ? 'text-blue-500'
                                                         : stage.status === 2
-                                                        ? 'text-green-600'
-                                                        : stage.status === 3
-                                                        ? 'text-red-500'
-                                                        : stage.status === 4
-                                                        ? 'text-gray-500'
-                                                        : stage.status === 5
-                                                        ? 'text-purple-500'
-                                                        : 'text-black'
-                                                }`}
+                                                            ? 'text-green-600'
+                                                            : stage.status === 3
+                                                                ? 'text-red-500'
+                                                                : stage.status === 4
+                                                                    ? 'text-gray-500'
+                                                                    : stage.status === 5
+                                                                        ? 'text-purple-500'
+                                                                        : 'text-black'
+                                                    }`}
                                             >
                                                 {getPlanStatus(stage.status)}
                                             </span>
@@ -244,15 +242,15 @@ export default function DisbursementRequestDetail() {
                                     {disbursementRequests?.disbursementReports?.every(
                                         (report) => !report.isCurrent,
                                     ) && (
-                                        <TableRow>
-                                            <TableCell
-                                                colSpan={2}
-                                                className="px-6 py-4 text-center text-gray-500 border-t border-gray-200"
-                                            >
-                                                Không có chi tiết báo cáo hiện tại
-                                            </TableCell>
-                                        </TableRow>
-                                    )}
+                                            <TableRow>
+                                                <TableCell
+                                                    colSpan={2}
+                                                    className="px-6 py-4 text-center text-gray-500 border-t border-gray-200"
+                                                >
+                                                    Không có chi tiết báo cáo hiện tại
+                                                </TableCell>
+                                            </TableRow>
+                                        )}
                                 </TableBody>
                             </Table>
                         </div>
