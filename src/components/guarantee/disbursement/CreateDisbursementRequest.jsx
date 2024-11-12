@@ -183,14 +183,23 @@ export default function CreateDisbursementRequest() {
                 )}
 
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                    <div className="space-y-4 flex flex-col border rounded-lg shadow-lg">
-                        <div className="flex space-x-2 justify-center items-center bg-gradient-to-r from-gray-200 to-rose-100 p-2 rounded-t-lg">
-                            <h3 className="text-xl font-semibold text-gray-700">Đợt giải ngân:</h3>
-                            <Badge className="w-6 h-6 p-2 text-white bg-teal-500 rounded-full shadow-inner">
-                                {disbursementStage?.stageNumber}
-                            </Badge>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                <div className="space-y-4 flex flex-col border rounded-lg shadow-lg">
+                    <div className="flex space-x-2 justify-center items-center bg-gradient-to-r from-gray-200 to-rose-100 p-2 rounded-t-lg">
+                        <h3 className="text-xl font-semibold text-gray-700">Đợt giải ngân:</h3>
+                        <Badge className="w-6 h-6 p-2 text-white bg-teal-500 rounded-full shadow-inner">
+                            {disbursementStage?.stageNumber}
+                        </Badge>
+                    </div>
+                    <div className="space-y-6 p-6 bg-gray-50 rounded-b-lg shadow-inner">
+                        <div className="flex items-center border-b pb-4">
+                            <User className="mr-2 h-5 w-5 text-teal-500" />
+                            <p className="text-gray-600">Nhà Bảo Lãnh:</p>
+                            <span className="ml-2 text-teal-600 font-semibold">
+                                {disbursementStage?.guarantee?.fullname}
+                            </span>
                         </div>
+
                         <div className="space-y-6 p-6 bg-gray-50 rounded-b-lg shadow-inner">
                             <div className="flex items-center">
                                 <div className="flex items-center w-1/2">
@@ -251,6 +260,7 @@ export default function CreateDisbursementRequest() {
                             </div>
                         </div>
                     </div>
+                </div>
 
                     <div className="border rounded-lg shadow-md">
                         <h2 className="text-xl text-center font-semibold mb-4 bg-gradient-to-l from-gray-200 to-rose-100 px-3 py-2 rounded-tl-lg rounded-tr-lg">

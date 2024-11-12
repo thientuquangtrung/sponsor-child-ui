@@ -1,26 +1,32 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import { Upload } from 'lucide-react';
+import { Upload, LoaderCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { X } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import LoadingScreen from '@/components/common/LoadingScreen';
 import { useGetDisbursementRequestByIdSimplifiedQuery } from '@/redux/guarantee/disbursementRequestApi';
-import { useUpdateMultipleDisbursementReportDetailsMutation } from '@/redux/guarantee/disbursementReportApi';
+import { useUpdateDisbursementReportMutation } from '@/redux/guarantee/disbursementReportApi';
 
 export default function UploadDisbursementReport() {
     const { id } = useParams();
     const navigate = useNavigate();
-    const { data: disbursementRequests, isLoading, error, refetch } = useGetDisbursementRequestByIdSimplifiedQuery(id);
-    const [updateMultipleDisbursementReportDetails] = useUpdateMultipleDisbursementReportDetailsMutation();
+    const { data: disbursementRequests, isLoading, error } = useGetDisbursementRequestByIdSimplifiedQuery(id);
+    const [updateDisbursementReport] = useUpdateDisbursementReportMutation();
 
     const [reportDetails, setReportDetails] = useState({});
     const [uploadedImages, setUploadedImages] = useState({});
+    const [updatedRows, setUpdatedRows] = useState([]);
+    const [loadingRows, setLoadingRows] = useState([]);
 
     const [isModalOpen, setModalOpen] = useState(false);
     const [modalImage, setModalImage] = useState(null);
+
+    const isRowUpdated = (detail) => {
+        return detail.comments && detail.actualAmountSpent && detail.receiptUrl;
+    };
 
     const openModal = (imageUrl) => {
         setModalImage(imageUrl);
@@ -102,31 +108,30 @@ export default function UploadDisbursementReport() {
         }));
     };
 
-    const onSubmit = async () => {
-        const payload = Object.keys(reportDetails)
-            .map((detailId) => {
-                const detail = reportDetails[detailId];
-                if (!detail.comments || !detail.receiptUrl) {
-                    toast.error(`Detail ID ${detailId}: Comments and Receipt URL are required.`);
-                    return null;
-                }
-                return {
-                    reportDetailId: detailId,
-                    actualAmountSpent: parseFloat(detail.actualAmountSpent.replace(/\./g, '').replace(/,/g, '')) || 0,
-                    receiptUrl: detail.receiptUrl,
-                    comments: detail.comments,
-                };
-            })
-            .filter(Boolean);
+    const updateSingleDisbursementDetail = async (detailId) => {
+        const detail = reportDetails[detailId];
+        if (!detail || !detail.comments || !detail.receiptUrl) {
+            toast.error(`Detail ID ${detailId}: Comments and Receipt URL are required.`);
+            return;
+        }
+
+        const payload = {
+            actualAmountSpent: parseFloat(detail.actualAmountSpent.replace(/\./g, '').replace(/,/g, '')) || 0,
+            receiptUrl: detail.receiptUrl,
+            comments: detail.comments,
+        };
+
+        setLoadingRows((prev) => [...prev, detailId]);
 
         try {
-            await updateMultipleDisbursementReportDetails(payload).unwrap();
-            toast.success('Cập nhật minh chứng sử dụng nguồn tiền thành công!');
-            refetch();
-            // navigate('/guarantee/disbursement-requests');
+            await updateDisbursementReport({ reportDetailId: detailId, data: payload }).unwrap();
+            toast.success(`Cập nhật chi tiết báo cáo ID ${detailId} thành công!`);
+            setUpdatedRows((prev) => [...prev, detailId]);
         } catch (error) {
-            console.error('Không cập nhật được:', error);
+            console.error(`Không cập nhật được ID ${detailId}:`, error);
             toast.error(`Không cập nhật được: ${error.message}`);
+        } finally {
+            setLoadingRows((prev) => prev.filter((id) => id !== detailId));
         }
     };
 
@@ -135,8 +140,7 @@ export default function UploadDisbursementReport() {
             <div className="w-full mx-auto p-2 space-y-4 flex flex-col">
                 <div className="flex flex-col items-center space-y-4">
                     <h2 className="text-xl italic text-center">
-                        Hệ thống đã hoàn thành việc giải ngân. Dưới đây là hình ảnh minh chứng cho giao dịch giải ngân
-                        từ hệ thống.
+                        Dưới đây là hình ảnh minh chứng cho giao dịch giải ngân.
                     </h2>
                     <img
                         src={disbursementRequests?.disbursementStage?.transferReceiptUrl}
@@ -164,7 +168,12 @@ export default function UploadDisbursementReport() {
                                 <TableHead className="border border-slate-300 text-center py-2 text-black">
                                     Hóa đơn
                                 </TableHead>
-                                <TableHead className="border border-slate-300 text-gray-black">Comment</TableHead>
+                                <TableHead className="border border-slate-300 text-center text-gray-black">
+                                    Ghi chú
+                                </TableHead>
+                                <TableHead className="border border-slate-300 text-center text-gray-black">
+                                    Trạng thái
+                                </TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -177,7 +186,11 @@ export default function UploadDisbursementReport() {
                                             detail.actualAmountSpent ||
                                             '';
                                         const comments = reportDetails[detail.id]?.comments || detail.comments || '';
-                                        const receiptPreview = uploadedImages[detail.id];
+                                        const receiptUrl =
+                                            reportDetails[detail.id]?.receiptUrl || detail.receiptUrl || '';
+
+                                        const isUpdated = isRowUpdated(detail); 
+                                        const isLoading = loadingRows.includes(detail.id);
 
                                         return (
                                             <TableRow
@@ -205,13 +218,20 @@ export default function UploadDisbursementReport() {
                                                                 formattedAmount,
                                                             );
                                                         }}
+                                                        disabled={isUpdated} 
                                                     />
                                                 </TableCell>
                                                 <TableCell className="p-3 border border-slate-300">
-                                                    <div className="border-dashed border-2 border-gray-400 p-2 rounded-lg flex flex-col items-center justify-center relative">
-                                                        {receiptPreview ? (
+                                                    <div
+                                                        className="border-dashed border-2 border-gray-400 p-2 rounded-lg flex flex-col items-center justify-center relative"
+                                                        onClick={() =>
+                                                            !isUpdated &&
+                                                            document.getElementById(`fileInput-${detail.id}`).click()
+                                                        }
+                                                    >
+                                                        {receiptUrl ? (
                                                             <img
-                                                                src={receiptPreview}
+                                                                src={receiptUrl}
                                                                 alt="Uploaded receipt"
                                                                 className="max-w-full max-h-32"
                                                             />
@@ -219,11 +239,13 @@ export default function UploadDisbursementReport() {
                                                             <Upload size={24} className="text-gray-500 mb-2" />
                                                         )}
                                                         <Input
+                                                            id={`fileInput-${detail.id}`}
                                                             type="file"
                                                             accept="image/*"
                                                             onChange={(e) => handleFileChange(e, detail.id)}
                                                             className="absolute inset-0 opacity-0 cursor-pointer"
                                                             style={{ zIndex: 100 }}
+                                                            disabled={isUpdated} 
                                                         />
                                                     </div>
                                                 </TableCell>
@@ -234,7 +256,27 @@ export default function UploadDisbursementReport() {
                                                         onChange={(e) =>
                                                             handleChange(detail.id, 'comments', e.target.value)
                                                         }
+                                                        disabled={isUpdated} 
                                                     />
+                                                </TableCell>
+                                                <TableCell className="p-3 border border-slate-300">
+                                                    {isUpdated ? (
+                                                        <span className="text-green-500 font-semibold">
+                                                            Đã cập nhật
+                                                        </span>
+                                                    ) : (
+                                                        <Button
+                                                            className="bg-rose-50 text-teal-500 font-semibold py-1 px-3 rounded hover:bg-normal"
+                                                            onClick={() => updateSingleDisbursementDetail(detail.id)}
+                                                            disabled={isLoading} 
+                                                        >
+                                                            {isLoading ? (
+                                                                <LoaderCircle className="animate-spin -ml-1 mr-3 h-5 w-5 inline" />
+                                                            ) : (
+                                                                'Cập nhật'
+                                                            )}
+                                                        </Button>
+                                                    )}
                                                 </TableCell>
                                             </TableRow>
                                         );
@@ -253,12 +295,6 @@ export default function UploadDisbursementReport() {
                         </TableBody>
                     </Table>
                 </div>
-                <Button
-                    className="bg-teal-500 text-white py-2 px-6 rounded hover:bg-teal-600 mx-auto"
-                    onClick={onSubmit}
-                >
-                    Cập nhật báo cáo
-                </Button>
             </div>
 
             {isModalOpen && (
