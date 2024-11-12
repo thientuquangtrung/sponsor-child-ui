@@ -140,7 +140,7 @@ export default function DisbursementRequestDetail() {
                                     <p className="text-gray-700 font-medium">Nhà Bảo Lãnh:</p>
                                 </div>
                                 <p className="text-teal-500 font-medium w-1/2">
-                                    {disbursementRequests.guarantee.fullname}
+                                    {disbursementRequests.guarantee?.fullname}
                                 </p>
                             </div>
 

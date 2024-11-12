@@ -76,7 +76,13 @@ const DisbursementPlan = ({ disbursementPlans }) => {
         return <EmptyState message="Chưa có kế hoạch giải ngân" />;
     }
 
-    const allActivities = disbursementPlans
+    const currentPlans = disbursementPlans.filter(plan => plan?.isCurrent === true);
+
+    if (currentPlans.length === 0) {
+        return <EmptyState message="Không có kế hoạch giải ngân đang thực hiện" />;
+    }
+
+    const allActivities = currentPlans
         .filter(plan => plan?.simplifiedStages)
         .flatMap(plan =>
             plan.simplifiedStages
@@ -201,6 +207,9 @@ const DisbursementPlan = ({ disbursementPlans }) => {
             </div>
         );
     };
+
+    console.log(disbursementPlans.isCurrent);
+
     return (
         <>
             <Card className="shadow-lg border-0 mb-6">
@@ -209,7 +218,7 @@ const DisbursementPlan = ({ disbursementPlans }) => {
                         Kế hoạch giải ngân</CardTitle>
                 </CardHeader>
                 <CardContent className="p-6">
-                    {disbursementPlans.map((plan, index) => (
+                    {currentPlans.map((plan, index) => (
                         <div key={index} className="mb-8">
                             <div className="mb-4 grid grid-cols-1 md:grid-cols-4 gap-4">
                                 <div className="bg-teal-50 p-4 rounded-lg">
@@ -287,7 +296,7 @@ const DisbursementPlan = ({ disbursementPlans }) => {
                 </CardContent>
             </Card>
 
-            <Card className="shadow-lg border-0 mb-6">
+            {/* <Card className="shadow-lg border-0 mb-6">
                 <CardHeader className="bg-rose-200">
                     <CardTitle className="text-lg flex items-center gap-2 text-gray-800">
                         Hoạt động chiến dịch</CardTitle>
@@ -326,7 +335,7 @@ const DisbursementPlan = ({ disbursementPlans }) => {
                         </div>
                     )}
                 </CardContent>
-            </Card>
+            </Card> */}
         </>
     );
 };
