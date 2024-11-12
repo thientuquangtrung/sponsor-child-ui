@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import LoadingScreen from '@/components/common/LoadingScreen';
 import { Calendar, CircleDollarSign, Plus, Undo2, User } from 'lucide-react';
-import { useGetDisbursementRequestByIdSimplifiedQuery } from '@/redux/guarantee/disbursementRequestApi';
+import { useCanCreateDisbursementRequestQuery, useGetDisbursementRequestByIdSimplifiedQuery } from '@/redux/guarantee/disbursementRequestApi';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import UpdateDisbursementRequest from './UpdateDisbursementRequest';
 import UploadDisbursementReport from './UploadDisbursementReport';
@@ -28,13 +28,17 @@ export default function DisbursementRequestDetail() {
     const { id } = useParams();
     const navigate = useNavigate();
     const { data: disbursementRequests, isLoading, error, refetch } = useGetDisbursementRequestByIdSimplifiedQuery(id);
+    const { data: canCreateData } = useCanCreateDisbursementRequestQuery(
+        disbursementRequests?.disbursementStage?.stageID,
+    );
+    const canCreate = canCreateData?.canCreate;
 
     useEffect(() => {
         const interval = setInterval(() => {
-            refetch(); 
-        }, 3000); 
+            refetch();
+        }, 3000);
 
-        return () => clearInterval(interval); 
+        return () => clearInterval(interval);
     }, [refetch]);
 
     if (isLoading) {
@@ -129,7 +133,7 @@ export default function DisbursementRequestDetail() {
                                 <User className="mr-2 h-5 w-5 text-teal-500" />
                                 <p className="text-gray-600 font-medium">Nhà Bảo Lãnh:</p>
                                 <span className="ml-2 text-teal-600 font-semibold">
-                                    {disbursementRequests.guarantee.fullname}
+                                    {disbursementRequests?.guarantee?.fullname}
                                 </span>
                             </div>
                             <div className="flex items-center border-b pb-4">
@@ -284,18 +288,20 @@ export default function DisbursementRequestDetail() {
                             <p className="text-center text-red-500 mt-2">
                                 (Lý do: {disbursementRequests.rejectionReason})
                             </p>
-                            <Button
-                                variant="outline"
-                                onClick={() =>
-                                    navigate(
-                                        `/guarantee/create-disbursement-request?stageID=${disbursementRequests.disbursementStage.stageID}`,
-                                    )
-                                }
-                                className="mt-4 text-teal-600 border-teal-600 hover:bg-normal hover:text-teal-600"
-                            >
-                                <Plus className="h-4 w-4 mr-2" />
-                                Tạo yêu cầu giải ngân mới
-                            </Button>
+                            {canCreate && (
+                                <Button
+                                    variant="outline"
+                                    onClick={() =>
+                                        navigate(
+                                            `/guarantee/create-disbursement-request?stageID=${disbursementRequests.disbursementStage.stageID}`,
+                                        )
+                                    }
+                                    className="mt-4 text-teal-600 border-teal-600 hover:bg-normal hover:text-teal-600"
+                                >
+                                    <Plus className="h-4 w-4 mr-2" />
+                                    Tạo yêu cầu giải ngân mới
+                                </Button>
+                            )}
                         </div>
                     ) : disbursementRequests.requestStatus === 4 ? (
                         <p className="text-center text-black font-semibold mt-4 italic">
