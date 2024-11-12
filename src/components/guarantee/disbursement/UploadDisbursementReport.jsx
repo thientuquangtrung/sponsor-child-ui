@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import { Upload } from 'lucide-react';
+import { Upload, LoaderCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { X } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import LoadingScreen from '@/components/common/LoadingScreen';
-import { useUpdateDisbursementReportMutation } from '@/redux/guarantee/disbursementReportApi';
 import { useGetDisbursementRequestByIdSimplifiedQuery } from '@/redux/guarantee/disbursementRequestApi';
+import { useUpdateDisbursementReportMutation } from '@/redux/guarantee/disbursementReportApi';
 
 export default function UploadDisbursementReport() {
     const { id } = useParams();
@@ -18,6 +18,8 @@ export default function UploadDisbursementReport() {
 
     const [reportDetails, setReportDetails] = useState({});
     const [uploadedImages, setUploadedImages] = useState({});
+    const [updatedRows, setUpdatedRows] = useState([]);
+    const [loadingRows, setLoadingRows] = useState([]);
 
     const [isModalOpen, setModalOpen] = useState(false);
     const [modalImage, setModalImage] = useState(null);
@@ -123,11 +125,11 @@ export default function UploadDisbursementReport() {
 
         try {
             await updateDisbursementReport({ reportDetailId: detailId, data: payload }).unwrap();
-            toast.success(`Cập nhật chi tiết báo cáo thành công!`);
+            toast.success(`Cập nhật chi tiết báo cáo ID ${detailId} thành công!`);
             setUpdatedRows((prev) => [...prev, detailId]);
         } catch (error) {
             console.error(`Không cập nhật được ID ${detailId}:`, error);
-            toast.error(`Cập nhật chi tiết báo cáo không thành công!`);
+            toast.error(`Không cập nhật được: ${error.message}`);
         } finally {
             setLoadingRows((prev) => prev.filter((id) => id !== detailId));
         }
@@ -138,8 +140,7 @@ export default function UploadDisbursementReport() {
             <div className="w-full mx-auto p-2 space-y-4 flex flex-col">
                 <div className="flex flex-col items-center space-y-4">
                     <h2 className="text-xl italic text-center">
-                        Hệ thống đã hoàn thành việc giải ngân. Dưới đây là hình ảnh minh chứng cho giao dịch giải ngân
-                        từ hệ thống.
+                        Dưới đây là hình ảnh minh chứng cho giao dịch giải ngân.
                     </h2>
                     <img
                         src={disbursementRequests?.disbursementStage?.transferReceiptUrl}
@@ -167,7 +168,12 @@ export default function UploadDisbursementReport() {
                                 <TableHead className="border border-slate-300 text-center py-2 text-black">
                                     Hóa đơn
                                 </TableHead>
-                                <TableHead className="border border-slate-300 text-gray-black">Comment</TableHead>
+                                <TableHead className="border border-slate-300 text-center text-gray-black">
+                                    Ghi chú
+                                </TableHead>
+                                <TableHead className="border border-slate-300 text-center text-gray-black">
+                                    Trạng thái
+                                </TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -289,12 +295,6 @@ export default function UploadDisbursementReport() {
                         </TableBody>
                     </Table>
                 </div>
-                <Button
-                    className="bg-teal-500 text-white py-2 px-6 rounded hover:bg-teal-600 mx-auto"
-                    onClick={onSubmit}
-                >
-                    Cập nhật báo cáo
-                </Button>
             </div>
 
             {isModalOpen && (
