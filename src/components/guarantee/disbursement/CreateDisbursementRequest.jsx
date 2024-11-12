@@ -10,14 +10,15 @@ import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from '@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useCreateDisbursementRequestMutation } from '@/redux/guarantee/disbursementRequestApi';
 import { useGetDisbursementStageByStageIdQuery } from '@/redux/guarantee/disbursementStageApi';
-import { Calendar, CircleDollarSign, LoaderCircle, Plus, Trash2, User } from 'lucide-react';
-
+import { AlertCircle, Calendar, CircleDollarSign, LoaderCircle, Plus, Trash2, User } from 'lucide-react';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, } from "@/components/ui/dialog";
 export default function CreateDisbursementRequest() {
     const location = useLocation();
     const navigate = useNavigate();
     const queryParams = new URLSearchParams(location.search);
     const stageID = queryParams.get('stageID');
-
+    const [isEarlyDisbursement, setIsEarlyDisbursement] = useState(false);
+    const [showConfirmDialog, setShowConfirmDialog] = useState(false);
     const { data: disbursementStage } = useGetDisbursementStageByStageIdQuery(stageID);
     const [createDisbursementRequest] = useCreateDisbursementRequestMutation();
 
@@ -40,6 +41,12 @@ export default function CreateDisbursementRequest() {
                 bankAccountNumber: disbursementStage.guarantee.bankAccountNumber || '',
                 bankName: bank ? bank.value : 0,
             });
+        }
+
+        if (disbursementStage?.scheduledDate) {
+            const currentDate = new Date();
+            const scheduledDate = new Date(disbursementStage.scheduledDate);
+            setIsEarlyDisbursement(currentDate < scheduledDate);
         }
     }, [disbursementStage]);
 
@@ -99,12 +106,12 @@ export default function CreateDisbursementRequest() {
         }));
 
         if (
-            disbursementStage?.disbursementAmount !== undefined &&
-            total > parseFloat(disbursementStage.disbursementAmount)
+            disbursementStage?.actualDisbursementAmount !== undefined &&
+            total > parseFloat(disbursementStage.actualDisbursementAmount)
         ) {
             setError(
                 `Tổng số tiền không được vượt quá ${formatAmount(
-                    disbursementStage.disbursementAmount.toString(),
+                    disbursementStage.actualDisbursementAmount.toString(),
                 )} VNĐ.`,
             );
         } else {
@@ -112,22 +119,31 @@ export default function CreateDisbursementRequest() {
         }
     };
 
-    const onSubmit = async (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
-        setIsSubmitting(true);
 
         if (error) {
             toast.error(error);
-            setIsSubmitting(false);
             return;
         }
 
+        if (isEarlyDisbursement) {
+            setShowConfirmDialog(true);
+            return;
+        }
+
+        await submitRequest();
+    };
+
+    const submitRequest = async () => {
+        setIsSubmitting(true);
         try {
             const payload = {
                 disbursementStageID: stageID,
                 bankAccountNumber: guaranteeInfo.bankAccountNumber,
                 bankAccountName: guaranteeInfo.fullname,
                 bankName: guaranteeInfo.bankName,
+                isEarlyRequest: isEarlyDisbursement,
                 reportDetails: guaranteeInfo.reportDetails.map((detail) => ({
                     itemDescription: detail.itemDescription,
                     amountSpent: parseFloat(detail.amountSpent.replace(/\./g, '')) || 0,
@@ -135,7 +151,11 @@ export default function CreateDisbursementRequest() {
             };
 
             await createDisbursementRequest(payload).unwrap();
-            toast.success('Yêu cầu giải ngân đã được gửi!');
+            toast.success(
+                isEarlyDisbursement
+                    ? 'Yêu cầu giải ngân sớm đã được gửi!'
+                    : 'Yêu cầu giải ngân đã được gửi!'
+            );
             navigate('/guarantee/disbursement-requests');
         } catch (error) {
             console.error('Submit error:', error);
@@ -145,176 +165,228 @@ export default function CreateDisbursementRequest() {
         }
     };
 
+
     return (
-        <form onSubmit={onSubmit} className="space-y-8">
-            <h2 className="text-2xl font-bold text-center text-teal-600 font-serif">
-                Tạo yêu cầu giải ngân cho chiến dịch {disbursementStage?.campaignResponseDTO.title}
-            </h2>
+        <>
+            <form onSubmit={handleSubmit} className="space-y-8">
+                <h2 className="text-2xl font-bold text-center text-teal-600 font-serif">
+                    Tạo yêu cầu giải ngân cho chiến dịch {disbursementStage?.campaignResponseDTO.title}
+                </h2>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                <div className="space-y-4 flex flex-col border rounded-lg shadow-lg">
-                    <div className="flex space-x-2 justify-center items-center bg-gradient-to-r from-gray-200 to-rose-100 p-2 rounded-t-lg">
-                        <h3 className="text-xl font-semibold text-gray-700">Đợt giải ngân:</h3>
-                        <Badge className="w-6 h-6 p-2 text-white bg-teal-500 rounded-full shadow-inner">
-                            {disbursementStage?.stageNumber}
-                        </Badge>
+                {isEarlyDisbursement && (
+                    <div className="flex items-center gap-2 bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-md">
+                        <AlertCircle className="h-5 w-5 text-yellow-500" />
+                        <p className="text-sm text-yellow-700">
+                            Bạn đang tạo yêu cầu giải ngân sớm hơn ngày dự kiến ({new Date(disbursementStage?.scheduledDate).toLocaleDateString('vi-VN')})
+                        </p>
                     </div>
-                    <div className="space-y-6 p-6 bg-gray-50 rounded-b-lg shadow-inner">
-                        <div className="flex items-center border-b pb-4">
-                            <User className="mr-2 h-5 w-5 text-teal-500" />
-                            <p className="text-gray-600">Nhà Bảo Lãnh:</p>
-                            <span className="ml-2 text-teal-600 font-semibold">
-                                {disbursementStage?.campaignResponseDTO.guaranteeName}
-                            </span>
+                )}
+
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                    <div className="space-y-4 flex flex-col border rounded-lg shadow-lg">
+                        <div className="flex space-x-2 justify-center items-center bg-gradient-to-r from-gray-200 to-rose-100 p-2 rounded-t-lg">
+                            <h3 className="text-xl font-semibold text-gray-700">Đợt giải ngân:</h3>
+                            <Badge className="w-6 h-6 p-2 text-white bg-teal-500 rounded-full shadow-inner">
+                                {disbursementStage?.stageNumber}
+                            </Badge>
                         </div>
-                        <div className="flex items-center border-b pb-4">
-                            <CircleDollarSign className="mr-2 h-5 w-5 text-teal-500" />
-                            <p className="text-gray-600">Số tiền giải ngân:</p>
-                            <span className="ml-2 text-teal-600 font-semibold">
-                                {disbursementStage?.disbursementAmount?.toLocaleString('vi-VN')} VNĐ
-                            </span>
+                        <div className="space-y-6 p-6 bg-gray-50 rounded-b-lg shadow-inner">
+                            <div className="flex items-center border-b pb-4">
+                                <User className="mr-2 h-5 w-5 text-teal-500" />
+                                <p className="text-gray-600">Nhà Bảo Lãnh:</p>
+                                <span className="ml-2 text-teal-600 font-semibold">
+                                    {disbursementStage?.campaignResponseDTO.guaranteeName}
+                                </span>
+                            </div>
+                            <div className="flex flex-col gap-4">
+                                <div className="flex items-center border-b pb-4">
+                                    <CircleDollarSign className="mr-2 h-5 w-5 text-teal-500" />
+                                    <p className="text-gray-600">Số tiền giải ngân đợt {disbursementStage?.stageNumber}:</p>
+                                    <span className="ml-2 text-teal-600 font-semibold">
+                                        {disbursementStage?.disbursementAmount?.toLocaleString('vi-VN')} VNĐ
+                                    </span>
+                                </div>
+
+                                <div className="flex items-center border-b pb-4">
+                                    <CircleDollarSign className="mr-2 h-5 w-5 text-teal-500" />
+                                    <p className="text-gray-600">Số tiền yêu cầu giải ngân:</p>
+                                    <span className="ml-2 text-teal-600 font-semibold">
+                                        {disbursementStage?.actualDisbursementAmount?.toLocaleString('vi-VN')} VNĐ
+                                    </span>
+                                </div>
+                            </div>
+                            <div className="flex items-center">
+                                <Calendar className="mr-2 h-5 w-5 text-teal-500" />
+                                <p className="text-gray-600">Ngày dự kiến giải ngân:</p>
+                                <span className="ml-2 text-teal-600 font-semibold">
+                                    {new Date(disbursementStage?.scheduledDate).toLocaleDateString('vi-VN')}
+                                </span>
+                            </div>
                         </div>
-                        <div className="flex items-center">
-                            <Calendar className="mr-2 h-5 w-5 text-teal-500" />
-                            <p className="text-gray-600">Ngày dự kiến giải ngân:</p>
-                            <span className="ml-2 text-teal-600 font-semibold">
-                                {new Date(disbursementStage?.scheduledDate).toLocaleDateString('vi-VN')}
-                            </span>
+                    </div>
+
+                    <div className="border rounded-lg shadow-md">
+                        <h2 className="text-xl text-center font-semibold mb-4 bg-gradient-to-l from-gray-200 to-rose-100 px-3 py-2 rounded-tl-lg rounded-tr-lg">
+                            Thông tin nhận giải ngân
+                        </h2>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-6">
+                            <Label>Tên ngân hàng:</Label>
+                            <Select value={guaranteeInfo.bankName} onValueChange={handleBankSelect}>
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Chọn ngân hàng" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {bankNames.map((bank) => (
+                                        <SelectItem key={bank.value} value={bank.value}>
+                                            {bank.label}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                            <Label>Số tài khoản ngân hàng:</Label>
+                            <Input
+                                type="text"
+                                name="bankAccountNumber"
+                                value={guaranteeInfo.bankAccountNumber}
+                                onChange={handleInputChange}
+                            />
+                            <Label>Tên tài khoản ngân hàng:</Label>
+                            <Input
+                                type="text"
+                                name="fullname"
+                                value={guaranteeInfo.fullname}
+                                onChange={handleInputChange}
+                            />
                         </div>
                     </div>
                 </div>
 
-                <div className="border rounded-lg shadow-md">
-                    <h2 className="text-xl text-center font-semibold mb-4 bg-gradient-to-l from-gray-200 to-rose-100 px-3 py-2 rounded-tl-lg rounded-tr-lg">
-                        Thông tin nhận giải ngân
-                    </h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-6">
-                        <Label>Tên ngân hàng:</Label>
-                        <Select value={guaranteeInfo.bankName} onValueChange={handleBankSelect}>
-                            <SelectTrigger>
-                                <SelectValue placeholder="Chọn ngân hàng" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {bankNames.map((bank) => (
-                                    <SelectItem key={bank.value} value={bank.value}>
-                                        {bank.label}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                        <Label>Số tài khoản ngân hàng:</Label>
-                        <Input
-                            type="text"
-                            name="bankAccountNumber"
-                            value={guaranteeInfo.bankAccountNumber}
-                            onChange={handleInputChange}
-                        />
-                        <Label>Tên tài khoản ngân hàng:</Label>
-                        <Input
-                            type="text"
-                            name="fullname"
-                            value={guaranteeInfo.fullname}
-                            onChange={handleInputChange}
-                        />
-                    </div>
-                </div>
-            </div>
-
-            <div className="p-6 border rounded-lg shadow-md bg-white">
-                <h2 className="text-2xl text-center font-semibold mb-4">Kế hoạch phân bổ nguồn tiền</h2>
-                <Table className="border-collapse border-solid-2 border-slate-500 w-full bg-white shadow-lg rounded-lg overflow-hidden">
-                    <TableHeader className="bg-gradient-to-l from-rose-100 to-teal-100 border-b border-slate-500">
-                        <TableRow>
-                            <TableHead className="border border-slate-300 text-center py-2 text-gray-700">
-                                Mô tả hoạt động
-                            </TableHead>
-                            <TableHead className="border border-slate-300 text-center py-2 text-gray-700">
-                                Dự kiến số tiền
-                            </TableHead>
-                            <TableHead className="border border-slate-300 py-2"></TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {guaranteeInfo.reportDetails.map((detail, index) => (
-                            <TableRow key={index}>
-                                <TableCell className="p-3 border border-slate-300">
-                                    <Input
-                                        value={detail.itemDescription}
-                                        onChange={(e) =>
-                                            handleReportDetailChange(index, 'itemDescription', e.target.value)
-                                        }
-                                        placeholder="Mô tả"
-                                    />
-                                </TableCell>
-                                <TableCell className="p-3 border border-slate-300">
-                                    <Input
-                                        type="text"
-                                        value={detail.amountSpent}
-                                        onChange={(e) => {
-                                            const rawValue = e.target.value.replace(/\D/g, '');
-                                            const formattedValue = formatAmount(rawValue);
-                                            handleReportDetailChange(index, 'amountSpent', formattedValue);
-                                        }}
-                                        placeholder="Nhập số tiền"
-                                    />
-                                </TableCell>
-                                <TableCell className="p-3 border border-slate-300">
-                                    <Button
-                                        type="button"
-                                        onClick={() => removeReportDetail(index)}
-                                        className="text-red-500 bg-normal hover:bg-normal"
-                                    >
-                                        <Trash2 />
-                                    </Button>
-                                </TableCell>
-                            </TableRow>
-                        ))}
-                        <TableRow>
-                            <TableCell className="p-3 border border-slate-300 font-semibold text-right" colSpan={1}>
-                                Tổng số tiền:
-                            </TableCell>
-                            <TableCell className="p-3 border border-slate-300 font-semibold text-teal-600">
-                                {guaranteeInfo.totalAmountUsed.toLocaleString('vi-VN')} VND
-                            </TableCell>
-                        </TableRow>
-                        {error && (
+                <div className="p-6 border rounded-lg shadow-md bg-white">
+                    <h2 className="text-2xl text-center font-semibold mb-4">Kế hoạch phân bổ nguồn tiền</h2>
+                    <Table className="border-collapse border-solid-2 border-slate-500 w-full bg-white shadow-lg rounded-lg overflow-hidden">
+                        <TableHeader className="bg-gradient-to-l from-rose-100 to-teal-100 border-b border-slate-500">
                             <TableRow>
-                                <TableCell colSpan={3} className="text-red-500 text-center">
-                                    {error}
+                                <TableHead className="border border-slate-300 text-center py-2 text-gray-700">
+                                    Mô tả hoạt động
+                                </TableHead>
+                                <TableHead className="border border-slate-300 text-center py-2 text-gray-700">
+                                    Dự kiến số tiền
+                                </TableHead>
+                                <TableHead className="border border-slate-300 py-2"></TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {guaranteeInfo.reportDetails.map((detail, index) => (
+                                <TableRow key={index}>
+                                    <TableCell className="p-3 border border-slate-300">
+                                        <Input
+                                            value={detail.itemDescription}
+                                            onChange={(e) =>
+                                                handleReportDetailChange(index, 'itemDescription', e.target.value)
+                                            }
+                                            placeholder="Mô tả"
+                                        />
+                                    </TableCell>
+                                    <TableCell className="p-3 border border-slate-300">
+                                        <Input
+                                            type="text"
+                                            value={detail.amountSpent}
+                                            onChange={(e) => {
+                                                const rawValue = e.target.value.replace(/\D/g, '');
+                                                const formattedValue = formatAmount(rawValue);
+                                                handleReportDetailChange(index, 'amountSpent', formattedValue);
+                                            }}
+                                            placeholder="Nhập số tiền"
+                                        />
+                                    </TableCell>
+                                    <TableCell className="p-3 border border-slate-300">
+                                        <Button
+                                            type="button"
+                                            onClick={() => removeReportDetail(index)}
+                                            className="text-red-500 bg-normal hover:bg-normal"
+                                        >
+                                            <Trash2 />
+                                        </Button>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                            <TableRow>
+                                <TableCell className="p-3 border border-slate-300 font-semibold text-right" colSpan={1}>
+                                    Tổng số tiền:
+                                </TableCell>
+                                <TableCell className="p-3 border border-slate-300 font-semibold text-teal-600">
+                                    {guaranteeInfo.totalAmountUsed.toLocaleString('vi-VN')} VND
                                 </TableCell>
                             </TableRow>
-                        )}
-                    </TableBody>
-                </Table>
+                            {error && (
+                                <TableRow>
+                                    <TableCell colSpan={3} className="text-red-500 text-center">
+                                        {error}
+                                    </TableCell>
+                                </TableRow>
+                            )}
+                        </TableBody>
+                    </Table>
 
-                <div className="flex justify-end mt-4">
+                    <div className="flex justify-end mt-4">
+                        <Button
+                            type="button"
+                            onClick={addReportDetail}
+                            className="bg-gray-100 px-4 py-2 rounded-md hover:bg-gray-200"
+                        >
+                            <Plus className="h-4 w-4 mr-2" />
+                            Thêm hoạt động
+                        </Button>
+                    </div>
+                </div>
+
+                <div className="flex justify-center">
                     <Button
-                        type="button"
-                        onClick={addReportDetail}
-                        className="bg-gray-100 px-4 py-2 rounded-md hover:bg-gray-200"
+                        type="submit"
+                        className="mt-4 bg-gradient-to-t from-teal-200 to-zinc-200"
+                        disabled={isSubmitting}
                     >
-                        <Plus className="h-4 w-4 mr-2" />
-                        Thêm hoạt động
+                        {isSubmitting ? (
+                            <div className="flex items-center">
+                                <LoaderCircle className="mr-2 h-5 w-5 animate-spin" />
+                                Đang gửi
+                            </div>
+                        ) : (
+                            'Gửi yêu cầu giải ngân'
+                        )}
                     </Button>
                 </div>
-            </div>
-
-            <div className="flex justify-center">
-                <Button
-                    type="submit"
-                    className="mt-4 bg-gradient-to-t from-teal-200 to-zinc-200"
-                    disabled={isSubmitting}
-                >
-                    {isSubmitting ? (
-                        <div className="flex items-center">
-                            <LoaderCircle className="mr-2 h-5 w-5 animate-spin" />
-                            Đang gửi
-                        </div>
-                    ) : (
-                        'Gửi yêu cầu giải ngân'
-                    )}
-                </Button>
-            </div>
-        </form>
+            </form>
+            <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Xác nhận giải ngân sớm</DialogTitle>
+                        <DialogDescription>
+                            Bạn đang tạo yêu cầu giải ngân sớm hơn ngày dự kiến ({new Date(disbursementStage?.scheduledDate).toLocaleDateString('vi-VN')}).
+                            Bạn có chắc chắn muốn tiếp tục?
+                        </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter>
+                        <Button
+                            variant="outline"
+                            onClick={() => setShowConfirmDialog(false)}
+                        >
+                            Hủy
+                        </Button>
+                        <Button
+                            variant="default"
+                            onClick={() => {
+                                setShowConfirmDialog(false);
+                                submitRequest();
+                            }}
+                            className="bg-teal-600 hover:bg-teal-700"
+                        >
+                            Xác nhận
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+        </>
     );
 }

@@ -5,8 +5,8 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import LoadingScreen from '@/components/common/LoadingScreen';
-import { Calendar, CircleDollarSign, Plus, Undo2, User } from 'lucide-react';
 import { useCanCreateDisbursementRequestQuery, useGetDisbursementRequestByIdSimplifiedQuery } from '@/redux/guarantee/disbursementRequestApi';
+import { AlertCircle, Calendar, CircleDollarSign, Plus, Undo2, User } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import UpdateDisbursementRequest from './UpdateDisbursementRequest';
 import UploadDisbursementReport from './UploadDisbursementReport';
@@ -70,9 +70,8 @@ export default function DisbursementRequestDetail() {
                         .map((stage, index) => (
                             <div
                                 key={stage.stageID}
-                                className={`flex justify-between items-center w-full mb-8 ${
-                                    index % 2 === 0 ? 'flex-row' : 'flex-row-reverse'
-                                }`}
+                                className={`flex justify-between items-center w-full mb-8 ${index % 2 === 0 ? 'flex-row' : 'flex-row-reverse'
+                                    }`}
                             >
                                 <div className="w-5/12">
                                     <div className="bg-white p-6 rounded shadow-lg">
@@ -89,21 +88,20 @@ export default function DisbursementRequestDetail() {
                                         <p className="mt-2 text-black">
                                             Trạng thái:{' '}
                                             <span
-                                                className={`font-semibold ${
-                                                    stage.status === 0
-                                                        ? 'text-yellow-500'
-                                                        : stage.status === 1
+                                                className={`font-semibold ${stage.status === 0
+                                                    ? 'text-yellow-500'
+                                                    : stage.status === 1
                                                         ? 'text-blue-500'
                                                         : stage.status === 2
-                                                        ? 'text-green-600'
-                                                        : stage.status === 3
-                                                        ? 'text-red-500'
-                                                        : stage.status === 4
-                                                        ? 'text-gray-500'
-                                                        : stage.status === 5
-                                                        ? 'text-purple-500'
-                                                        : 'text-black'
-                                                }`}
+                                                            ? 'text-green-600'
+                                                            : stage.status === 3
+                                                                ? 'text-red-500'
+                                                                : stage.status === 4
+                                                                    ? 'text-gray-500'
+                                                                    : stage.status === 5
+                                                                        ? 'text-purple-500'
+                                                                        : 'text-black'
+                                                    }`}
                                             >
                                                 {getPlanStatus(stage.status)}
                                             </span>
@@ -119,6 +117,17 @@ export default function DisbursementRequestDetail() {
                 </div>
             </div>
 
+
+
+            {disbursementRequests.isEarlyRequest && (
+                <div className="flex items-center gap-2 bg-yellow-50 p-4 border-b">
+                    <AlertCircle className="h-5 w-5 text-yellow-500" />
+                    <p className="text-sm text-yellow-700">
+                        Đây là yêu cầu giải ngân sớm hơn so với ngày dự kiến
+                    </p>
+                </div>
+            )}
+
             <div className="w-full mx-auto p-4 space-y-4 flex flex-col bg-white rounded-lg shadow-lg mt-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-10 py-6">
                     <div className="space-y-4 flex flex-col border rounded-lg shadow-md bg-white">
@@ -129,29 +138,48 @@ export default function DisbursementRequestDetail() {
                             </Badge>
                         </div>
                         <div className="space-y-4 p-4 bg-gray-50 rounded-b-lg shadow-inner">
-                            <div className="flex items-center border-b pb-4">
-                                <User className="mr-2 h-5 w-5 text-teal-500" />
-                                <p className="text-gray-600 font-medium">Nhà Bảo Lãnh:</p>
-                                <span className="ml-2 text-teal-600 font-semibold">
-                                    {disbursementRequests?.guarantee?.fullname}
-                                </span>
-                            </div>
-                            <div className="flex items-center border-b pb-4">
-                                <CircleDollarSign className="mr-2 h-5 w-5 text-teal-500" />
-                                <p className="text-gray-600 font-medium">Số tiền giải ngân:</p>
-                                <span className="ml-2 text-teal-600 font-semibold">
-                                    {disbursementRequests.disbursementStage.disbursementAmount.toLocaleString('vi-VN')}{' '}
-                                    VND
-                                </span>
-                            </div>
                             <div className="flex items-center">
-                                <Calendar className="mr-2 h-5 w-5 text-teal-500" />
-                                <p className="text-gray-600 font-medium">Ngày dự kiến giải ngân:</p>
-                                <span className="ml-2 text-teal-600 font-semibold">
-                                    {new Date(disbursementRequests.disbursementStage.scheduledDate).toLocaleDateString(
-                                        'vi-VN',
-                                    )}
-                                </span>
+                                <div className="flex items-center w-1/2">
+                                    <User className="mr-2 h-5 w-5 text-teal-500" />
+                                    <p className="text-gray-700 font-medium">Nhà Bảo Lãnh:</p>
+                                </div>
+                                <p className="text-teal-500 font-medium w-1/2">
+                                    {disbursementRequests.guarantee.fullname}
+                                </p>
+                            </div>
+
+                            <div className="flex items-center">
+                                <div className="flex items-center w-1/2">
+                                    <CircleDollarSign className="mr-2 h-5 w-5 text-teal-500" />
+                                    <p className="text-gray-700 font-medium">
+                                        Số tiền giải ngân đợt {disbursementRequests?.disbursementStage?.stageNumber}:
+                                    </p>
+                                </div>
+                                <p className="text-teal-500 font-medium w-1/2">
+                                    {disbursementRequests?.disbursementStage?.disbursementAmount?.toLocaleString('vi-VN')} VNĐ
+                                </p>
+                            </div>
+
+                            <div className="flex items-center">
+                                <div className="flex items-center w-1/2">
+                                    <CircleDollarSign className="mr-2 h-5 w-5 text-teal-500" />
+                                    <p className="text-gray-700 font-medium">
+                                        Số tiền yêu cầu giải ngân:
+                                    </p>
+                                </div>
+                                <p className="text-teal-500 font-medium w-1/2">
+                                    {disbursementRequests?.disbursementStage?.actualDisbursementAmount?.toLocaleString('vi-VN')} VNĐ
+                                </p>
+                            </div>
+
+                            <div className="flex items-center">
+                                <div className="flex items-center w-1/2">
+                                    <Calendar className="mr-2 h-5 w-5 text-teal-500" />
+                                    <p className="text-gray-700 font-medium">Ngày dự kiến giải ngân:</p>
+                                </div>
+                                <p className="text-teal-500 font-medium w-1/2">
+                                    {new Date(disbursementRequests.disbursementStage.scheduledDate).toLocaleDateString('vi-VN')}
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -248,15 +276,15 @@ export default function DisbursementRequestDetail() {
                                     {disbursementRequests?.disbursementReports?.every(
                                         (report) => !report.isCurrent,
                                     ) && (
-                                        <TableRow>
-                                            <TableCell
-                                                colSpan={2}
-                                                className="px-6 py-4 text-center text-gray-500 border-t border-gray-200"
-                                            >
-                                                Không có chi tiết báo cáo hiện tại
-                                            </TableCell>
-                                        </TableRow>
-                                    )}
+                                            <TableRow>
+                                                <TableCell
+                                                    colSpan={2}
+                                                    className="px-6 py-4 text-center text-gray-500 border-t border-gray-200"
+                                                >
+                                                    Không có chi tiết báo cáo hiện tại
+                                                </TableCell>
+                                            </TableRow>
+                                        )}
                                 </TableBody>
                             </Table>
                         </div>

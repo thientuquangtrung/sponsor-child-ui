@@ -7,7 +7,7 @@ import {
     FileText,
     Goal,
     Inbox,
-
+    Receipt,
 } from 'lucide-react';
 import {
     Card,
@@ -44,34 +44,34 @@ const Activity = ({ campaign }) => {
 
     const getStageStatusColor = (status) => {
         switch (status) {
-            case 0: return "text-yellow-600 bg-yellow-50"; // Đã lên lịch
-            case 1: return "text-blue-600 bg-blue-50";     // Đang tiến hành
-            case 2: return "text-green-600 bg-green-50";   // Đã hoàn thành
-            case 3: return "text-red-600 bg-red-50";       // Thất bại
-            case 4: return "text-gray-600 bg-gray-50";     // Đã hủy
-            case 5: return "text-purple-600 bg-purple-50"; // Đã thay thế
+            case 0: return "text-yellow-600 bg-yellow-50";
+            case 1: return "text-blue-600 bg-blue-50";
+            case 2: return "text-green-600 bg-green-50";
+            case 3: return "text-red-600 bg-red-50";
+            case 4: return "text-gray-600 bg-gray-50";
+            case 5: return "text-purple-600 bg-purple-50";
             default: return "text-gray-600 bg-gray-50";
         }
     };
 
     const getActivityStatusColor = (status) => {
         switch (status) {
-            case 0: return "text-yellow-600 bg-yellow-50"; // Đã lên lịch
-            case 1: return "text-blue-600 bg-blue-50";     // Đang tiến hành
-            case 2: return "text-green-600 bg-green-50";   // Đã hoàn thành
-            case 3: return "text-gray-600 bg-gray-50";     // Đã hủy
+            case 0: return "text-yellow-600 bg-yellow-50";
+            case 1: return "text-blue-600 bg-blue-50";
+            case 2: return "text-green-600 bg-green-50";
+            case 3: return "text-gray-600 bg-gray-50";
             default: return "text-gray-600 bg-gray-50";
         }
     };
 
     const getRequestStatusColor = (status) => {
         switch (status) {
-            case 0: return "text-yellow-600 bg-yellow-50"; // Đã yêu cầu
-            case 1: return "text-blue-600 bg-blue-50";     // Đã duyệt
-            case 2: return "text-red-600 bg-red-50";       // Từ chối
-            case 3: return "text-orange-600 bg-orange-50"; // Yêu cầu chỉnh sửa
-            case 4: return "text-indigo-600 bg-indigo-50"; // Yêu cầu báo cáo
-            case 5: return "text-green-600 bg-green-50";   // Hoàn thành
+            case 0: return "text-yellow-600 bg-yellow-50";
+            case 1: return "text-blue-600 bg-blue-50";
+            case 2: return "text-red-600 bg-red-50";
+            case 3: return "text-orange-600 bg-orange-50";
+            case 4: return "text-indigo-600 bg-indigo-50";
+            case 5: return "text-green-600 bg-green-50";
             default: return "text-gray-600 bg-gray-50";
         }
     };
@@ -91,9 +91,8 @@ const Activity = ({ campaign }) => {
                 <div className="bg-teal-50 p-4 rounded-full mb-4">
                     <Inbox className="w-12 h-12 text-teal-600" />
                 </div>
-
                 <p className="text-gray-600">
-                    (｡•́︿•̀｡) Hiện chiến dịch chưa có hoạt động .
+                    (｡•́︿•̀｡) Hiện chiến dịch chưa có hoạt động.
                     Hãy quay lại sau nhé! ✨
                 </p>
             </div>
@@ -115,11 +114,17 @@ const Activity = ({ campaign }) => {
                             <Card className="border-none shadow-lg">
                                 <CardContent className="p-6">
                                     <div className="flex justify-between items-start mb-6">
-                                        <div>
+                                        <div className="flex-grow">
                                             <div className="flex items-center space-x-3">
-                                                <h3 className="text-xl font-bold text-gray-900">
-                                                    Đợt giải ngân {stage.stageNumber}
-                                                </h3>
+                                                <div className="space-y-2 flex-grow">
+                                                    <h3 className="text-xl font-bold text-gray-900">
+                                                        {stage.stageActivity.description}
+                                                    </h3>
+                                                    <div className="flex items-center space-x-2 text-sm text-gray-500">
+                                                        <Calendar className="w-4 h-4" />
+                                                        <span>Ngày dự kiến: {formatDate(stage.scheduledDate)}</span>
+                                                    </div>
+                                                </div>
                                                 <button
                                                     onClick={() => toggleActivity(stage.stageID)}
                                                     className="p-1 hover:bg-teal-50 rounded-full transition-colors"
@@ -130,40 +135,35 @@ const Activity = ({ campaign }) => {
                                                     }
                                                 </button>
                                             </div>
-                                            <div className="flex items-center space-x-2 text-sm text-gray-500 mt-1">
-                                                <Calendar className="w-4 h-4" />
-                                                <span>{formatDate(stage.scheduledDate)}</span>
-                                            </div>
-                                            <div className="mt-2 text-sm font-medium text-gray-700">
-                                                Số tiền: {formatAmount(stage.disbursementAmount)}
-                                            </div>
-                                            {stage.actualDisbursementDate && stage.actualDisbursementAmount && (
-                                                <div className="mt-1 text-sm text-gray-500">
-                                                    <div>Đã giải ngân: {formatAmount(stage.actualDisbursementAmount)}</div>
-                                                    <div>Ngày giải ngân: {formatDate(stage.actualDisbursementDate)}</div>
-                                                </div>
-                                            )}
                                         </div>
-                                        <span className={`px-4 py-2 rounded-full text-sm font-medium ${getStageStatusColor(stage.status)}`}>
-                                            {findStatusLabel(disbursementStageStatus, stage.status)}
-                                        </span>
+                                        <div className="flex flex-col items-end space-y-2">
+                                            <span className={`px-4 py-2 rounded-full text-sm font-medium ${getStageStatusColor(stage.status)}`}>
+                                                {findStatusLabel(disbursementStageStatus, stage.status)}
+                                            </span>
+                                            <div className="text-right">
+                                                <div className="text-blue-600 font-medium">
+                                                    Tổng chi phí dự kiến: {formatAmount(stage.disbursementAmount)}
+                                                </div>
+                                                {/* {stage.actualDisbursementAmount && (
+                                                    <div className="text-green-600 font-medium">
+                                                        Số tiền thực tế: {formatAmount(stage.actualDisbursementAmount)}
+                                                    </div>
+                                                )} */}
+                                            </div>
+                                        </div>
                                     </div>
 
                                     {expandedActivities[stage.stageID] && (
-                                        <div className="mt-6">
+                                        <div className="mt-6 space-y-4">
                                             <div className="border-l-2 border-teal-200 pl-4 ml-2 relative">
                                                 <div className="absolute -left-[5px] top-3 w-2 h-2 rounded-full bg-teal-500" />
                                                 <div className="bg-gray-50 rounded-xl p-4 hover:bg-gray-100 transition-colors">
                                                     <div className="flex justify-between items-start mb-3">
-                                                        <h4 className="font-semibold text-gray-900">
-                                                            {stage.stageActivity.description}
-                                                        </h4>
-                                                    </div>
-
-                                                    <div className="flex justify-between items-center text-sm text-gray-500">
                                                         <div className="flex items-center space-x-2">
                                                             <Calendar className="w-4 h-4" />
-                                                            <span>{formatDate(stage.stageActivity.activityDate)}</span>
+                                                            <span className="text-sm text-gray-500">
+                                                                {formatDate(stage.stageActivity.activityDate)}
+                                                            </span>
                                                         </div>
                                                         <span className={`px-3 py-1 rounded-full text-xs font-medium ${getActivityStatusColor(stage.stageActivity.status)}`}>
                                                             {findStatusLabel(activityStatus, stage.stageActivity.status)}
@@ -180,26 +180,47 @@ const Activity = ({ campaign }) => {
                                                                     </span>
                                                                 </div>
                                                                 <div>Ngày yêu cầu: {formatDate(stage.latestDisbursementRequest.requestDate)}</div>
-                                                                {/* <div>Số tài khoản: {stage.latestDisbursementRequest.bankAccountNumber}</div>
-                                                                <div>Tên tài khoản: {stage.latestDisbursementRequest.bankAccountName}</div>
-                                                                <div>Ngân hàng: {stage.latestDisbursementRequest.bankName}</div> */}
+
+                                                                {stage.latestDisbursementRequest.simplifiedDisbursementReports?.length > 0 && (
+                                                                    <div className="mt-4">
+                                                                        <h5 className="font-medium mb-2">Chi tiết:</h5>
+                                                                        {stage.latestDisbursementRequest.simplifiedDisbursementReports
+                                                                            .filter(report => report.isCurrent)
+                                                                            .map(report => (
+                                                                                <div key={report.id} className="space-y-3">
+                                                                                    {report.disbursementReportDetails.map(detail => (
+                                                                                        <div key={detail.id} className="bg-white p-3 rounded-lg">
+                                                                                            <div className="font-medium">{detail.itemDescription}</div>
+                                                                                            <div className="text-sm">
+                                                                                                <div className="text-blue-600">
+                                                                                                    Chi phí dự kiến: {formatAmount(detail.amountSpent)}
+                                                                                                </div>
+                                                                                                <div className="text-green-600">
+                                                                                                    Chi phí thực tế: {formatAmount(detail.actualAmountSpent)}
+                                                                                                </div>
+                                                                                            </div>
+                                                                                            {detail.receiptUrl && (
+                                                                                                <a
+                                                                                                    href={detail.receiptUrl}
+                                                                                                    target="_blank"
+                                                                                                    rel="noopener noreferrer"
+                                                                                                    className="flex items-center space-x-2 text-teal-600 hover:text-teal-700 mt-2"
+                                                                                                >
+                                                                                                    <Receipt className="w-4 h-4" />
+                                                                                                    <span>Xem hóa đơn</span>
+                                                                                                </a>
+                                                                                            )}
+                                                                                        </div>
+                                                                                    ))}
+                                                                                </div>
+                                                                            ))}
+                                                                    </div>
+                                                                )}
                                                             </div>
                                                         </div>
                                                     )}
 
-                                                    {stage.transferReceiptUrl && (
-                                                        <div className="mt-3 pt-3 border-t border-gray-200">
-                                                            <a
-                                                                href={stage.transferReceiptUrl}
-                                                                target="_blank"
-                                                                rel="noopener noreferrer"
-                                                                className="flex items-center space-x-2 text-sm text-teal-600 hover:text-teal-700 transition-colors"
-                                                            >
-                                                                <FileText className="w-4 h-4" />
-                                                                <span>Xem biên lai</span>
-                                                            </a>
-                                                        </div>
-                                                    )}
+
                                                 </div>
                                             </div>
                                         </div>
