@@ -48,7 +48,7 @@ export default function UpdateDisbursementRequest() {
             total > parseFloat(disbursementRequest.disbursementStage.disbursementAmount)
         ) {
             setError(
-                `Tổng số tiền không được vượt quá ${disbursementRequest.disbursementStage.disbursementAmount.toLocaleString(
+                `Tổng số tiền không được vượt quá ${disbursementRequest.disbursementStage.actualDisbursementAmount.toLocaleString(
                     'vi-VN',
                 )} VND.`,
             );
