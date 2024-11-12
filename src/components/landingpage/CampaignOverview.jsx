@@ -43,7 +43,7 @@ const CampaignOverview = () => {
                 status: 1,
                 title: campaign?.title || '',
                 story: campaign?.story || '',
-                raiseAmount: campaign?.raiseAmount || 0,
+                raisedAmount: campaign?.raisedAmount || 0,
                 thumbnailUrl: campaign?.thumbnailUrl || '',
                 imagesFolderUrl: campaign?.imagesFolderUrl || '',
                 userID: user?.userID || '',

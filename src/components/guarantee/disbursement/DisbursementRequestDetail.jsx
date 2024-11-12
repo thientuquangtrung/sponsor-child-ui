@@ -29,13 +29,7 @@ export default function DisbursementRequestDetail() {
     const navigate = useNavigate();
     const { data: disbursementRequests, isLoading, error, refetch } = useGetDisbursementRequestByIdSimplifiedQuery(id);
 
-    // useEffect(() => {
-    //     const interval = setInterval(() => {
-    //         refetch();
-    //     }, 3000);
 
-    //     return () => clearInterval(interval);
-    // }, [refetch]);
 
     if (isLoading) {
         return <LoadingScreen />;
@@ -143,7 +137,22 @@ export default function DisbursementRequestDetail() {
                                     {disbursementRequests.guarantee?.fullname}
                                 </p>
                             </div>
-
+                            {disbursementRequests?.disbursementStage?.actualDisbursementAmount &&
+                                disbursementRequests?.disbursementStage?.disbursementAmount &&
+                                (disbursementRequests.disbursementStage.actualDisbursementAmount - disbursementRequests.disbursementStage.disbursementAmount) > 0 && (
+                                    <div className="flex items-center">
+                                        <div className="flex items-center w-1/2">
+                                            <CircleDollarSign className="mr-2 h-5 w-5 text-teal-500" />
+                                            <p className="text-gray-700 font-medium">
+                                                Số tiền giải ngân đợt trước:
+                                            </p>
+                                        </div>
+                                        <p className="text-teal-500 font-medium w-1/2">
+                                            {(disbursementRequests.disbursementStage.actualDisbursementAmount -
+                                                disbursementRequests.disbursementStage.disbursementAmount).toLocaleString('vi-VN')} VNĐ
+                                        </p>
+                                    </div>
+                                )}
                             <div className="flex items-center">
                                 <div className="flex items-center w-1/2">
                                     <CircleDollarSign className="mr-2 h-5 w-5 text-teal-500" />
@@ -336,6 +345,6 @@ export default function DisbursementRequestDetail() {
                     ) : null}
                 </div>
             </div>
-        </div>
+        </div >
     );
 }

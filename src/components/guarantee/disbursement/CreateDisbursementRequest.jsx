@@ -199,19 +199,65 @@ export default function CreateDisbursementRequest() {
                                 {disbursementStage?.guarantee?.fullname}
                             </span>
                         </div>
-                        <div className="flex items-center border-b pb-4">
-                            <CircleDollarSign className="mr-2 h-5 w-5 text-teal-500" />
-                            <p className="text-gray-600">Số tiền giải ngân:</p>
-                            <span className="ml-2 text-teal-600 font-semibold">
-                                {disbursementStage?.disbursementAmount?.toLocaleString('vi-VN')} VNĐ
-                            </span>
-                        </div>
-                        <div className="flex items-center">
-                            <Calendar className="mr-2 h-5 w-5 text-teal-500" />
-                            <p className="text-gray-600">Ngày dự kiến giải ngân:</p>
-                            <span className="ml-2 text-teal-600 font-semibold">
-                                {new Date(disbursementStage?.scheduledDate).toLocaleDateString('vi-VN')}
-                            </span>
+
+                        <div className="space-y-6 p-6 bg-gray-50 rounded-b-lg shadow-inner">
+                            <div className="flex items-center">
+                                <div className="flex items-center w-1/2">
+                                    <User className="mr-2 h-5 w-5 text-teal-500" />
+                                    <p className="text-gray-700 font-medium">Nhà Bảo Lãnh:</p>
+                                </div>
+                                <span className="ml-2 text-teal-600 font-semibold">
+                                    {disbursementStage?.guarantee?.fullname}
+                                </span>
+                            </div>
+                            {disbursementStage?.actualDisbursementAmount &&
+                                disbursementStage?.disbursementAmount &&
+                                (disbursementStage.actualDisbursementAmount - disbursementStage.disbursementAmount) > 0 && (
+                                    <div className="flex items-center">
+                                        <div className="flex items-center w-1/2">
+                                            <CircleDollarSign className="mr-2 h-5 w-5 text-teal-500" />
+                                            <p className="text-gray-700 font-medium">
+                                                Số tiền giải ngân đợt trước:
+                                            </p>
+                                        </div>
+                                        <p className="ml-2 text-teal-600 font-semibold">
+                                            {(disbursementStage.actualDisbursementAmount -
+                                                disbursementStage.disbursementAmount).toLocaleString('vi-VN')} VNĐ
+                                        </p>
+                                    </div>
+                                )}
+                            <div className="flex items-center">
+                                <div className="flex items-center w-1/2">
+                                    <CircleDollarSign className="mr-2 h-5 w-5 text-teal-500" />
+                                    <p className="text-gray-700 font-medium">Số tiền giải ngân đợt {disbursementStage?.stageNumber}:</p>
+                                </div>
+                                <span className="ml-2 text-teal-600 font-semibold">
+                                    {disbursementStage?.disbursementAmount?.toLocaleString('vi-VN')} VNĐ
+                                </span>
+
+                            </div>
+
+                            <div className="flex items-center">
+                                <div className="flex items-center w-1/2">
+
+                                    <CircleDollarSign className="mr-2 h-5 w-5 text-teal-500" />
+                                    <p className="text-gray-700 font-medium">Số tiền yêu cầu giải ngân:</p>
+                                </div>
+                                <span className="ml-2 text-teal-600 font-semibold">
+                                    {disbursementStage?.actualDisbursementAmount?.toLocaleString('vi-VN')} VNĐ
+                                </span>
+
+                            </div>
+                            <div className="flex items-center">
+                                <div className="flex items-center w-1/2">
+
+                                    <Calendar className="mr-2 h-5 w-5 text-teal-500" />
+                                    <p className="text-gray-700 font-medium">Ngày dự kiến giải ngân:</p>
+                                </div>
+                                <span className="ml-2 text-teal-600 font-semibold">
+                                    {new Date(disbursementStage?.scheduledDate).toLocaleDateString('vi-VN')}
+                                </span>
+                            </div>
                         </div>
                     </div>
                 </div>
