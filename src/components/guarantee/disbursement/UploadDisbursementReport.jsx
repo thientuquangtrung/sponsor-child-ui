@@ -13,7 +13,7 @@ import { useUpdateDisbursementReportMutation } from '@/redux/guarantee/disbursem
 export default function UploadDisbursementReport() {
     const { id } = useParams();
     const navigate = useNavigate();
-    const { data: disbursementRequests, isLoading, error } = useGetDisbursementRequestByIdSimplifiedQuery(id);
+    const { data: disbursementRequests, isLoading, error, refetch } = useGetDisbursementRequestByIdSimplifiedQuery(id);
     const [updateDisbursementReport] = useUpdateDisbursementReportMutation();
 
     const [reportDetails, setReportDetails] = useState({});
@@ -121,11 +121,12 @@ export default function UploadDisbursementReport() {
 
         try {
             await updateDisbursementReport({ reportDetailId: detailId, data: payload }).unwrap();
-            toast.success(`Cập nhật chi tiết báo cáo ID ${detailId} thành công!`);
+            toast.success(`Cập nhật chi tiết báo cáo thành công!`);
             setUpdatedRows((prev) => [...prev, detailId]);
+            await refetch();
         } catch (error) {
             console.error(`Không cập nhật được ID ${detailId}:`, error);
-            toast.error(`Không cập nhật được: ${error.message}`);
+            toast.error(`Cập nhật báo cáo không thành công!`);
         } finally {
             setLoadingRows((prev) => prev.filter((id) => id !== detailId));
         }
@@ -186,43 +187,48 @@ export default function UploadDisbursementReport() {
                                         const isLoading = loadingRows.includes(detail.id);
 
                                         return (
-                                            <TableRow
-                                                key={detail.id}
-                                                className="hover:bg-gray-50 border-b border-gray-200 text-center"
-                                            >
-                                                <TableCell className="p-3 border border-slate-300">
-                                                    {detail.itemDescription || 'Không có mô tả'}
-                                                </TableCell>
-                                                <TableCell className="p-3 border border-slate-300 text-teal-500 font-semibold">
+                                            <TableRow key={detail.id}>
+                                                <TableCell>{detail.itemDescription || 'Không có mô tả'}</TableCell>
+                                                <TableCell>
                                                     {detail.amountSpent?.toLocaleString('vi-VN') + ' VNĐ'}
                                                 </TableCell>
-                                                <TableCell className="p-3 border border-slate-300">
+                                                <TableCell>
                                                     <Input
                                                         type="text"
-                                                        value={actualAmountSpent}
-                                                        placeholder="Số tiền"
-                                                        onChange={(e) => {
-                                                            const formattedAmount = e.target.value
-                                                                .replace(/\./g, '')
-                                                                .replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-                                                            handleChange(
-                                                                detail.id,
-                                                                'actualAmountSpent',
-                                                                formattedAmount,
-                                                            );
-                                                        }}
+                                                        value={
+                                                            reportDetails[detail.id]?.actualAmountSpent ||
+                                                            detail.actualAmountSpent ||
+                                                            ''
+                                                        }
+                                                        onChange={(e) =>
+                                                            setReportDetails((prev) => ({
+                                                                ...prev,
+                                                                [detail.id]: {
+                                                                    ...prev[detail.id],
+                                                                    actualAmountSpent: e.target.value,
+                                                                },
+                                                            }))
+                                                        }
+                                                        disabled={
+                                                            detail.actualAmountSpent &&
+                                                            detail.receiptUrl &&
+                                                            detail.comments
+                                                        } 
                                                     />
                                                 </TableCell>
-                                                <TableCell className="p-3 border border-slate-300">
+                                                <TableCell>
                                                     <div
                                                         className="border-dashed border-2 border-gray-400 p-2 rounded-lg flex flex-col items-center justify-center relative"
                                                         onClick={() =>
+                                                            !detail.actualAmountSpent &&
+                                                            !detail.receiptUrl &&
+                                                            !detail.comments &&
                                                             document.getElementById(`fileInput-${detail.id}`).click()
                                                         }
                                                     >
-                                                        {receiptPreview ? (
+                                                        {detail.receiptUrl ? (
                                                             <img
-                                                                src={receiptPreview}
+                                                                src={detail.receiptUrl}
                                                                 alt="Uploaded receipt"
                                                                 className="max-w-full max-h-32"
                                                             />
@@ -236,34 +242,50 @@ export default function UploadDisbursementReport() {
                                                             onChange={(e) => handleFileChange(e, detail.id)}
                                                             className="absolute inset-0 opacity-0 cursor-pointer"
                                                             style={{ zIndex: 100 }}
+                                                            disabled={
+                                                                detail.actualAmountSpent &&
+                                                                detail.receiptUrl &&
+                                                                detail.comments
+                                                            } 
                                                         />
                                                     </div>
                                                 </TableCell>
-                                                <TableCell className="p-3 border border-slate-300">
+
+                                                <TableCell>
                                                     <textarea
-                                                        className="w-full border rounded p-2"
-                                                        value={comments}
-                                                        onChange={(e) =>
-                                                            handleChange(detail.id, 'comments', e.target.value)
+                                                        value={
+                                                            reportDetails[detail.id]?.comments || detail.comments || ''
                                                         }
+                                                        onChange={(e) =>
+                                                            setReportDetails((prev) => ({
+                                                                ...prev,
+                                                                [detail.id]: {
+                                                                    ...prev[detail.id],
+                                                                    comments: e.target.value,
+                                                                },
+                                                            }))
+                                                        }
+                                                        disabled={
+                                                            detail.actualAmountSpent &&
+                                                            detail.receiptUrl &&
+                                                            detail.comments
+                                                        } 
                                                     />
                                                 </TableCell>
-                                                <TableCell className="p-3 border border-slate-300">
-                                                    {updatedRows.includes(detail.id) ? (
+                                                <TableCell>
+                                                    {detail.actualAmountSpent &&
+                                                    detail.receiptUrl &&
+                                                    detail.comments ? (
                                                         <span className="text-green-500 font-semibold">
                                                             Đã cập nhật
                                                         </span>
                                                     ) : (
                                                         <Button
-                                                            className="bg-rose-50 text-teal-500 font-semibold py-1 px-3 rounded hover:bg-normal"
                                                             onClick={() => updateSingleDisbursementDetail(detail.id)}
                                                             disabled={isLoading}
+                                                            className="bg-rose-50 text-teal-500 font-semibold py-1 px-3 rounded hover:bg-normal"
                                                         >
-                                                            {isLoading ? (
-                                                                <LoaderCircle className="animate-spin -ml-1 mr-3 h-5 w-5 inline" />
-                                                            ) : (
-                                                                'Cập nhật'
-                                                            )}
+                                                            Cập nhật
                                                         </Button>
                                                     )}
                                                 </TableCell>
