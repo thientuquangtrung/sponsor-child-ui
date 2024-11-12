@@ -44,8 +44,8 @@ export default function UpdateDisbursementRequest() {
         }, 0);
 
         if (
-            disbursementRequest?.disbursementStage.disbursementAmount &&
-            total > parseFloat(disbursementRequest.disbursementStage.disbursementAmount)
+            disbursementRequest?.disbursementStage.actualDisbursementAmount &&
+            total > parseFloat(disbursementRequest.disbursementStage.actualDisbursementAmount)
         ) {
             setError(
                 `Tổng số tiền không được vượt quá ${disbursementRequest.disbursementStage.actualDisbursementAmount.toLocaleString(
