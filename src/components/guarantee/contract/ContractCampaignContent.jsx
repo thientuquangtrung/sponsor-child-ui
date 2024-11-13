@@ -16,14 +16,11 @@ const formatDate = (dateString) => {
     return format(new Date(dateString), 'dd/MM/yyyy');
 };
 
-
-
 const ContractCampaignContent = ({ signature, campaignDetails }) => {
-    const disbursementPlan = campaignDetails?.disbursementPlans?.[0] || {};
-    const activities = campaignDetails?.activities || [];
-
-    const stages = disbursementPlan?.stages || [];
+    const disbursementPlan = campaignDetails?.disbursementPlans?.find(
+        plan => plan.isCurrent === true) || {};
     const today = new Date();
+
     const { user } = useSelector((state) => state.auth);
     const {
         data: guaranteeProfile,
@@ -32,13 +29,13 @@ const ContractCampaignContent = ({ signature, campaignDetails }) => {
     } = useGetGuaranteeProfileQuery(user?.userID, {
         skip: !user?.userID
     });
+
     if (isLoading) return <LoadingScreen />;
 
     if (error) {
         console.error('Error fetching guarantee profile:', error);
         return <div>Error loading profile</div>;
     }
-
 
     const formattedToday = format(today, "dd' tháng 'MM' năm 'yyyy");
     const renderPartyB = () => {
@@ -138,13 +135,13 @@ const ContractCampaignContent = ({ signature, campaignDetails }) => {
                     <p>
                         2.1. Tên chiến dịch: {campaignDetails.title || ".........................."}
                         <br />
-                        2.2. Số tiền cam kết bảo lãnh: {formatCurrency(campaignDetails.targetAmount) || "................."}
+                        2.2. Số tiền cam kết bảo lãnh: {formatCurrency(disbursementPlan.totalPlannedAmount) || "................."}
                         <br />
                         2.3. Thời gian thực hiện:
                         <br />
-                        - Ngày bắt đầu: {formatDate(campaignDetails.startDate)}
+                        - Ngày bắt đầu: {formatDate(disbursementPlan.plannedStartDate)}
                         <br />
-                        - Ngày kết thúc: {formatDate(campaignDetails.endDate)}
+                        - Ngày kết thúc: {formatDate(disbursementPlan.plannedEndDate)}
                         <br />
                     </p>
                 </div>
@@ -161,24 +158,18 @@ const ContractCampaignContent = ({ signature, campaignDetails }) => {
                         3.2. Tổng số tiền giải ngân: {formatCurrency(disbursementPlan.totalPlannedAmount) || "................."}
                         <br />
                         3.3. Các giai đoạn giải ngân:
-                        {stages.map((stage, index) => {
-                            const matchingActivity = activities.find(
-                                activity => new Date(activity.activityDate).getTime() === new Date(stage.scheduledDate).getTime()
-                            );
-
-                            return (
-                                <React.Fragment key={index}>
-                                    <br />
-                                    Giai đoạn {index + 1}:
-                                    <br />
-                                    - Số tiền: {formatCurrency(stage.disbursementAmount) || "........................"}
-                                    <br />
-                                    - Ngày dự kiến: {formatDate(stage.scheduledDate)}
-                                    <br />
-                                    - Hoạt động: {matchingActivity?.description || "......................"}
-                                </React.Fragment>
-                            );
-                        })}
+                        {disbursementPlan.simplifiedStages?.map((stage, index) => (
+                            <React.Fragment key={index}>
+                                <br />
+                                Giai đoạn {index + 1}:
+                                <br />
+                                - Số tiền: {formatCurrency(stage.disbursementAmount) || "........................"}
+                                <br />
+                                - Ngày dự kiến: {formatDate(stage.scheduledDate)}
+                                <br />
+                                - Hoạt động: {stage.stageActivity?.description || "......................"}
+                            </React.Fragment>
+                        ))}
                     </p>
                 </div>
 
@@ -213,7 +204,7 @@ const ContractCampaignContent = ({ signature, campaignDetails }) => {
                     <p>
                         5.1. Thời gian hiệu lực hợp đồng:
                         <br />
-                        - Thời gian bắt đầu: {formatDate(campaignDetails.startDate)}
+                        - Thời gian bắt đầu: {formatDate(disbursementPlan.plannedStartDate)}
                         <br />
                         - Thời gian kết thúc: {formatDate(disbursementPlan.plannedEndDate)}
                         <br />

@@ -18,6 +18,7 @@ export const campaignStatus = [
 
 export const campaignStatusUser = [
     { label: 'Đang hoạt động', value: 4 },
+    { label: 'Đang giải ngân', value: 8 },
     { label: 'Quá hạn', value: 7 },
 ];
 

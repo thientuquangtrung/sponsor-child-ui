@@ -23,31 +23,21 @@ import { DataTableColumnHeader } from '@/components/datatable/DataTableColumnHea
 import { useGetCampaignByGuaranteeIdQuery } from '@/redux/campaign/campaignApi';
 import LoadingScreen from '@/components/common/LoadingScreen';
 import { useNavigate } from 'react-router-dom';
+import DisbursementProgress from '@/components/guarantee/campaign/DisbursementProgress';
 
 const getStatusVariant = (statusValue) => {
     switch (statusValue) {
-        case 0: // pending
-            return 'secondary';
-        case 1: // pending contract
-            return 'warning';
-        case 2: // approved
-            return 'success';
-        case 3: // rejected
-            return 'destructive';
-        case 4: // active
-            return 'default';
-        case 5: // finished
-            return 'outline';
-        case 6: // canceled
-            return 'destructive';
-        case 7: // expired
-            return 'destructive';
-        case 8: //  in disbursement
-            return 'info';
-        case 9: // suspended
-            return 'outline';
-        default:
-            return 'secondary';
+        case 0: return 'secondary';
+        case 1: return 'warning';
+        case 2: return 'success';
+        case 3: return 'destructive';
+        case 4: return 'default';
+        case 5: return 'outline';
+        case 6: return 'destructive';
+        case 7: return 'destructive';
+        case 8: return 'info';
+        case 9: return 'outline';
+        default: return 'secondary';
     }
 };
 
@@ -72,7 +62,8 @@ const ActionMenu = ({ row }) => {
                 <DropdownMenuItem onClick={() => navigate(`/guarantee/campaign/${row.original.campaignID}`)}>
                     <Eye className="mr-2 h-4 w-4" />
                     Xem chi tiết
-                </DropdownMenuItem>            </DropdownMenuContent>
+                </DropdownMenuItem>
+            </DropdownMenuContent>
         </DropdownMenu>
     );
 };
@@ -85,29 +76,34 @@ export function GuaranteeCampaigns() {
         { id: 'startDate', desc: true }
     ]);
 
-
     const columns = [
         {
             accessorKey: 'thumbnailUrl',
             header: 'Hình ảnh',
             cell: ({ row }) => (
-                <img
-                    src={row.getValue('thumbnailUrl')}
-                    alt={row.getValue('title')}
-                    className="w-16 h-16 object-cover rounded"
-                />
+                <div className="w-16 h-16 min-w-[64px]">
+                    <img
+                        src={row.getValue('thumbnailUrl')}
+                        alt={row.getValue('title')}
+                        className="w-full h-full object-cover rounded"
+                    />
+                </div>
             ),
         },
         {
             accessorKey: 'title',
             header: ({ column }) => <DataTableColumnHeader column={column} title="Tên chiến dịch" />,
-            cell: ({ row }) => <div className="font-medium text-ellipsis whitespace-nowrap overflow-hidden w-48 ">{row.getValue('title')}</div>,
+            cell: ({ row }) => (
+                <div className="font-medium min-w-[200px] max-w-[200px] text-ellipsis overflow-hidden whitespace-nowrap">
+                    {row.getValue('title')}
+                </div>
+            ),
         },
         {
             accessorKey: 'targetAmount',
             header: ({ column }) => <DataTableColumnHeader column={column} title="Số tiền mục tiêu" />,
             cell: ({ row }) => (
-                <div className="text-right font-medium">
+                <div className="text-right font-medium min-w-[120px]">
                     {row.getValue('targetAmount').toLocaleString('vi-VN')} ₫
                 </div>
             ),
@@ -116,14 +112,18 @@ export function GuaranteeCampaigns() {
             accessorKey: 'startDate',
             header: ({ column }) => <DataTableColumnHeader column={column} title="Ngày bắt đầu" />,
             cell: ({ row }) => (
-                <div>{new Date(row.getValue('startDate')).toLocaleDateString('vi-VN')}</div>
+                <div className="min-w-[100px]">
+                    {new Date(row.getValue('startDate')).toLocaleDateString('vi-VN')}
+                </div>
             ),
         },
         {
             accessorKey: 'endDate',
             header: ({ column }) => <DataTableColumnHeader column={column} title="Ngày kết thúc" />,
             cell: ({ row }) => (
-                <div>{new Date(row.getValue('endDate')).toLocaleDateString('vi-VN')}</div>
+                <div className="min-w-[100px]">
+                    {new Date(row.getValue('endDate')).toLocaleDateString('vi-VN')}
+                </div>
             ),
         },
         {
@@ -132,9 +132,11 @@ export function GuaranteeCampaigns() {
             cell: ({ row }) => {
                 const statusValue = row.getValue('status');
                 return (
-                    <Badge variant={getStatusVariant(statusValue)}>
-                        {getStatusLabel(statusValue)}
-                    </Badge>
+                    <div className="min-w-[120px]">
+                        <Badge variant={getStatusVariant(statusValue)}>
+                            {getStatusLabel(statusValue)}
+                        </Badge>
+                    </div>
                 );
             },
             filterFn: (row, id, value) => {
@@ -144,7 +146,20 @@ export function GuaranteeCampaigns() {
         {
             accessorKey: 'childName',
             header: ({ column }) => <DataTableColumnHeader column={column} title="Tên trẻ em" />,
-            cell: ({ row }) => <div>{row.getValue('childName') || 'Chưa có thông tin'}</div>,
+            cell: ({ row }) => (
+                <div className="min-w-[150px]">
+                    {row.getValue('childName') || 'Chưa có thông tin'}
+                </div>
+            ),
+        },
+        {
+            accessorKey: 'disbursementPlans',
+            header: ({ column }) => <DataTableColumnHeader column={column} title="Tiến độ giải ngân" />,
+            cell: ({ row }) => (
+                <div className="min-w-[200px]">
+                    <DisbursementProgress disbursementPlans={row.getValue('disbursementPlans')} />
+                </div>
+            ),
         },
         {
             id: 'actions',
@@ -161,7 +176,6 @@ export function GuaranteeCampaigns() {
         state: {
             sorting,
         },
-
     });
 
     if (isLoading) {
@@ -173,7 +187,7 @@ export function GuaranteeCampaigns() {
     }
 
     return (
-        <div className="w-full space-y-4">
+        <div className="grid grid-cols-1 gap-4">
             <h1 className="text-2xl font-bold px-6 pt-6">Danh sách chiến dịch của bạn</h1>
 
             <div className="flex justify-end items-center mb-6">
@@ -182,44 +196,47 @@ export function GuaranteeCampaigns() {
                     onClick={() => navigate('/guarantee/create-campaign')}
                 >
                     <BadgePlus className="w-4 h-4 mr-2" />
-                    Tạo Chiến dịch
+                    Tạo Chiến dịch
                 </Button>
             </div>
-            <div className="rounded-md border">
-                <Table>
-                    <TableHeader>
-                        {table.getHeaderGroups().map((headerGroup) => (
-                            <TableRow key={headerGroup.id}>
-                                {headerGroup.headers.map((header) => (
-                                    <TableHead key={header.id}>
-                                        {header.isPlaceholder
-                                            ? null
-                                            : flexRender(header.column.columnDef.header, header.getContext())}
-                                    </TableHead>
-                                ))}
-                            </TableRow>
-                        ))}
-                    </TableHeader>
-                    <TableBody>
-                        {table.getRowModel().rows?.length ? (
-                            table.getRowModel().rows.map((row) => (
-                                <TableRow key={row.id}>
-                                    {row.getVisibleCells().map((cell) => (
-                                        <TableCell key={cell.id}>
-                                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                        </TableCell>
+
+            <div className="overflow-x-auto">
+                <div className="border rounded-md min-w-full inline-block">
+                    <Table>
+                        <TableHeader>
+                            {table.getHeaderGroups().map((headerGroup) => (
+                                <TableRow key={headerGroup.id}>
+                                    {headerGroup.headers.map((header) => (
+                                        <TableHead key={header.id}>
+                                            {header.isPlaceholder
+                                                ? null
+                                                : flexRender(header.column.columnDef.header, header.getContext())}
+                                        </TableHead>
                                     ))}
                                 </TableRow>
-                            ))
-                        ) : (
-                            <TableRow>
-                                <TableCell colSpan={columns.length} className="h-24 text-center">
-                                    Không có chiến dịch nào.
-                                </TableCell>
-                            </TableRow>
-                        )}
-                    </TableBody>
-                </Table>
+                            ))}
+                        </TableHeader>
+                        <TableBody>
+                            {table.getRowModel().rows?.length ? (
+                                table.getRowModel().rows.map((row) => (
+                                    <TableRow key={row.id}>
+                                        {row.getVisibleCells().map((cell) => (
+                                            <TableCell key={cell.id}>
+                                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                            </TableCell>
+                                        ))}
+                                    </TableRow>
+                                ))
+                            ) : (
+                                <TableRow>
+                                    <TableCell colSpan={columns.length} className="h-24 text-center">
+                                        Không có chiến dịch nào.
+                                    </TableCell>
+                                </TableRow>
+                            )}
+                        </TableBody>
+                    </Table>
+                </div>
             </div>
         </div>
     );
