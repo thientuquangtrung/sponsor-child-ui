@@ -188,7 +188,11 @@ const CampaignDetail = () => {
                                 <strong>Địa chỉ:</strong>{' '}
                                 {`${campaign?.childLocation}, ${campaign?.childWard}, ${campaign?.childDistrict}, ${campaign?.childProvince}`}
                             </p>
-                            <p className="text-lg text-gray-700 mt-2">{campaign?.story}</p>
+
+                            <div
+                                className="prose max-w-none text-gray-600 rounded-lg p-6"
+                                dangerouslySetInnerHTML={{ __html: campaign?.story }}
+                            />
                         </TabsContent>
                         <TabsContent value="activities" className="p-4">
                             <Activity campaign={campaign} />

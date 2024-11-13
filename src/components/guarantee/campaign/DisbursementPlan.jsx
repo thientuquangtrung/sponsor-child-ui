@@ -5,6 +5,7 @@ import { disbursementStageStatus, activityStatus, disbursementRequestStatus } fr
 import { ExternalLink, Inbox } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
+import DisbursementPlanTabs from './DisbursementPlanTabs';
 
 const stageStatusColorMap = {
     0: 'bg-blue-100 text-blue-800',
@@ -208,11 +209,10 @@ const DisbursementPlan = ({ disbursementPlans }) => {
         );
     };
 
-    console.log(disbursementPlans.isCurrent);
 
     return (
         <>
-            <Card className="shadow-lg border-0 mb-6">
+            {/* <Card className="shadow-lg border-0 mb-6">
                 <CardHeader className="bg-rose-200">
                     <CardTitle className="text-lg flex items-center gap-2 text-gray-800">
                         Kế hoạch giải ngân</CardTitle>
@@ -294,7 +294,12 @@ const DisbursementPlan = ({ disbursementPlans }) => {
                         </div>
                     ))}
                 </CardContent>
-            </Card>
+            </Card> */}
+
+            <DisbursementPlanTabs
+                disbursementPlans={disbursementPlans}
+                navigate={navigate}
+            />
 
             {/* <Card className="shadow-lg border-0 mb-6">
                 <CardHeader className="bg-rose-200">
