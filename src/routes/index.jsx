@@ -31,6 +31,7 @@ import CreateDisbursementRequest from '@/components/guarantee/disbursement/Creat
 import CampaignInfo from '@/components/guarantee/campaign/CampaignInfo';
 import DisbursementRequestDetail from '@/components/guarantee/disbursement/DisbursementRequestDetail';
 import ListDisbursementCampaign from '@/components/guarantee/disbursement/ListDisbursementCampaign';
+import GeneralFund from '@/components/landingpage/GeneralFund';
 
 const Loadable = (Component) => {
     const LoadableComponent = (props) => {
@@ -114,6 +115,10 @@ export default function Router() {
                 {
                     path: 'events',
                     element: <VisitEvents />,
+                },
+                {
+                    path: 'general-fund',
+                    element: <GeneralFund />,
                 },
                 {
                     path: 'event/:id',
