@@ -118,7 +118,7 @@ const Activity = ({ campaign }) => {
                                             <div className="flex items-center space-x-3">
                                                 <div className="space-y-2 flex-grow">
                                                     <h3 className="text-xl font-bold text-gray-900">
-                                                        {stage.stageActivity.description}
+                                                        {stage.stageActivity?.description || "Chưa có hoạt động"}
                                                     </h3>
                                                     <div className="flex items-center space-x-2 text-sm text-gray-500">
                                                         <Calendar className="w-4 h-4" />
