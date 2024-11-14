@@ -138,3 +138,8 @@ export const visitStatus = [
     { label: 'Đã hủy', value: 5 },
     { label: 'Đã hoãn', value: 6 },
 ];
+
+export const fundType = [
+    { label: 'Cá nhân', value: 0 },
+    { label: 'Chiến dịch', value: 1 },
+];

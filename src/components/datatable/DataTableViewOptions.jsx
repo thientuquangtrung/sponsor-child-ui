@@ -16,7 +16,7 @@ export function DataTableViewOptions({ table }) {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="ml-auto hidden lg:flex">
+                <Button variant="outline" className="ml-auto hidden lg:flex hover:bg-gray-200">
                     <MixerHorizontalIcon className="mr-2 h-4 w-4" />
                     View
                 </Button>

@@ -35,7 +35,6 @@ const CampaignOverview = () => {
     // };
     console.log(campaign);
 
-
     const handleSendRequest = async () => {
         try {
             const dataToUpdate = {
@@ -58,12 +57,16 @@ const CampaignOverview = () => {
         } catch (error) {
             console.error('Error sending request:', error);
 
-            if (error.status === 400) {
+            if (error.status === 409) {
+                console.error('API error details:', error.data);
+                toast.error('Bạn đã đăng ký trở thành nhà bảo lãnh cho chiến dịch này trước đó.');
+            } else if (error.status === 400) {
                 console.error('API error details:', error.data);
                 toast.error(`Lỗi khi gửi yêu cầu: ${error.data?.message || 'Có lỗi xảy ra.'}`);
             } else {
                 toast.error(`Lỗi khi gửi yêu cầu: ${error.message}`);
             }
+            setIsDialogOpen(false);
         }
     };
 
@@ -81,8 +84,9 @@ const CampaignOverview = () => {
             try {
                 const resources = await getAssetsList('campaign_1');
                 const imageUrls = resources.map((resource) => {
-                    return `https://res.cloudinary.com/${import.meta.env.VITE_CLOUD_NAME}/image/${resource.type}/${resource.public_id
-                        }.${resource.format}`;
+                    return `https://res.cloudinary.com/${import.meta.env.VITE_CLOUD_NAME}/image/${resource.type}/${
+                        resource.public_id
+                    }.${resource.format}`;
                 });
                 setImages(imageUrls);
             } catch (error) {
@@ -152,8 +156,7 @@ const CampaignOverview = () => {
                                             <strong>Năm sinh:</strong> {campaign?.childBirthYear}
                                         </p>
                                         <p className="text-lg text-gray-700 mt-2">
-                                            <strong>Giới tính:</strong>{' '}
-                                            {campaign?.childGender === 1 ? 'Nam' : 'Nữ'}
+                                            <strong>Giới tính:</strong> {campaign?.childGender === 1 ? 'Nam' : 'Nữ'}
                                         </p>
                                     </div>
                                     <p className="text-lg text-gray-700 mt-2">
@@ -209,7 +212,6 @@ const CampaignOverview = () => {
                                 />
                             </div>
                         </div>
-
                     </div>
                 </div>
             </div>
@@ -277,8 +279,9 @@ const CampaignOverview = () => {
                     {campaign?.disbursementPlans[0]?.stages.map((stage, index) => (
                         <div
                             key={stage.stageNumber}
-                            className={`flex justify-between items-center w-full mb-16 ${index % 2 === 0 ? 'flex-row' : 'flex-row-reverse'
-                                }`}
+                            className={`flex justify-between items-center w-full mb-16 ${
+                                index % 2 === 0 ? 'flex-row' : 'flex-row-reverse'
+                            }`}
                         >
                             <div className="w-5/12">
                                 <div className="bg-white p-6 rounded shadow-lg">
