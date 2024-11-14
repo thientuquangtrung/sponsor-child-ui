@@ -6,13 +6,10 @@ import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Plus, Trash2, LoaderCircle } from 'lucide-react';
 
-import { useGetDisbursementRequestByIdSimplifiedQuery } from '@/redux/guarantee/disbursementRequestApi';
 import { useCreateDisbursementReportMutation } from '@/redux/guarantee/disbursementReportApi';
 
-export default function UpdateDisbursementRequest() {
-    const { id } = useParams();
+export default function UpdateDisbursementRequest({ disbursementRequest }) {
     const navigate = useNavigate();
-    const { data: disbursementRequest } = useGetDisbursementRequestByIdSimplifiedQuery(id);
     const [updateDisbursementReport] = useCreateDisbursementReportMutation();
 
     const [formData, setFormData] = useState({
@@ -85,27 +82,37 @@ export default function UpdateDisbursementRequest() {
     };
 
     const removeReportDetail = (index) => {
-        const updatedDetails = formData.disbursementReports.filter((_, i) => i !== index);
-        setFormData((prev) => ({
-            ...prev,
-            disbursementReports: updatedDetails,
-            totalAmountUsed: calculateTotalAmountUsed(updatedDetails),
-        }));
+        if (formData.disbursementReports.length > 1) {
+            const updatedDetails = formData.disbursementReports.filter((_, i) => i !== index);
+            setFormData((prev) => ({
+                ...prev,
+                disbursementReports: updatedDetails,
+            }));
+            calculateTotalAmountUsed(updatedDetails);
+        }
+    };
+
+    const isFillFullInfo = () => {
+        return formData.disbursementReports.every((detail) => detail.itemDescription && detail.amountSpent);
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setIsSubmitting(true);
 
-        if (error) {
-            toast.error(error);
-            setIsSubmitting(false);
+        if (!isFillFullInfo()) {
+            toast.error('Vui lòng điền đầy đủ thông tin!');
             return;
         }
 
+        if (error) {
+            toast.error(error);
+            return;
+        }
+
+        setIsSubmitting(true);
         try {
             const response = {
-                disbursementRequestID: id,
+                disbursementRequestID: disbursementRequest.id,
                 reportDetails: formData.disbursementReports.map((detail) => ({
                     itemDescription: detail.itemDescription,
                     amountSpent: parseFloat(detail.amountSpent.replace(/\./g, '')) || 0,
@@ -163,13 +170,15 @@ export default function UpdateDisbursementRequest() {
                                     />
                                 </TableCell>
                                 <TableCell className="p-3 border border-slate-300">
-                                    <Button
-                                        type="button"
-                                        onClick={() => removeReportDetail(index)}
-                                        className="text-red-500 bg-normal hover:bg-normal"
-                                    >
-                                        <Trash2 />
-                                    </Button>
+                                    {formData.disbursementReports.length > 1 && (
+                                        <Button
+                                            type="button"
+                                            onClick={() => removeReportDetail(index)}
+                                            className="text-red-500 bg-normal hover:bg-normal"
+                                        >
+                                            <Trash2 />
+                                        </Button>
+                                    )}
                                 </TableCell>
                             </TableRow>
                         ))}
