@@ -1,13 +1,8 @@
 import React, { useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { useGetDisbursementRequestByIdSimplifiedQuery } from '@/redux/guarantee/disbursementRequestApi';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { X } from 'lucide-react'; 
+import { X } from 'lucide-react';
 
-export default function DisbursementReportDetail() {
-    const { id } = useParams();
-    const { data: disbursementRequests } = useGetDisbursementRequestByIdSimplifiedQuery(id);
-
+export default function DisbursementReportDetail({ disbursementRequest }) {
     const [isModalOpen, setModalOpen] = useState(false);
     const [modalImage, setModalImage] = useState(null);
 
@@ -23,7 +18,9 @@ export default function DisbursementReportDetail() {
 
     return (
         <div>
-            <h3 className="text-xl text-center font-semibold mb-6 text-teal-500">Chi tiết sử dụng nguồn tiền đã giải ngân</h3>
+            <h3 className="text-xl text-center font-semibold mb-6 text-teal-500">
+                Chi tiết sử dụng nguồn tiền đã giải ngân
+            </h3>
             <div className="overflow-x-auto">
                 <Table className="border-collapse border-solid-2 border-slate-500 w-full bg-white shadow-lg rounded-lg overflow-hidden">
                     <TableHeader className="bg-gradient-to-l from-rose-100 to-teal-100 border-b border-slate-500">
@@ -46,7 +43,7 @@ export default function DisbursementReportDetail() {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {disbursementRequests?.disbursementReports
+                        {disbursementRequest?.disbursementReports
                             ?.filter((report) => report.isCurrent)
                             .flatMap((report) =>
                                 report.disbursementReportDetails.map((detail) => (
@@ -69,7 +66,7 @@ export default function DisbursementReportDetail() {
                                                     src={detail.receiptUrl}
                                                     alt="Hóa đơn"
                                                     className="w-20 h-20 object-cover cursor-pointer"
-                                                    onClick={() => openModal(detail.receiptUrl)} 
+                                                    onClick={() => openModal(detail.receiptUrl)}
                                                 />
                                             ) : (
                                                 'Không có hóa đơn'
@@ -81,7 +78,7 @@ export default function DisbursementReportDetail() {
                                     </TableRow>
                                 )),
                             )}
-                        {disbursementRequests?.disbursementReports?.every((report) => !report.isCurrent) && (
+                        {disbursementRequest?.disbursementReports?.every((report) => !report.isCurrent) && (
                             <TableRow>
                                 <TableCell
                                     colSpan={5}
@@ -98,13 +95,16 @@ export default function DisbursementReportDetail() {
             {isModalOpen && (
                 <div
                     className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50"
-                    onClick={closeModal} 
+                    onClick={closeModal}
                 >
-                    <div className="bg-white p-4 rounded-lg shadow-lg max-w-2xl relative" onClick={(e) => e.stopPropagation()}>
+                    <div
+                        className="bg-white p-4 rounded-lg shadow-lg max-w-2xl relative"
+                        onClick={(e) => e.stopPropagation()}
+                    >
                         <X
                             className="absolute top-4 right-4 cursor-pointer text-gray-500 hover:text-gray-700"
                             onClick={closeModal}
-                            size={24} 
+                            size={24}
                         />
                         <img src={modalImage} alt="Biên lai lớn" className="max-w-full h-full" />
                     </div>

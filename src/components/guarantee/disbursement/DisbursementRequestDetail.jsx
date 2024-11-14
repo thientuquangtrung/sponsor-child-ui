@@ -29,8 +29,6 @@ export default function DisbursementRequestDetail() {
     const navigate = useNavigate();
     const { data: disbursementRequests, isLoading, error, refetch } = useGetDisbursementRequestByIdSimplifiedQuery(id);
 
-
-
     if (isLoading) {
         return <LoadingScreen />;
     }
@@ -60,8 +58,9 @@ export default function DisbursementRequestDetail() {
                         .map((stage, index) => (
                             <div
                                 key={stage.stageID}
-                                className={`flex justify-between items-center w-full mb-8 ${index % 2 === 0 ? 'flex-row' : 'flex-row-reverse'
-                                    }`}
+                                className={`flex justify-between items-center w-full mb-8 ${
+                                    index % 2 === 0 ? 'flex-row' : 'flex-row-reverse'
+                                }`}
                             >
                                 <div className="w-5/12">
                                     <div className="bg-white p-6 rounded shadow-lg">
@@ -78,20 +77,21 @@ export default function DisbursementRequestDetail() {
                                         <p className="mt-2 text-black">
                                             Trạng thái:{' '}
                                             <span
-                                                className={`font-semibold ${stage.status === 0
-                                                    ? 'text-yellow-500'
-                                                    : stage.status === 1
+                                                className={`font-semibold ${
+                                                    stage.status === 0
+                                                        ? 'text-yellow-500'
+                                                        : stage.status === 1
                                                         ? 'text-blue-500'
                                                         : stage.status === 2
-                                                            ? 'text-green-600'
-                                                            : stage.status === 3
-                                                                ? 'text-red-500'
-                                                                : stage.status === 4
-                                                                    ? 'text-gray-500'
-                                                                    : stage.status === 5
-                                                                        ? 'text-purple-500'
-                                                                        : 'text-black'
-                                                    }`}
+                                                        ? 'text-green-600'
+                                                        : stage.status === 3
+                                                        ? 'text-red-500'
+                                                        : stage.status === 4
+                                                        ? 'text-gray-500'
+                                                        : stage.status === 5
+                                                        ? 'text-purple-500'
+                                                        : 'text-black'
+                                                }`}
                                             >
                                                 {getPlanStatus(stage.status)}
                                             </span>
@@ -107,14 +107,10 @@ export default function DisbursementRequestDetail() {
                 </div>
             </div>
 
-
-
             {disbursementRequests.isEarlyRequest && (
                 <div className="flex items-center gap-2 bg-yellow-50 p-4 border-b">
                     <AlertCircle className="h-5 w-5 text-yellow-500" />
-                    <p className="text-sm text-yellow-700">
-                        Đây là yêu cầu giải ngân sớm hơn so với ngày dự kiến
-                    </p>
+                    <p className="text-sm text-yellow-700">Đây là yêu cầu giải ngân sớm hơn so với ngày dự kiến</p>
                 </div>
             )}
 
@@ -127,7 +123,7 @@ export default function DisbursementRequestDetail() {
                                 {disbursementRequests.disbursementStage.stageNumber}
                             </Badge>
                         </div>
-                        <div className="space-y-4 p-4 bg-gray-50 rounded-b-lg shadow-inner">
+                        <div className="space-y-4 p-4 rounded-b-lg">
                             <div className="flex items-center">
                                 <div className="flex items-center w-1/2">
                                     <User className="mr-2 h-5 w-5 text-teal-500" />
@@ -139,17 +135,20 @@ export default function DisbursementRequestDetail() {
                             </div>
                             {disbursementRequests?.disbursementStage?.actualDisbursementAmount &&
                                 disbursementRequests?.disbursementStage?.disbursementAmount &&
-                                (disbursementRequests.disbursementStage.actualDisbursementAmount - disbursementRequests.disbursementStage.disbursementAmount) > 0 && (
+                                disbursementRequests.disbursementStage.actualDisbursementAmount -
+                                    disbursementRequests.disbursementStage.disbursementAmount >
+                                    0 && (
                                     <div className="flex items-center">
                                         <div className="flex items-center w-1/2">
                                             <CircleDollarSign className="mr-2 h-5 w-5 text-teal-500" />
-                                            <p className="text-gray-700 font-medium">
-                                                Số tiền giải ngân đợt trước:
-                                            </p>
+                                            <p className="text-gray-700 font-medium">Số tiền giải ngân đợt trước:</p>
                                         </div>
                                         <p className="text-teal-500 font-medium w-1/2">
-                                            {(disbursementRequests.disbursementStage.actualDisbursementAmount -
-                                                disbursementRequests.disbursementStage.disbursementAmount).toLocaleString('vi-VN')} VNĐ
+                                            {(
+                                                disbursementRequests.disbursementStage.actualDisbursementAmount -
+                                                disbursementRequests.disbursementStage.disbursementAmount
+                                            ).toLocaleString('vi-VN')}{' '}
+                                            VNĐ
                                         </p>
                                     </div>
                                 )}
@@ -161,19 +160,23 @@ export default function DisbursementRequestDetail() {
                                     </p>
                                 </div>
                                 <p className="text-teal-500 font-medium w-1/2">
-                                    {disbursementRequests?.disbursementStage?.disbursementAmount?.toLocaleString('vi-VN')} VNĐ
+                                    {disbursementRequests?.disbursementStage?.disbursementAmount?.toLocaleString(
+                                        'vi-VN',
+                                    )}{' '}
+                                    VNĐ
                                 </p>
                             </div>
 
                             <div className="flex items-center">
                                 <div className="flex items-center w-1/2">
                                     <CircleDollarSign className="mr-2 h-5 w-5 text-teal-500" />
-                                    <p className="text-gray-700 font-medium">
-                                        Số tiền yêu cầu giải ngân:
-                                    </p>
+                                    <p className="text-gray-700 font-medium">Số tiền yêu cầu giải ngân:</p>
                                 </div>
                                 <p className="text-teal-500 font-medium w-1/2">
-                                    {disbursementRequests?.disbursementStage?.actualDisbursementAmount?.toLocaleString('vi-VN')} VNĐ
+                                    {disbursementRequests?.disbursementStage?.actualDisbursementAmount?.toLocaleString(
+                                        'vi-VN',
+                                    )}{' '}
+                                    VNĐ
                                 </p>
                             </div>
 
@@ -183,7 +186,9 @@ export default function DisbursementRequestDetail() {
                                     <p className="text-gray-700 font-medium">Ngày dự kiến giải ngân:</p>
                                 </div>
                                 <p className="text-teal-500 font-medium w-1/2">
-                                    {new Date(disbursementRequests.disbursementStage.scheduledDate).toLocaleDateString('vi-VN')}
+                                    {new Date(disbursementRequests.disbursementStage.scheduledDate).toLocaleDateString(
+                                        'vi-VN',
+                                    )}
                                 </p>
                             </div>
                         </div>
@@ -281,15 +286,15 @@ export default function DisbursementRequestDetail() {
                                     {disbursementRequests?.disbursementReports?.every(
                                         (report) => !report.isCurrent,
                                     ) && (
-                                            <TableRow>
-                                                <TableCell
-                                                    colSpan={2}
-                                                    className="px-6 py-4 text-center text-gray-500 border-t border-gray-200"
-                                                >
-                                                    Không có chi tiết báo cáo hiện tại
-                                                </TableCell>
-                                            </TableRow>
-                                        )}
+                                        <TableRow>
+                                            <TableCell
+                                                colSpan={2}
+                                                className="px-6 py-4 text-center text-gray-500 border-t border-gray-200"
+                                            >
+                                                Không có chi tiết báo cáo hiện tại
+                                            </TableCell>
+                                        </TableRow>
+                                    )}
                                 </TableBody>
                             </Table>
                         </div>
@@ -345,6 +350,6 @@ export default function DisbursementRequestDetail() {
                     ) : null}
                 </div>
             </div>
-        </div >
+        </div>
     );
 }
