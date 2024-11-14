@@ -54,7 +54,7 @@ export function Header() {
                     <NavLink to="/" className="mr-6 flex items-center">
                         <Logo />
                     </NavLink>
-                    <div className="flex items-center space-x-6 text-sm font-medium">
+                    <div className="flex items-center space-x-2 text-sm font-medium">
                         {mainMenu.map((menu, index) =>
                             menu.items !== undefined ? (
                                 <DropdownMenu key={index}>

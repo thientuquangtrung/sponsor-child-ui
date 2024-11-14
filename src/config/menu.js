@@ -32,6 +32,10 @@ export const mainMenu = [
         title: "Sự kiện",
         to: "events",
     },
+    {
+        title: "Quỹ chung",
+        to: "general-fund",
+    }
 ];
 
 export const sideMenu = [];
