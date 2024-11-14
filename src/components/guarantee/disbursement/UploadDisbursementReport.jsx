@@ -12,13 +12,10 @@ import { useUpdateDisbursementReportMutation } from '@/redux/guarantee/disbursem
 
 export default function UploadDisbursementReport() {
     const { id } = useParams();
-    const navigate = useNavigate();
     const { data: disbursementRequests, isLoading, error } = useGetDisbursementRequestByIdSimplifiedQuery(id);
     const [updateDisbursementReport] = useUpdateDisbursementReportMutation();
 
     const [reportDetails, setReportDetails] = useState({});
-    const [uploadedImages, setUploadedImages] = useState({});
-    const [updatedRows, setUpdatedRows] = useState([]);
     const [loadingRows, setLoadingRows] = useState([]);
 
     const [isModalOpen, setModalOpen] = useState(false);
@@ -88,11 +85,6 @@ export default function UploadDisbursementReport() {
                     receiptUrl,
                 },
             }));
-
-            setUploadedImages((prevImages) => ({
-                ...prevImages,
-                [detailId]: receiptUrl,
-            }));
         } catch (error) {
             toast.error('Failed to upload the file. Please try again.');
         }
@@ -125,8 +117,7 @@ export default function UploadDisbursementReport() {
 
         try {
             await updateDisbursementReport({ reportDetailId: detailId, data: payload }).unwrap();
-            toast.success(`Cập nhật chi tiết báo cáo ID ${detailId} thành công!`);
-            setUpdatedRows((prev) => [...prev, detailId]);
+            toast.success(`Cập nhật chi tiết báo cáo thành công!`);
         } catch (error) {
             console.error(`Không cập nhật được ID ${detailId}:`, error);
             toast.error(`Không cập nhật được: ${error.message}`);
@@ -189,7 +180,7 @@ export default function UploadDisbursementReport() {
                                         const receiptUrl =
                                             reportDetails[detail.id]?.receiptUrl || detail.receiptUrl || '';
 
-                                        const isUpdated = isRowUpdated(detail); 
+                                        const isUpdated = isRowUpdated(detail);
                                         const isLoading = loadingRows.includes(detail.id);
 
                                         return (
@@ -218,7 +209,7 @@ export default function UploadDisbursementReport() {
                                                                 formattedAmount,
                                                             );
                                                         }}
-                                                        disabled={isUpdated} 
+                                                        disabled={isUpdated}
                                                     />
                                                 </TableCell>
                                                 <TableCell className="p-3 border border-slate-300">
@@ -245,7 +236,7 @@ export default function UploadDisbursementReport() {
                                                             onChange={(e) => handleFileChange(e, detail.id)}
                                                             className="absolute inset-0 opacity-0 cursor-pointer"
                                                             style={{ zIndex: 100 }}
-                                                            disabled={isUpdated} 
+                                                            disabled={isUpdated}
                                                         />
                                                     </div>
                                                 </TableCell>
@@ -256,7 +247,7 @@ export default function UploadDisbursementReport() {
                                                         onChange={(e) =>
                                                             handleChange(detail.id, 'comments', e.target.value)
                                                         }
-                                                        disabled={isUpdated} 
+                                                        disabled={isUpdated}
                                                     />
                                                 </TableCell>
                                                 <TableCell className="p-3 border border-slate-300">
@@ -268,7 +259,7 @@ export default function UploadDisbursementReport() {
                                                         <Button
                                                             className="bg-rose-50 text-teal-500 font-semibold py-1 px-3 rounded hover:bg-normal"
                                                             onClick={() => updateSingleDisbursementDetail(detail.id)}
-                                                            disabled={isLoading} 
+                                                            disabled={isLoading}
                                                         >
                                                             {isLoading ? (
                                                                 <LoaderCircle className="animate-spin -ml-1 mr-3 h-5 w-5 inline" />

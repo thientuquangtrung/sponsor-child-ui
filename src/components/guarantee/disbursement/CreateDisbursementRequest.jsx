@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { bankNames } from '@/config/combobox';
 import { Input } from '@/components/ui/input';
@@ -11,12 +11,23 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { useCreateDisbursementRequestMutation } from '@/redux/guarantee/disbursementRequestApi';
 import { useGetDisbursementStageByStageIdQuery } from '@/redux/guarantee/disbursementStageApi';
 import { AlertCircle, Calendar, CircleDollarSign, LoaderCircle, Plus, Trash2, User } from 'lucide-react';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, } from "@/components/ui/dialog";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog';
+import { useSelector } from 'react-redux';
+
 export default function CreateDisbursementRequest() {
-    const location = useLocation();
     const navigate = useNavigate();
-    const queryParams = new URLSearchParams(location.search);
-    const stageID = queryParams.get('stageID');
+    const { user } = useSelector((state) => state.auth);
+
+    const [searchParams] = useSearchParams();
+    const stageID = searchParams.get('stageID');
+
     const [isEarlyDisbursement, setIsEarlyDisbursement] = useState(false);
     const [showConfirmDialog, setShowConfirmDialog] = useState(false);
     const { data: disbursementStage } = useGetDisbursementStageByStageIdQuery(stageID);
@@ -50,6 +61,11 @@ export default function CreateDisbursementRequest() {
         }
     }, [disbursementStage]);
 
+    if (disbursementStage && user.userID !== disbursementStage?.guarantee.userID) {
+        toast.error('Bạn không có quyền tạo yêu cầu giải ngân cho chiến dịch này!');
+        navigate('/guarantee/disbursement-requests');
+    }
+
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setGuaranteeInfo((prevInfo) => ({
@@ -73,12 +89,14 @@ export default function CreateDisbursementRequest() {
     };
 
     const removeReportDetail = (index) => {
-        const updatedDetails = guaranteeInfo.reportDetails.filter((_, i) => i !== index);
-        setGuaranteeInfo((prevInfo) => ({
-            ...prevInfo,
-            reportDetails: updatedDetails,
-        }));
-        calculateTotalAmountUsed(updatedDetails);
+        if (guaranteeInfo.reportDetails.length > 1) {
+            const updatedDetails = guaranteeInfo.reportDetails.filter((_, i) => i !== index);
+            setGuaranteeInfo((prevInfo) => ({
+                ...prevInfo,
+                reportDetails: updatedDetails,
+            }));
+            calculateTotalAmountUsed(updatedDetails);
+        }
     };
 
     const handleReportDetailChange = (index, field, value) => {
@@ -119,8 +137,21 @@ export default function CreateDisbursementRequest() {
         }
     };
 
+    const isFillFullInfo = () => {
+        return (
+            guaranteeInfo.reportDetails.every((detail) => detail.itemDescription && detail.amountSpent) &&
+            guaranteeInfo.bankAccountNumber &&
+            guaranteeInfo.fullname
+        );
+    };
+
     const handleSubmit = async (event) => {
         event.preventDefault();
+
+        if (!isFillFullInfo()) {
+            toast.error('Vui lòng điền đầy đủ thông tin!');
+            return;
+        }
 
         if (error) {
             toast.error(error);
@@ -152,9 +183,7 @@ export default function CreateDisbursementRequest() {
 
             await createDisbursementRequest(payload).unwrap();
             toast.success(
-                isEarlyDisbursement
-                    ? 'Yêu cầu giải ngân sớm đã được gửi!'
-                    : 'Yêu cầu giải ngân đã được gửi!'
+                isEarlyDisbursement ? 'Yêu cầu giải ngân sớm đã được gửi!' : 'Yêu cầu giải ngân đã được gửi!',
             );
             navigate('/guarantee/disbursement-requests');
         } catch (error) {
@@ -164,7 +193,6 @@ export default function CreateDisbursementRequest() {
             setIsSubmitting(false);
         }
     };
-
 
     return (
         <>
@@ -177,30 +205,21 @@ export default function CreateDisbursementRequest() {
                     <div className="flex items-center gap-2 bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-md">
                         <AlertCircle className="h-5 w-5 text-yellow-500" />
                         <p className="text-sm text-yellow-700">
-                            Bạn đang tạo yêu cầu giải ngân sớm hơn ngày dự kiến ({new Date(disbursementStage?.scheduledDate).toLocaleDateString('vi-VN')})
+                            Bạn đang tạo yêu cầu giải ngân sớm hơn ngày dự kiến (
+                            {new Date(disbursementStage?.scheduledDate).toLocaleDateString('vi-VN')})
                         </p>
                     </div>
                 )}
 
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                <div className="space-y-4 flex flex-col border rounded-lg shadow-lg">
-                    <div className="flex space-x-2 justify-center items-center bg-gradient-to-r from-gray-200 to-rose-100 p-2 rounded-t-lg">
-                        <h3 className="text-xl font-semibold text-gray-700">Đợt giải ngân:</h3>
-                        <Badge className="w-6 h-6 p-2 text-white bg-teal-500 rounded-full shadow-inner">
-                            {disbursementStage?.stageNumber}
-                        </Badge>
-                    </div>
-                    <div className="space-y-6 p-6 bg-gray-50 rounded-b-lg shadow-inner">
-                        <div className="flex items-center border-b pb-4">
-                            <User className="mr-2 h-5 w-5 text-teal-500" />
-                            <p className="text-gray-600">Nhà Bảo Lãnh:</p>
-                            <span className="ml-2 text-teal-600 font-semibold">
-                                {disbursementStage?.guarantee?.fullname}
-                            </span>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                    <div className="space-y-4 flex flex-col border rounded-lg shadow-lg">
+                        <div className="flex space-x-2 justify-center items-center bg-gradient-to-r from-gray-200 to-rose-100 p-2 rounded-t-lg">
+                            <h3 className="text-xl font-semibold text-gray-700">Đợt giải ngân:</h3>
+                            <Badge className="w-6 h-6 p-2 text-white bg-teal-500 rounded-full shadow-inner">
+                                {disbursementStage?.stageNumber}
+                            </Badge>
                         </div>
-
-                        <div className="space-y-6 p-6 bg-gray-50 rounded-b-lg shadow-inner">
+                        <div className="space-y-6 p-6 rounded-b-lg">
                             <div className="flex items-center">
                                 <div className="flex items-center w-1/2">
                                     <User className="mr-2 h-5 w-5 text-teal-500" />
@@ -212,45 +231,45 @@ export default function CreateDisbursementRequest() {
                             </div>
                             {disbursementStage?.actualDisbursementAmount &&
                                 disbursementStage?.disbursementAmount &&
-                                (disbursementStage.actualDisbursementAmount - disbursementStage.disbursementAmount) > 0 && (
+                                disbursementStage.actualDisbursementAmount - disbursementStage.disbursementAmount >
+                                    0 && (
                                     <div className="flex items-center">
                                         <div className="flex items-center w-1/2">
                                             <CircleDollarSign className="mr-2 h-5 w-5 text-teal-500" />
-                                            <p className="text-gray-700 font-medium">
-                                                Số tiền giải ngân đợt trước:
-                                            </p>
+                                            <p className="text-gray-700 font-medium">Số tiền giải ngân đợt trước:</p>
                                         </div>
                                         <p className="ml-2 text-teal-600 font-semibold">
-                                            {(disbursementStage.actualDisbursementAmount -
-                                                disbursementStage.disbursementAmount).toLocaleString('vi-VN')} VNĐ
+                                            {(
+                                                disbursementStage.actualDisbursementAmount -
+                                                disbursementStage.disbursementAmount
+                                            ).toLocaleString('vi-VN')}{' '}
+                                            VNĐ
                                         </p>
                                     </div>
                                 )}
                             <div className="flex items-center">
                                 <div className="flex items-center w-1/2">
                                     <CircleDollarSign className="mr-2 h-5 w-5 text-teal-500" />
-                                    <p className="text-gray-700 font-medium">Số tiền giải ngân đợt {disbursementStage?.stageNumber}:</p>
+                                    <p className="text-gray-700 font-medium">
+                                        Số tiền giải ngân đợt {disbursementStage?.stageNumber}:
+                                    </p>
                                 </div>
                                 <span className="ml-2 text-teal-600 font-semibold">
                                     {disbursementStage?.disbursementAmount?.toLocaleString('vi-VN')} VNĐ
                                 </span>
-
                             </div>
 
                             <div className="flex items-center">
                                 <div className="flex items-center w-1/2">
-
                                     <CircleDollarSign className="mr-2 h-5 w-5 text-teal-500" />
                                     <p className="text-gray-700 font-medium">Số tiền yêu cầu giải ngân:</p>
                                 </div>
                                 <span className="ml-2 text-teal-600 font-semibold">
                                     {disbursementStage?.actualDisbursementAmount?.toLocaleString('vi-VN')} VNĐ
                                 </span>
-
                             </div>
                             <div className="flex items-center">
                                 <div className="flex items-center w-1/2">
-
                                     <Calendar className="mr-2 h-5 w-5 text-teal-500" />
                                     <p className="text-gray-700 font-medium">Ngày dự kiến giải ngân:</p>
                                 </div>
@@ -260,7 +279,6 @@ export default function CreateDisbursementRequest() {
                             </div>
                         </div>
                     </div>
-                </div>
 
                     <div className="border rounded-lg shadow-md">
                         <h2 className="text-xl text-center font-semibold mb-4 bg-gradient-to-l from-gray-200 to-rose-100 px-3 py-2 rounded-tl-lg rounded-tr-lg">
@@ -337,13 +355,15 @@ export default function CreateDisbursementRequest() {
                                         />
                                     </TableCell>
                                     <TableCell className="p-3 border border-slate-300">
-                                        <Button
-                                            type="button"
-                                            onClick={() => removeReportDetail(index)}
-                                            className="text-red-500 bg-normal hover:bg-normal"
-                                        >
-                                            <Trash2 />
-                                        </Button>
+                                        {guaranteeInfo.reportDetails.length > 1 && (
+                                            <Button
+                                                type="button"
+                                                onClick={() => removeReportDetail(index)}
+                                                className="text-red-500 bg-normal hover:bg-normal"
+                                            >
+                                                <Trash2 />
+                                            </Button>
+                                        )}
                                     </TableCell>
                                 </TableRow>
                             ))}
@@ -399,15 +419,13 @@ export default function CreateDisbursementRequest() {
                     <DialogHeader>
                         <DialogTitle>Xác nhận giải ngân sớm</DialogTitle>
                         <DialogDescription>
-                            Bạn đang tạo yêu cầu giải ngân sớm hơn ngày dự kiến ({new Date(disbursementStage?.scheduledDate).toLocaleDateString('vi-VN')}).
-                            Bạn có chắc chắn muốn tiếp tục?
+                            Bạn đang tạo yêu cầu giải ngân sớm hơn ngày dự kiến (
+                            {new Date(disbursementStage?.scheduledDate).toLocaleDateString('vi-VN')}). Bạn có chắc chắn
+                            muốn tiếp tục?
                         </DialogDescription>
                     </DialogHeader>
                     <DialogFooter>
-                        <Button
-                            variant="outline"
-                            onClick={() => setShowConfirmDialog(false)}
-                        >
+                        <Button variant="outline" onClick={() => setShowConfirmDialog(false)}>
                             Hủy
                         </Button>
                         <Button
