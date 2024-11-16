@@ -85,7 +85,7 @@ export default function GeneralFund() {
             </div>
 
             {/* Chart Section */}
-            <div className="p-6">
+            <div className='mt-4'>
                 <GeneralFundChart />
             </div>
 
@@ -100,7 +100,7 @@ export default function GeneralFund() {
                             value="donationHistory"
                             className="relative px-6 py-3 font-semibold transition-all duration-300 ease-in-out"
                         >
-                            Lịch sử quyên góp
+                            Lịch sử nhận tiền
                         </TabsTrigger>
                         <TabsTrigger
                             value="usageHistory"

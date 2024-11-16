@@ -5,7 +5,7 @@ export const fundApi = baseApi.injectEndpoints({
         getFundSource: builder.query({
             query: () => '/fund/source',
         }),
-        
+
         getFundCommon: builder.query({
             query: () => '/fund/common',
         }),
@@ -25,7 +25,21 @@ export const fundApi = baseApi.injectEndpoints({
                 body: fundData,
             }),
         }),
+
+        cancelReserveFundSourceTransactionByOrderCode: builder.mutation({
+            query: (orderCode) => ({
+                url: `/fund/cancel-reserve-fund-source-transaction/${orderCode}`,
+                method: 'POST',
+            }),
+        }),
     }),
 });
 
-export const { useGetFundSourceQuery, useGetFundCommonQuery, useGetFundUsageHistoryQuery, useCreateIndividualFundSourceMutation, useGetFundMonthlyIncomeExpenseQuery } = fundApi;
+export const {
+    useGetFundSourceQuery,
+    useGetFundCommonQuery,
+    useGetFundUsageHistoryQuery,
+    useCreateIndividualFundSourceMutation,
+    useGetFundMonthlyIncomeExpenseQuery,
+    useCancelReserveFundSourceTransactionByOrderCodeMutation,
+} = fundApi;

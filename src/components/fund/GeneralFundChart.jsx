@@ -5,7 +5,7 @@ import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from 'recharts';
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
-import { YearPicker } from '@/components/ui/year-picker'; 
+import { YearPicker } from '@/components/ui/year-picker';
 import { useGetFundMonthlyIncomeExpenseQuery } from '@/redux/fund/fundApi';
 
 const chartConfig = {
@@ -51,8 +51,8 @@ export function GeneralFundChart() {
                     <YearPicker
                         date={new Date(selectedYear, 0, 1)}
                         onYearSelect={(date) => setSelectedYear(date.getFullYear())}
-                        fromYear={2000} 
-                        toYear={new Date().getFullYear()} 
+                        fromYear={2000}
+                        toYear={new Date().getFullYear()}
                         className="ml-2"
                     />
                 </div>
@@ -80,7 +80,7 @@ export function GeneralFundChart() {
                             </div>
                         </div>
                         <ChartContainer config={chartConfig}>
-                            <BarChart data={transformedData} barSize={42}>
+                            <BarChart data={transformedData} barSize={40}>
                                 <CartesianGrid vertical={false} />
                                 <XAxis
                                     dataKey="month"
@@ -91,7 +91,12 @@ export function GeneralFundChart() {
                                         new Date(value).toLocaleString('vi-VN', { month: 'short' })
                                     }
                                 />
-                                <YAxis />
+                                <YAxis
+                                    width={100} 
+                                    tickFormatter={(value) =>
+                                        `${new Intl.NumberFormat('vi-VN', { style: 'decimal' }).format(value)} đ`
+                                    }
+                                />
                                 <ChartTooltip cursor={false} content={<ChartTooltipContent indicator="dashed" />} />
                                 <Bar dataKey="income" fill={chartConfig.income.color} radius={10} />
                                 <Bar dataKey="expenditure" fill={chartConfig.expenditure.color} radius={10} />
