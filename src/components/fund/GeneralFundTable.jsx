@@ -14,6 +14,7 @@ import { DataTablePagination } from '@/components/datatable/DataTablePagination'
 import { useGetFundSourceQuery } from '@/redux/fund/fundApi';
 import ToolbarForDonationHistory from '../datatable/ToolbarForDonationHistory';
 import { fundType } from '@/config/combobox';
+import DateRangePicker from '../ui/calendar-range';
 
 const columns = [
     {
@@ -35,8 +36,7 @@ const columns = [
         accessorKey: 'fundSourceType',
         header: ({ column }) => <DataTableColumnHeader column={column} title="Phân loại" />,
         cell: ({ row }) => {
-            const fundTypeLabel =
-                fundType.find((type) => type.value === row.getValue('fundSourceType'))
+            const fundTypeLabel = fundType.find((type) => type.value === row.getValue('fundSourceType'));
             return (
                 <Badge
                     className={
@@ -47,17 +47,35 @@ const columns = [
                 </Badge>
             );
         },
+
+        filterFn: (row, id, value) => {
+            const fundSourceType = row.getValue(id);
+            return value.includes(fundSourceType ? 'Chiến dịch' : 'Cá nhân');
+        },
     },
 ];
 
 export function GeneralFundTable() {
     const { data, error, isLoading } = useGetFundSourceQuery();
-    const [sorting, setSorting] = React.useState([]);
+    const [sorting, setSorting] = React.useState([{ id: 'dateAdded', desc: true }]);
     const [rowSelection, setRowSelection] = React.useState({});
     const [columnFilters, setColumnFilters] = React.useState([]);
     const [columnVisibility, setColumnVisibility] = React.useState({});
+    const [dateRange, setDateRange] = React.useState({ from: null, to: null });
 
-    const tableData = data?.sources || [];
+    const tableData = React.useMemo(() => {
+        if (!data?.sources) return [];
+
+        const filteredData = data.sources.filter((item) => {
+            const dateAdded = new Date(item.dateAdded);
+            if (dateRange.from && dateRange.to) {
+                return dateAdded >= dateRange.from && dateAdded <= dateRange.to;
+            }
+            return true;
+        });
+
+        return filteredData.sort((a, b) => new Date(b.dateAdded) - new Date(a.dateAdded));
+    }, [data, dateRange]);
 
     const table = useReactTable({
         data: tableData,
@@ -80,8 +98,12 @@ export function GeneralFundTable() {
 
     return (
         <div className="w-full space-y-4 p-10">
-            <ToolbarForDonationHistory table={table} />
-
+            <div className="flex justify-between items-center space-x-2">
+                <ToolbarForDonationHistory table={table} />
+                <div>
+                    <DateRangePicker onRangeChange={setDateRange} />
+                </div>
+            </div>
             <div className="rounded-lg border shadow-sm bg-white overflow-hidden">
                 <Table className="table-auto w-full">
                     <TableHeader>
@@ -121,7 +143,7 @@ export function GeneralFundTable() {
                                             key={cell.id}
                                             className={`px-4 py-3 text-gray-800 ${
                                                 cell.column.id === 'sourceName' ? 'w-1/3' : 'w-1/6'
-                                            }`} 
+                                            }`}
                                         >
                                             {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                         </TableCell>
