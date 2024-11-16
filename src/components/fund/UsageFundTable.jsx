@@ -11,38 +11,49 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { DataTableColumnHeader } from '@/components/datatable/DataTableColumnHeader';
 import { DataTablePagination } from '@/components/datatable/DataTablePagination';
 import { useGetFundUsageHistoryQuery } from '@/redux/fund/fundApi';
+import DateRangePicker from '../ui/calendar-range';
 
 const columns = [
     {
         accessorKey: 'purpose',
         header: ({ column }) => <DataTableColumnHeader column={column} title="Mục đích sử dụng" />,
-        cell: ({ row }) => <div className="font-medium">{row.getValue('purpose')}</div>, 
+        cell: ({ row }) => <div className="font-medium">{row.getValue('purpose')}</div>,
     },
     {
         accessorKey: 'amountUsed',
         header: ({ column }) => <DataTableColumnHeader column={column} title="Số tiền" />,
-        cell: ({ row }) => (
-            <div className="font-medium">
-                {row.getValue('amountUsed').toLocaleString('vi-VN')} ₫
-            </div>
-        ),
+        cell: ({ row }) => <div className="font-medium">{row.getValue('amountUsed').toLocaleString('vi-VN')} ₫</div>,
     },
     {
         accessorKey: 'dateUsed',
         header: ({ column }) => <DataTableColumnHeader column={column} title="Ngày" />,
         cell: ({ row }) => <div>{new Date(row.getValue('dateUsed')).toLocaleDateString('vi-VN')}</div>,
     },
-    
 ];
 
 export function UsageFundTable() {
     const { data, error, isLoading } = useGetFundUsageHistoryQuery();
-    const [sorting, setSorting] = React.useState([]);
+    const [sorting, setSorting] = React.useState([{ id: 'dateUsed', desc: true }]);
     const [rowSelection, setRowSelection] = React.useState({});
     const [columnFilters, setColumnFilters] = React.useState([]);
     const [columnVisibility, setColumnVisibility] = React.useState({});
+    const [dateRange, setDateRange] = React.useState({ from: null, to: null });
 
-    const tableData = data?.usageHistories || [];
+    const tableData = React.useMemo(() => {
+        if (!data?.usageHistories) return [];
+
+        // Filter data based on the selected date range
+        const filteredData = data.usageHistories.filter((item) => {
+            const dateAdded = new Date(item.dateAdded);
+            if (dateRange.from && dateRange.to) {
+                return dateAdded >= new Date(dateRange.from) && dateAdded <= new Date(dateRange.to);
+            }
+            return true; // Không lọc nếu không có khoảng ngày
+        });
+
+        // Sort data by dateUsed in descending order by default
+        return filteredData.sort((a, b) => new Date(b.dateUsed) - new Date(a.dateUsed));
+    }, [data, dateRange]);
 
     const table = useReactTable({
         data: tableData,
@@ -65,6 +76,9 @@ export function UsageFundTable() {
 
     return (
         <div className="w-full space-y-4 p-6">
+            <div className="flex justify-end mb-4">
+                <DateRangePicker onRangeChange={setDateRange} />
+            </div>
             <div className="rounded-lg border shadow-sm bg-white overflow-hidden">
                 <Table className="table-auto w-full">
                     <TableHeader>
@@ -75,7 +89,7 @@ export function UsageFundTable() {
                                         key={header.id}
                                         className={`px-4 py-2 font-semibold text-gray-700 text-center ${
                                             header.column.id === 'purpose' ? 'w-1/2' : 'w-1/6'
-                                        }`} 
+                                        }`}
                                     >
                                         {flexRender(header.column.columnDef.header, header.getContext())}
                                     </TableHead>

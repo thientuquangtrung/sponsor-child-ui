@@ -9,6 +9,8 @@ import { useLoginMutation } from '@/redux/auth/authApi';
 import { toast } from 'sonner';
 import { useDispatch } from 'react-redux';
 import { UpdateAuthentication } from '@/redux/auth/authActionCreators';
+import { useState } from 'react';
+import { Eye, EyeOff } from 'lucide-react';
 
 const formSchema = z.object({
     email: z.string().email(),
@@ -18,6 +20,7 @@ const formSchema = z.object({
 export default function LoginForm() {
     const [login, { isLoading }] = useLoginMutation();
     const dispatch = useDispatch();
+    const [showPassword, setShowPassword] = useState(false);
 
     // 1. Define your form.
     const form = useForm({
@@ -68,9 +71,22 @@ export default function LoginForm() {
                             <FormLabel className="text-lg">Mật khẩu</FormLabel>
                             <FormControl>
                                 <Input
+                                    endIcon={
+                                        showPassword ? (
+                                            <Eye
+                                                className="cursor-pointer"
+                                                onClick={() => setShowPassword(!showPassword)}
+                                            />
+                                        ) : (
+                                            <EyeOff
+                                                className="cursor-pointer"
+                                                onClick={() => setShowPassword(!showPassword)}
+                                            />
+                                        )
+                                    }
                                     className="text-lg h-12"
                                     placeholder={'Nhập mật khẩu'}
-                                    type={'password'}
+                                    type={showPassword ? 'text' : 'password'}
                                     {...field}
                                 />
                             </FormControl>
