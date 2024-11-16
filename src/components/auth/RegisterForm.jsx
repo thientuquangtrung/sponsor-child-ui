@@ -1,14 +1,15 @@
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
+import { useDispatch } from 'react-redux';
+import { useState } from 'react';
+import { Eye, EyeOff } from 'lucide-react';
 
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { toast } from 'sonner';
 import { useRegisterMutation } from '@/redux/auth/authApi';
 import ButtonLoading from '@/components/ui/loading-button';
-import { useDispatch } from 'react-redux';
-import { UpdateAuthentication } from '@/redux/auth/authActionCreators';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 
 const formSchema = z.object({
@@ -21,6 +22,7 @@ const formSchema = z.object({
 export default function RegisterForm() {
     const [register, { isLoading }] = useRegisterMutation();
     const dispatch = useDispatch();
+    const [showPassword, setShowPassword] = useState(false);
 
     // 1. Define your form.
     const form = useForm({
@@ -88,9 +90,22 @@ export default function RegisterForm() {
                         <FormItem>
                             <FormControl>
                                 <Input
+                                    endIcon={
+                                        showPassword ? (
+                                            <Eye
+                                                className="cursor-pointer"
+                                                onClick={() => setShowPassword(!showPassword)}
+                                            />
+                                        ) : (
+                                            <EyeOff
+                                                className="cursor-pointer"
+                                                onClick={() => setShowPassword(!showPassword)}
+                                            />
+                                        )
+                                    }
                                     className="text-lg h-12"
                                     placeholder={'Nhập mật khẩu'}
-                                    type={'password'}
+                                    type={showPassword ? 'text' : 'password'}
                                     {...field}
                                 />
                             </FormControl>
