@@ -146,7 +146,6 @@ export const visitRegistrationStatus = [
     { label: 'Hủy đăng ký', value: 3 },
 ];
 
-
 //fund
 export const fundType = [
     { label: 'Cá nhân', value: 0 },
