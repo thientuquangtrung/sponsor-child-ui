@@ -13,7 +13,7 @@ import {
 import { Button } from "@/components/ui/button";
 import useLocationVN from '@/hooks/useLocationVN';
 import banner from '@/assets/images/banner.png';
-import { useGetAllChildrenVisitTripsQuery, useGetChildrenVisitTripsByProvinceQuery } from '@/redux/childrenVisitTrips/childrenVisitTripsApi';
+import { useGetFilteredChildrenVisitTripsQuery } from '@/redux/childrenVisitTrips/childrenVisitTripsApi';
 import LoadingScreen from '@/components/common/LoadingScreen';
 import { visitStatus } from '@/config/combobox';
 import { formatDate } from '@/lib/utils';
@@ -27,46 +27,39 @@ const VisitEvent = () => {
     const [provinceFilter, setProvinceFilter] = useState("");
     const [visibleEvents, setVisibleEvents] = useState(9);
 
-    const { data: allEvents, isLoading } = useGetAllChildrenVisitTripsQuery();
-
-    const { data: provinceEvents } = useGetChildrenVisitTripsByProvinceQuery(provinceFilter, {
-        skip: !provinceFilter,
+    const { data: filteredEvents, isLoading } = useGetFilteredChildrenVisitTripsQuery({
+        province: provinceFilter,
+        status: statusFilter ? parseInt(statusFilter) : undefined
     });
 
-    const events = provinceFilter ? provinceEvents : allEvents;
-
-    const filteredEvents = events?.filter(event => {
+    const searchFilteredEvents = filteredEvents?.filter(event => {
         const matchesSearch = !searchTerm ||
             event.description.toLowerCase().includes(searchTerm.toLowerCase());
-
-        const matchesStatus = !statusFilter || event.status === parseInt(statusFilter);
-
-        return matchesSearch && matchesStatus;
+        return matchesSearch;
     }) || [];
 
+    const displayedEvents = searchFilteredEvents.slice(0, visibleEvents);
+    const hasMoreEvents = searchFilteredEvents.length > visibleEvents;
 
     const handleLoadMore = () => {
         setVisibleEvents(prev => prev + 9);
     };
 
-    const displayedEvents = filteredEvents.slice(0, visibleEvents);
-    const hasMoreEvents = filteredEvents.length > visibleEvents;
-
     const getStatusColor = (status) => {
         switch (status) {
-            case 0: // Đã lên kế hoạch
+            case 0:
                 return 'text-rose-300';
-            case 1: // Đang mở đăng ký
+            case 1:
                 return 'text-sky-500';
-            case 2: // Đã đóng đăng ký
+            case 2:
                 return 'text-yellow-500';
-            case 3: // Đang chờ
+            case 3:
                 return 'text-orange-500';
-            case 4: // Đã hoàn thành
+            case 4:
                 return 'text-green-500';
-            case 5: // Đã hủy
+            case 5:
                 return 'text-red-500';
-            case 6: // Đã hoãn
+            case 6:
                 return 'text-purple-500';
             default:
                 return 'text-gray-500';
@@ -93,6 +86,7 @@ const VisitEvent = () => {
                 return <AlertCircle className="w-4 h-4 mr-2 text-gray-500" />;
         }
     };
+
     const handleNavigateToDetail = (eventId) => {
         navigate(`/event/${eventId}`);
     };
@@ -251,12 +245,11 @@ const VisitEvent = () => {
                         className="px-6 py-2 bg-teal-500 text-white rounded-full hover:bg-teal-600 transition-colors duration-200 flex items-center gap-2"
                     >
                         Xem thêm
-
                     </button>
                 </div>
             )}
 
-            {filteredEvents.length === 0 && (
+            {searchFilteredEvents.length === 0 && (
                 <div className="text-center py-8">
                     <p className="text-gray-500">
                         Không tìm thấy sự kiện nào phù hợp với tiêu chí tìm kiếm

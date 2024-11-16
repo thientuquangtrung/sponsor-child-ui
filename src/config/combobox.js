@@ -134,12 +134,20 @@ export const visitStatus = [
     { label: 'Đã lên kế hoạch', value: 0 },
     { label: 'Đang mở đăng ký', value: 1 },
     { label: 'Đã đóng đăng ký', value: 2 },
-    { label: 'Đang chờ', value: 3 },
+    { label: 'Đang diễn ra', value: 3 },
     { label: 'Đã hoàn thành', value: 4 },
     { label: 'Đã hủy', value: 5 },
     { label: 'Đã hoãn', value: 6 },
 ];
+export const visitRegistrationStatus = [
+    { label: 'Đang chờ thanh toán', value: 0 },
+    { label: 'Đã đăng ký', value: 1 },
+    { label: 'Đang chờ hoàn tiền', value: 2 },
+    { label: 'Hủy đăng ký', value: 3 },
+];
 
+
+//fund
 export const fundType = [
     { label: 'Cá nhân', value: 0 },
     { label: 'Chiến dịch', value: 1 },

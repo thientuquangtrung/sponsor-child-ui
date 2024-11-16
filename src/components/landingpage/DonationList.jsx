@@ -4,12 +4,12 @@ import { Input } from '../ui/input';
 
 const DonationList = ({ donations, currentPage, totalPages, onPageChange }) => {
     const [isLoading, setIsLoading] = useState(false);
-  
+
     const handlePageChange = (page) => {
         if (page !== currentPage) {
             setIsLoading(true);
             onPageChange(page);
-            setTimeout(() => setIsLoading(false), 200); 
+            setTimeout(() => setIsLoading(false), 200);
         }
     };
 
@@ -81,9 +81,8 @@ const DonationList = ({ donations, currentPage, totalPages, onPageChange }) => {
                                 {donations.map((donation, index) => (
                                     <tr
                                         key={donation.donationID}
-                                        className={`border-b border-gray-200 ${
-                                            index % 2 ? 'bg-white' : 'bg-zinc-50'
-                                        } hover:bg-zinc-100`}
+                                        className={`border-b border-gray-200 ${index % 2 ? 'bg-white' : 'bg-zinc-50'
+                                            } hover:bg-zinc-100`}
                                     >
                                         <td className="py-3 px-4">{donation.donorName}</td>
                                         <td className="py-3 px-4">{donation.amount.toLocaleString()} VND</td>
@@ -116,11 +115,10 @@ const DonationList = ({ donations, currentPage, totalPages, onPageChange }) => {
                                     <button
                                         key={page}
                                         onClick={() => handlePageChange(page)}
-                                        className={`px-3 py-1 rounded ${
-                                            currentPage === page
-                                                ? 'bg-teal-600 text-white'
-                                                : 'bg-white text-gray-700 hover:bg-gray-100'
-                                        }`}
+                                        className={`px-3 py-1 rounded ${currentPage === page
+                                            ? 'bg-teal-600 text-white'
+                                            : 'bg-white text-gray-700 hover:bg-gray-100'
+                                            }`}
                                     >
                                         {page}
                                     </button>

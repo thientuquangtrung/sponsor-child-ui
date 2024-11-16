@@ -126,8 +126,8 @@ const DonationInformation = () => {
     };
 
     const onSubmit = async (data) => {
-        setIsSubmitting(true); 
-    
+        setIsSubmitting(true);
+
         const amountValue = parseInt(amount.replace(/,/g, ''), 10);
         const donationData = {
             donorID: user?.userID,
@@ -137,10 +137,10 @@ const DonationInformation = () => {
             cancelUrl: window.location.origin,
             returnUrl: window.location.origin,
         };
-    
+
         try {
             const response = await createDonation(donationData).unwrap();
-    
+
             setPayOSConfig((oldConfig) => ({
                 ...oldConfig,
                 CHECKOUT_URL: response.paymentLink.checkoutUrl,
@@ -152,7 +152,7 @@ const DonationInformation = () => {
             setIsSubmitting(false);
         }
     };
-    
+
 
     if (isLoading) {
         return <p>Đang tải thông tin chiến dịch...</p>;
