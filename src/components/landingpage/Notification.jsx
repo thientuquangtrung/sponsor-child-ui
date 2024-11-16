@@ -8,56 +8,11 @@ import {
     DropdownMenuItem,
 } from '@/components/ui/dropdown-menu';
 import notification from '@/assets/images/notification.jpg';
+import { useSelector } from 'react-redux';
 
 const Notification = () => {
     const [isOpen, setIsOpen] = useState(false);
-    const [notifications, setNotifications] = useState([
-        {
-            id: 1,
-            name: 'Trần Thu Hà',
-            action: 'đã bình luận về hoạt động của bạn trong chiến dịch',
-            message: 'Thật tuyệt vời! Mình rất cảm động trước những đóng góp của bạn cho các em nhỏ.',
-            time: '5 phút trước',
-            profileImage: 'https://via.placeholder.com/400x300',
-            isRead: false,
-        },
-        {
-            id: 2,
-            name: 'Nguyễn Văn Bình',
-            action: 'đã quyên góp cho chiến dịch "Vì nụ cười trẻ thơ"',
-            message: 'Số tiền: 500,000 VNĐ',
-            time: '21 phút trước',
-            profileImage: 'https://via.placeholder.com/400x300',
-            isRead: false,
-        },
-        {
-            id: 3,
-            name: 'Hoàng Minh Đăng',
-            action: 'đã xác nhận giải ngân cho các em tại trường tiểu học ABC',
-            message: 'Số tiền: 1,000,000 VNĐ',
-            time: '2 giờ trước',
-            profileImage: 'https://via.placeholder.com/400x300',
-            isRead: false,
-        },
-        {
-            id: 4,
-            name: 'Phạm Quang Huy',
-            action: 'đã thích hoạt động mới trong chiến dịch "Vòng tay yêu thương"',
-            message: 'Cùng nhau lan tỏa tình yêu thương!',
-            time: '3 giờ trước',
-            profileImage: 'https://via.placeholder.com/400x300',
-            isRead: true,
-        },
-        {
-            id: 5,
-            name: 'Lê Thị Ngọc',
-            action: 'đã bình luận về khoản quyên góp của bạn',
-            message: 'Rất biết ơn sự đóng góp của bạn! Hy vọng chúng ta sẽ giúp được nhiều em nhỏ hơn.',
-            time: '1 ngày trước',
-            profileImage: 'https://via.placeholder.com/400x300',
-            isRead: false,
-        },
-    ]);
+    const { notifications } = useSelector((state) => state.notification);
 
     const notificationCount = notifications.filter((notification) => !notification.isRead).length;
 
@@ -68,7 +23,7 @@ const Notification = () => {
     const handleDeleteNotification = (event, id) => {
         event.stopPropagation();
         const updatedNotifications = notifications.filter((notification) => notification.id !== id);
-        setNotifications(updatedNotifications);
+        // setNotifications(updatedNotifications);
     };
 
     const markAllAsRead = () => {
@@ -76,7 +31,7 @@ const Notification = () => {
             ...notification,
             isRead: true,
         }));
-        setNotifications(updatedNotifications);
+        // setNotifications(updatedNotifications);
     };
 
     return (
