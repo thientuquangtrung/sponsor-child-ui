@@ -6,12 +6,13 @@ import { encryptTransform } from 'redux-persist-transform-encrypt';
 // slices
 import appReducer from './app/appReducer';
 import authReducer from './auth/authReducer';
+import notificationReducer from './notification/notificationReducer';
 import baseApi from './baseApi';
 
 // ----------------------------------------------------------------------
 
 const rootPersistConfig = {
-    key: 'root',
+    key: 'sponsorchild-app',
     storage,
     stateReconciler: autoMergeLevel2,
     keyPrefix: 'redux-',
@@ -25,13 +26,14 @@ const rootPersistConfig = {
         }),
     ],
     whitelist: ['auth'],
-    // blacklist: ['conversation'],
+    // blacklist: [],
 };
 
 const rootReducer = combineReducers({
     [baseApi.reducerPath]: baseApi.reducer,
     app: appReducer,
     auth: authReducer,
+    notification: notificationReducer,
 });
 
 const rootMiddleware = (getDefaultMiddleware) =>

@@ -1,8 +1,8 @@
 export const mainMenu = [
-    {
-        title: "My Assets",
-        to: "assets",
-    },
+    // {
+    //     title: "My Assets",
+    //     to: "assets",
+    // },
     // {
     //     title: "Dropdown",
     //     items: [
@@ -16,10 +16,26 @@ export const mainMenu = [
     //         },
     //     ],
     // },
+    // {
+    //     title: "Assets Hub",
+    //     to: "assetshub",
+    // },
     {
-        title: "Assets Hub",
-        to: "assetshub",
+        title: "Giới thiệu",
+        to: "introduction",
     },
+    {
+        title: "Chiến dịch",
+        to: "donate-target",
+    },
+    {
+        title: "Sự kiện",
+        to: "events",
+    },
+    {
+        title: "Quỹ chung",
+        to: "general-fund",
+    }
 ];
 
 export const sideMenu = [];

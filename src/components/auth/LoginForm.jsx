@@ -3,12 +3,14 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 
 import { Button } from '@/components/ui/button';
-import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useLoginMutation } from '@/redux/auth/authApi';
 import { toast } from 'sonner';
 import { useDispatch } from 'react-redux';
 import { UpdateAuthentication } from '@/redux/auth/authActionCreators';
+import { useState } from 'react';
+import { Eye, EyeOff } from 'lucide-react';
 
 const formSchema = z.object({
     email: z.string().email(),
@@ -18,6 +20,7 @@ const formSchema = z.object({
 export default function LoginForm() {
     const [login, { isLoading }] = useLoginMutation();
     const dispatch = useDispatch();
+    const [showPassword, setShowPassword] = useState(false);
 
     // 1. Define your form.
     const form = useForm({
@@ -35,12 +38,12 @@ export default function LoginForm() {
         login(values)
             .unwrap()
             .then((res) => {
-                dispatch(UpdateAuthentication(res.data));
+                dispatch(UpdateAuthentication(res));
                 toast.success('Logged in successfully!');
             })
             .catch((err) => {
                 console.log(err);
-                toast.error(err.error || err.data?.error?.message || 'Try again later!');
+                toast.error(err?.message || err?.data?.message || 'Try again later!');
             });
     }
 
@@ -52,8 +55,9 @@ export default function LoginForm() {
                     name="email"
                     render={({ field }) => (
                         <FormItem>
+                            <FormLabel className="text-lg">Email</FormLabel>
                             <FormControl>
-                                <Input className="h-12" placeholder="Email address" {...field} />
+                                <Input className="text-lg h-12" placeholder="Nhập địa chỉ email" {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -64,15 +68,37 @@ export default function LoginForm() {
                     name="password"
                     render={({ field }) => (
                         <FormItem>
+                            <FormLabel className="text-lg">Mật khẩu</FormLabel>
                             <FormControl>
-                                <Input className="h-12" placeholder={'Password'} type={'password'} {...field} />
+                                <Input
+                                    endIcon={
+                                        showPassword ? (
+                                            <Eye
+                                                className="cursor-pointer"
+                                                onClick={() => setShowPassword(!showPassword)}
+                                            />
+                                        ) : (
+                                            <EyeOff
+                                                className="cursor-pointer"
+                                                onClick={() => setShowPassword(!showPassword)}
+                                            />
+                                        )
+                                    }
+                                    className="text-lg h-12"
+                                    placeholder={'Nhập mật khẩu'}
+                                    type={showPassword ? 'text' : 'password'}
+                                    {...field}
+                                />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
                     )}
                 />
-                <Button className="w-full h-12" type="submit">
-                    Login
+                <Button
+                    className="w-full h-12 text-white text-2xl bg-gradient-to-r from-primary to-secondary"
+                    type="submit"
+                >
+                    Đăng nhập
                 </Button>
             </form>
         </Form>

@@ -1,14 +1,23 @@
-import UploadTracker from './components/common/UploadTracker';
-import { ThemeProvider } from './contexts/ThemeContext';
-import Router from './routes';
 import { Toaster } from 'sonner';
+import { BrowserRouter } from 'react-router-dom';
+import { Provider as ReduxProvider } from 'react-redux';
+
+import { ThemeProvider } from './contexts/ThemeContext';
+import { SocketProvider } from './contexts/SocketContext';
+import Router from './routes';
+import { store } from './redux/store';
 
 export default function App() {
     return (
-        <ThemeProvider>
-            <Router />
-            <Toaster richColors />
-            <UploadTracker />
-        </ThemeProvider>
+        <ReduxProvider store={store}>
+            <ThemeProvider>
+                <SocketProvider>
+                    <BrowserRouter>
+                        <Router />
+                        <Toaster richColors />
+                    </BrowserRouter>
+                </SocketProvider>
+            </ThemeProvider>
+        </ReduxProvider>
     );
 }

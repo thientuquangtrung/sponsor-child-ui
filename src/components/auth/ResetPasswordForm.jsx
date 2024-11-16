@@ -14,7 +14,7 @@ const formSchema = z.object({
 });
 
 export default function ResetPasswordForm() {
-    const [resetPassword, { isLoading, error, data }] = useResetPasswordMutation();
+    const [resetPassword, { isLoading, isError, isSuccess }] = useResetPasswordMutation();
 
     // 1. Define your form.
     const form = useForm({
@@ -29,25 +29,32 @@ export default function ResetPasswordForm() {
         // Do something with the form values.
         // ✅ This will be type-safe and validated.
         console.log(values);
-        resetPassword(values);
+        resetPassword(values)
+            .unwrap()
+            .then(() => {
+                console.log('sent');
+            })
+            .catch((err) => {
+                console.log(err);
+            });
     }
 
-    if (error) {
+    if (isError) {
         return (
             <Alert variant="destructive">
                 <AlertCircle className="h-4 w-4" />
-                <AlertTitle>Error</AlertTitle>
-                <AlertDescription>Something went wrong, please try again.</AlertDescription>
+                <AlertTitle>Lỗi</AlertTitle>
+                <AlertDescription>Có lỗi xảy ra, vui lòng thử lại.</AlertDescription>
             </Alert>
         );
     }
 
-    if (data) {
+    if (isSuccess) {
         return (
             <Alert className="text-green-600 border-green-600">
                 <CircleCheck className="w-4 h-4 !text-green-600" />
-                <AlertTitle>Success</AlertTitle>
-                <AlertDescription>Reset password link has been sent to your email.</AlertDescription>
+                <AlertTitle>Thành công</AlertTitle>
+                <AlertDescription>Liên kết đặt lại mật khẩu đã được gửi tới email của bạn.</AlertDescription>
             </Alert>
         );
     }
@@ -61,14 +68,18 @@ export default function ResetPasswordForm() {
                     render={({ field }) => (
                         <FormItem>
                             <FormControl>
-                                <Input className="h-12" placeholder="Email" {...field} />
+                                <Input className="text-lg h-12" placeholder="Nhập email" {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
                     )}
                 />
-                <ButtonLoading isLoading={isLoading} className="w-full h-12" type="submit">
-                    Continue
+                <ButtonLoading
+                    isLoading={isLoading}
+                    className="text-white text-2xl w-full h-12 bg-gradient-to-r from-primary to-secondary"
+                    type="submit"
+                >
+                    Tiếp tục
                 </ButtonLoading>
             </form>
         </Form>

@@ -12,11 +12,10 @@ const ResetPassword = () => {
                 <div className="flex-1 h-full">
                     <img className="size-12 absolute top-4 right-4 md:top-8 md:right-8" src={logo} alt="sponsor-child" />
                     <h1 className="text-4xl font-semibold">
-                        Forgot <br /> Your Password?
+                        Quên <br /> Mật khẩu của bạn?
                     </h1>
                     <h2 className="text-muted-foreground mt-4 mb-8">
-                        Enter your email address associated with your account and we will send you a link to reset your
-                        password.
+                    Nhập địa chỉ email được liên kết với tài khoản của bạn và chúng tôi sẽ gửi cho bạn liên kết để đặt lại mật khẩu.
                     </h2>
                     <ResetPasswordForm />
                 </div>
