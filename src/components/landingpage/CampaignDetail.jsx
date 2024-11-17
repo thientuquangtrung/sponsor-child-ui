@@ -12,6 +12,7 @@ import { useGetDonationsByCampaignIdQuery, useGetTotalDonationsByCampaignIdQuery
 import { Dialog, DialogClose, DialogContent } from '@/components/ui/dialog';
 import { getAssetsList } from '@/lib/cloudinary';
 import Activity from '@/components/landingpage/Activity';
+import Comment from './Comment';
 
 const partners = [
     {
@@ -166,6 +167,9 @@ const CampaignDetail = () => {
                             <TabsTrigger value="activities" className={`relative py-1 px-4 text-md font-medium`}>
                                 Hoạt động
                             </TabsTrigger>
+                            <TabsTrigger value="comments" className={`relative py-1 px-4 text-md font-medium`}>
+                                Bình luận
+                            </TabsTrigger>
                             <TabsTrigger value="donations" className={`relative py-1 px-4 text-md font-medium`}>
                                 Danh sách ủng hộ ({donationsTotal?.totalDonations || 0})
                             </TabsTrigger>
@@ -196,6 +200,10 @@ const CampaignDetail = () => {
                         </TabsContent>
                         <TabsContent value="activities" className="p-4">
                             <Activity campaign={campaign} />
+                        </TabsContent>
+
+                        <TabsContent value="comments" className="p-4">
+                            <Comment />
                         </TabsContent>
 
                         <TabsContent value="donations" className="p-4">
