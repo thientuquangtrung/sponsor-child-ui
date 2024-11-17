@@ -145,6 +145,49 @@ export const visitRegistrationStatus = [
     { label: 'Đang chờ hoàn tiền', value: 2 },
     { label: 'Hủy đăng ký', value: 3 },
 ];
+export const giftDeliveryMethod = [
+    { label: 'Giao tận nơi', value: 0 },
+    { label: 'Dịch vụ bưu chính', value: 1 },
+    { label: 'Tình nguyện viên lấy', value: 2 },
+    { label: 'Đối tác địa phương', value: 3 },
+    { label: 'Phân phát sự kiện', value: 4 },
+];
+export const giftStatus = [
+    { label: 'Chờ xử lý', value: 0 },
+    { label: 'Đang vận chuyển', value: 1 },
+    { label: 'Đã nhận quà', value: 2 },
+    { label: 'Đã hủy', value: 3 },
+    { label: 'Đã trả lại', value: 4 },
+    { label: 'Không giao được', value: 5 },
+];
+export const giftType = [
+    { label: 'Gạo', value: 0 },
+    { label: 'Mì ăn liền', value: 1 },
+    { label: 'Dầu ăn', value: 2 },
+    { label: 'Muối và gia vị', value: 3 },
+    { label: 'Đường', value: 4 },
+    { label: 'Kem đánh răng và bàn chải', value: 5 },
+    { label: 'Xà phòng và dầu gội', value: 6 },
+    { label: 'Khẩu trang', value: 7 },
+    { label: 'Bộ sơ cứu', value: 8 },
+    { label: 'Quần áo', value: 9 },
+    { label: 'Chăn', value: 10 },
+    { label: 'Giày dép', value: 11 },
+    { label: 'Sách và vở', value: 12 },
+    { label: 'Bút viết', value: 13 },
+    { label: 'Cặp sách', value: 14 },
+    { label: 'Đồng phục', value: 15 },
+    { label: 'Sữa và thực phẩm bổ sung', value: 16 },
+    { label: 'Nước đóng chai', value: 17 },
+    { label: 'Thực phẩm đóng hộp', value: 18 },
+    { label: 'Quạt điện', value: 19 },
+    { label: 'Xe đạp', value: 20 },
+    { label: 'Mùng chống muỗi', value: 21 },
+    { label: 'Bếp nấu', value: 22 },
+    { label: 'Máy tính bảng', value: 23 },
+    { label: 'Laptop', value: 24 },
+    { label: 'Router WiFi', value: 25 },
+];
 
 //fund
 export const fundType = [

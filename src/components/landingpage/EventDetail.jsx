@@ -2,16 +2,8 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Share2, MapPin, Calendar, Clock, CheckCircle2, Gift, Users } from 'lucide-react';
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-} from "@/components/ui/dialog";
+import { Share2, MapPin, Calendar, Clock, Gift, Users } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import GiftRegistration from './GiftRegistration';
 import { toast } from 'sonner';
 import { useParams } from 'react-router-dom';
 import LoadingScreen from '@/components/common/LoadingScreen';
@@ -22,36 +14,15 @@ import ImageGallery from '@/components/landingpage/ImageGallery';
 import { Icons } from '@/components/icons';
 import ParticipantRegistration from '@/components/visit/ParticipantRegistration';
 import { useSelector } from 'react-redux';
-import ParticipantList from '../visit/ParticipantList';
+import ParticipantList from '@/components/visit/ParticipantList';
+import RegistrationHistoryCard from '@/components//visit/RegistrationHistoryCard';
+import GiftRegistration from '@/components/visit/GiftRegistration';
 
 
-const RegistrationDialog = ({ open, onClose }) => (
-    <Dialog open={open} onOpenChange={onClose}>
-        <DialogContent className="sm:max-w-md">
-            <DialogHeader>
-                <DialogTitle className="text-center text-2xl font-semibold text-green-600">
-                    <div className="flex items-center justify-center gap-2">
-                        <CheckCircle2 className="w-8 h-8" />
-                        Đăng ký thành công!
-                    </div>
-                </DialogTitle>
-            </DialogHeader>
-            <div className="text-center space-y-4">
-                <p className="text-gray-600">
-                    Cảm ơn bạn đã đăng ký tham gia sự kiện. Chúng tôi sẽ gửi email xác nhận và thông tin chi tiết cho bạn.
-                </p>
-                <Button onClick={onClose} className="w-full bg-green-600 hover:bg-green-700">
-                    Đóng
-                </Button>
-            </div>
-        </DialogContent>
-    </Dialog>
-);
 
 const EventDetail = () => {
     const { id } = useParams();
     const { data: event, isLoading, error } = useGetChildrenVisitTripsByIdQuery(id);
-    const [showSuccessDialog, setShowSuccessDialog] = useState(false);
     const [showGiftDialog, setShowGiftDialog] = useState(false);
     const { user } = useSelector((state) => state.auth);
 
@@ -122,9 +93,6 @@ const EventDetail = () => {
         }
     };
 
-    const handleGiftSubmit = (formData) => {
-        setShowGiftDialog(false);
-    };
 
     const renderEventHeader = () => (
         <Card>
@@ -168,69 +136,79 @@ const EventDetail = () => {
     );
 
     const renderRegistrationCard = () => (
-        <Card className="sticky top-8">
-            <CardContent className="p-6 space-y-6">
-                <div className="flex items-center gap-4">
-                    <div className="h-12 w-12 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden">
-                        <Icons.logo className="h-10 w-10" />
-                    </div>
-                    <div>
-                        <h3 className="font-medium text-gray-900">Đơn vị tổ chức</h3>
-                        <p className="text-gray-600">Quỹ từ thiện SponsorChild</p>
-                    </div>
-                </div>
-
-                <div className="space-y-6 p-6 bg-gradient-to-r from-teal-50 to-rose-50 rounded-xl shadow-sm">
-                    <div className="flex gap-4 justify-center">
-                        {event.status === 1 && (
-                            <ParticipantRegistration
-                                visitId={id}
-                                userId={user?.userID}
-                                maxParticipants={event?.maxParticipants}
-                                participantsCount={event?.participantsCount}
-                            />
-                        )}
-                        <Button
-                            onClick={handleShare}
-                            variant="outline"
-                            className="w-40 h-14 flex items-center justify-center rounded-xl border-2 text-teal-500 border-teal-500 hover:bg-teal-100 hover:border-teal-300 hover:text-teal-400 transition-all duration-300 hover:scale-[1.02]"
-                        >
-                            <Share2 className="w-5 h-5 mr-2" />
-                            Chia sẻ
-                        </Button>
-                    </div>
-                    <div className="pt-6 border-t border-gray-200">
-                        <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2 justify-center text-center">
-                            Thông tin đăng ký
-                        </h3>
-                        <ul className="space-y-3 text-gray-600">
-                            <li className="flex items-center gap-2">
-                                <Calendar className="w-4 h-4 text-rose-400" />
-                                Hạn đăng ký: <span className="font-medium">{formatDate(event.endDate)}</span>
-                            </li>
-
-                            <li className="flex items-center gap-2">
-                                <Users className="w-4 h-4 text-rose-400" />
-                                <span>{event.participantsCount}/{event.maxParticipants} người đã tham gia</span>
-                            </li>
-                            <li className="flex items-center gap-2">
-                                <Gift className="w-4 h-4 text-rose-400" />
-                                <span className="text-teal-600 font-medium">Lệ phí tham gia: {event.visitCost.toLocaleString()} VND/người</span>
-                            </li>
-                        </ul>
-                        <div className="flex justify-center">
-                            <Button
-                                onClick={() => setShowGiftDialog(true)}
-                                className="h-12 mt-4 bg-rose-500 hover:bg-rose-600 text-white rounded-xl transition-all duration-300 hover:scale-[1.02]"
-                            >
-                                <Gift className="w-5 h-5 mr-2" />
-                                Đăng ký tặng quà
-                            </Button>
+        <>
+            <div className="sticky top-8">
+                <Card>
+                    <CardContent className="p-6 space-y-6">
+                        <div className="flex items-center gap-4">
+                            <div className="h-12 w-12 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden">
+                                <Icons.logo className="h-10 w-10" />
+                            </div>
+                            <div>
+                                <h3 className="font-medium text-gray-900">Đơn vị tổ chức</h3>
+                                <p className="text-gray-600">Quỹ từ thiện SponsorChild</p>
+                            </div>
                         </div>
-                    </div>
-                </div>
-            </CardContent>
-        </Card >
+
+                        <div className="space-y-6 p-6 bg-gradient-to-r from-teal-50 to-rose-50 rounded-xl shadow-sm">
+                            <div className="flex gap-4 justify-center">
+                                {event.status === 1 && (
+                                    <ParticipantRegistration
+                                        visitId={id}
+                                        userId={user?.userID}
+                                        maxParticipants={event?.maxParticipants}
+                                        participantsCount={event?.participantsCount}
+                                    />
+                                )}
+                                <Button
+                                    onClick={handleShare}
+                                    variant="outline"
+                                    className="w-40 h-14 flex items-center justify-center rounded-xl border-2 text-teal-500 border-teal-500 hover:bg-teal-100 hover:border-teal-300 hover:text-teal-400 transition-all duration-300 hover:scale-[1.02]"
+                                >
+                                    <Share2 className="w-5 h-5 mr-2" />
+                                    Chia sẻ
+                                </Button>
+                            </div>
+                            <div className="pt-6 border-t border-gray-200">
+                                <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2 justify-center text-center">
+                                    Thông tin đăng ký
+                                </h3>
+                                <ul className="space-y-3 text-gray-600">
+                                    <li className="flex items-center gap-2">
+                                        <Calendar className="w-4 h-4 text-rose-400" />
+                                        Hạn đăng ký: <span className="font-medium">{formatDate(event.endDate)}</span>
+                                    </li>
+
+                                    <li className="flex items-center gap-2">
+                                        <Users className="w-4 h-4 text-rose-400" />
+                                        <span>{event.participantsCount}/{event.maxParticipants} người đã tham gia</span>
+                                    </li>
+                                    <li className="flex items-center gap-2">
+                                        <Gift className="w-4 h-4 text-rose-400" />
+                                        <span className="text-teal-600 font-medium">Lệ phí tham gia: {event.visitCost.toLocaleString()} VND/người</span>
+                                    </li>
+                                </ul>
+                                <div className="flex justify-center">
+                                    <Button
+                                        onClick={() => setShowGiftDialog(true)}
+                                        className="h-12 mt-4 bg-rose-500 hover:bg-rose-600 text-white rounded-xl transition-all duration-300 hover:scale-[1.02]"
+                                    >
+                                        <Gift className="w-5 h-5 mr-2" />
+                                        Đăng ký tặng quà
+                                    </Button>
+                                </div>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card >
+                {user && (
+                    <RegistrationHistoryCard
+                        visitId={id}
+                        userId={user?.userID}
+                    />
+                )}
+            </div>
+        </>
     );
 
     const renderScheduleTab = () => (
@@ -267,17 +245,26 @@ const EventDetail = () => {
             <Card>
                 <CardContent className="space-y-4 p-6">
                     <h2 className="text-xl font-semibold mb-4 text-teal-600">Những món quà sẻ chia yêu thương</h2>
-                    {event.giftRequestDetails.map((gift, index) => (
-                        <div key={index} className="flex items-center justify-between">
-                            <div className="text-gray-700">
-                                <h4 className="font-medium">{gift.giftType}</h4>
+
+                    <div className="grid grid-cols-2">
+                        {event.giftRequestDetails.map((gift, index) => (
+                            <div
+                                key={index}
+                                className={`flex items-center justify-between ${index % 2 === 0 ? "border-r-2 border-t-300 pr-4" : "pl-4"
+                                    }`}
+                            >
+                                <div className="text-gray-700">
+                                    <h4 className="font-medium">{gift.giftType}</h4>
+                                </div>
+                                <div className="text-teal-500 font-medium">
+                                    {gift.currentAmount}/{gift.amount} {gift.unit} đã đăng ký trao gửi
+                                </div>
                             </div>
-                            <div className="text-teal-500 font-medium">
-                                {gift.amount} {gift.unit}
-                            </div>
-                        </div>
-                    ))}
+                        ))}
+                    </div>
                 </CardContent>
+
+
             </Card>
         </>
     );
@@ -372,15 +359,13 @@ const EventDetail = () => {
                 </div>
             </div>
 
-            <RegistrationDialog
-                open={showSuccessDialog}
-                onClose={() => setShowSuccessDialog(false)}
-            />
 
             <GiftRegistration
                 isOpen={showGiftDialog}
                 onClose={() => setShowGiftDialog(false)}
-                onSubmit={handleGiftSubmit}
+                visitId={id}
+                userId={user?.userID}
+                giftRequestDetails={event.giftRequestDetails}
             />
         </div>
     );

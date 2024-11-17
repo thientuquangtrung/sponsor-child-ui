@@ -43,7 +43,6 @@ export const visitTripRegistrationApi = baseApi.injectEndpoints({
             method: 'GET',
         }),
 
-
         updateVisitTripRegistration: builder.mutation({
             query: ({ id, ...data }) => ({
                 url: `/VisitTripRegistrations/${id}`,

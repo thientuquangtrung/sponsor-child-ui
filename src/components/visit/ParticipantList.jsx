@@ -68,19 +68,12 @@ const ParticipantList = ({ visitRegistrations = [] }) => {
         setCurrentPage(1);
     };
 
-    const activeParticipantsCount = visitRegistrations.filter(registration => registration.status === 1).length;
 
     return (
         <div className="shadow-xl">
-            <div className="w-full bg-zinc-100 py-2 relative">
-                <h2 className="text-lg ml-5 font-semibold text-teal-600">
-                    Danh sách người tham gia ({activeParticipantsCount})
-                </h2>
-                <div className="absolute bottom-0 left-0 w-48 border-b-2 border-teal-600"></div>
-            </div>
 
-            <div className="px-4">
-                <div className="relative my-8">
+            <div className="px-4 py-1">
+                <div className="relative my-4">
                     <Input
                         placeholder="Tìm kiếm người tham gia..."
                         value={searchTerm}
