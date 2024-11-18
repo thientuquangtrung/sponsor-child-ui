@@ -150,7 +150,7 @@ export const visitRegistrationStatus = [
 export const visitRegistrationStatus2 = [
     { label: 'vui lòng hủy và thanh toán lại. Lỗi đã được ghi nhận', value: 0 },
     { label: 'đã đăng ký', value: 1 },
-    { label: 'thực hiện hoàn tiền', value: 2 },
+    { label: 'đã hủy và yêu cầu hoàn tiền', value: 2 },
     { label: 'hủy đăng ký', value: 3 },
     { label: 'góp vào quỹ chung', value: 4 },
 

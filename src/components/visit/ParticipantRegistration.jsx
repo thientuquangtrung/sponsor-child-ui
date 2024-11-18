@@ -246,13 +246,17 @@ const ParticipantRegistration = ({
                                 </li>
                                 <li className="flex items-center gap-2">
                                     <CircleAlert className="w-5 h-5 shrink-0 text-teal-500" />
-                                    <span>Không hoàn tiền khi chuyến thăm đã bắt đầu, nhưng được hoàn tiền nếu chuyến thăm bị hủy.</span>
+                                    <span>Không hoàn tiền khi chuyến thăm đã bắt đầu.</span>
+                                </li>
+                                <li className="flex items-center gap-2">
+                                    <CircleAlert className="w-5 h-5 shrink-0 text-teal-500" />
+                                    <span>Trong trường hợp chuyến thăm bị hủy, bạn được quyền hoàn tiền hoặc góp số tiền đó vào quỹ chung.</span>
                                 </li>
                             </ul>
                         </div>
                     </div>
 
-                    <div className="border-t flex justify-end gap-3 mt-4">
+                    <div className="flex justify-end gap-3 mt-4">
                         <Button
                             variant="outline"
                             onClick={() => setShowTermsDialog(false)}
@@ -284,7 +288,6 @@ const ParticipantRegistration = ({
                 onConfirmCancel={handleConfirmCancel}
                 visitCost={visitCost}
                 eventStatus={eventStatus}
-
             />
         </>
     );

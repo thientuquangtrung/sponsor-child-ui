@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { Gift, Image } from 'lucide-react';
+import { Gift } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useGetPhysicalDonationsByUserAndVisitQuery } from '@/redux/physicalDonations/physicalDonationApi';
 import { giftStatus } from '@/config/combobox';
@@ -63,23 +63,27 @@ const GiftHistoryCard = ({
                                     <div className="flex items-start justify-between">
                                         <div className="flex-1">
                                             <p className="text-gray-700 mb-2">
-                                                Cảm ơn bạn đã quyên góp <span className="font-medium">{gift.amount} {gift.unit}</span> {gift.giftType}{' '}
+                                                Cảm ơn bạn đã quyên góp <span className="font-medium">{gift.amount} {gift.unit}</span> {gift.giftType}{' '}
                                             </p>
-                                            <p className="text-sm text-gray-600">
-                                                <span className="font-medium">{getStatusText(gift.giftStatus)}  vào ngày: {formatDateTime(gift.updatedAt)}
-                                                </span>
-                                            </p>
-
-                                            {gift.proofOfDonation && (
+                                            {gift.giftStatus !== 0 && gift.proofOfDonation ? (
                                                 <a
                                                     href={gift.proofOfDonation}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
-                                                    className="flex items-center text-teal-600 hover:text-teal-800 mt-2"
+                                                    className="flex items-center text-sm text-gray-600 hover:text-teal-800"
                                                 >
-                                                    <Image className="w-4 h-4 mr-1" />
-                                                    <span className="text-sm">Đã nhận được quà</span>
+                                                    <span className="font-medium">
+                                                        <span className="underline">{getStatusText(gift.giftStatus)}</span> vào ngày: {formatDateTime(gift.updatedAt)}
+                                                    </span>
                                                 </a>
+                                            ) : (
+                                                gift.giftStatus !== 0 && (
+                                                    <p className="text-sm text-gray-600">
+                                                        <span className="font-medium">
+                                                            {getStatusText(gift.giftStatus)} vào ngày: {formatDateTime(gift.updatedAt)}
+                                                        </span>
+                                                    </p>
+                                                )
                                             )}
                                         </div>
                                     </div>
