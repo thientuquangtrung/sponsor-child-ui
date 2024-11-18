@@ -10,19 +10,35 @@ import { useCreatePhysicalDonationMutation } from '@/redux/physicalDonations/phy
 import { toast } from 'sonner';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { giftDeliveryMethod } from '@/config/combobox';
+import { Loader2 } from 'lucide-react';
 
 const giftSchema = z.object({
-    giftTypeIndex: z.number().min(0, 'Vui lòng chọn loại quà'),
-    amount: z.number().min(1, 'Số lượng phải lớn hơn 0'),
-    giftWeight: z.number().min(0, 'Khối lượng phải lớn hơn 0'),
-    length: z.number().min(0, 'Chiều dài phải lớn hơn 0'),
-    width: z.number().min(0, 'Chiều rộng phải lớn hơn 0'),
-    height: z.number().min(0, 'Chiều cao phải lớn hơn 0'),
-    giftDeliveryMethod: z.number(),
+    giftTypeIndex: z.number({ required_error: 'Vui lòng chọn loại quà' }).min(0, 'Vui lòng chọn loại quà'),
+    amount: z.preprocess(
+        (val) => (val === '' ? undefined : Number(val)),
+        z.number({ required_error: 'Vui lòng nhập số lượng' }).min(1, 'Số lượng phải lớn hơn 0')
+    ),
+    giftWeight: z.preprocess(
+        (val) => (val === '' ? undefined : Number(val)),
+        z.number({ required_error: 'Vui lòng nhập khối lượng' }).min(0, 'Khối lượng phải lớn hơn 0')
+    ),
+    length: z.preprocess(
+        (val) => (val === '' ? undefined : Number(val)),
+        z.number({ required_error: 'Vui lòng nhập chiều dài' }).min(0, 'Chiều dài phải lớn hơn 0')
+    ),
+    width: z.preprocess(
+        (val) => (val === '' ? undefined : Number(val)),
+        z.number({ required_error: 'Vui lòng nhập chiều rộng' }).min(0, 'Chiều rộng phải lớn hơn 0')
+    ),
+    height: z.preprocess(
+        (val) => (val === '' ? undefined : Number(val)),
+        z.number({ required_error: 'Vui lòng nhập chiều cao' }).min(0, 'Chiều cao phải lớn hơn 0')
+    ),
+    giftDeliveryMethod: z.number({ required_error: 'Vui lòng chọn phương thức vận chuyển' }).min(0, 'Vui lòng chọn phương thức vận chuyển'),
 });
 
 const GiftRegistration = ({ isOpen, onClose, visitId, userId, giftRequestDetails }) => {
-    const [createPhysicalDonation] = useCreatePhysicalDonationMutation();
+    const [createPhysicalDonation, { isLoading }] = useCreatePhysicalDonationMutation();
 
     const form = useForm({
         resolver: zodResolver(giftSchema),
@@ -38,17 +54,16 @@ const GiftRegistration = ({ isOpen, onClose, visitId, userId, giftRequestDetails
     });
 
     const selectedGiftType = giftRequestDetails?.[form.watch('giftTypeIndex')];
-    // const deliveryMethod = form.watch('giftDeliveryMethod');
 
     const handleNumberInput = (e, onChange) => {
         let value = e.target.value;
+        if (!/^\d*\.?\d*$/.test(value) && value !== '') {
+            return;
+        }
         if (value.length > 1 && value[0] === '0' && value[1] !== '.') {
             value = value.replace(/^0+/, '');
         }
-        if (value < 0 || value.startsWith('-')) {
-            value = '';
-        }
-        onChange(value === '' ? '' : Number(value));
+        onChange(value);
     };
 
     const onSubmit = async (data) => {
@@ -60,12 +75,13 @@ const GiftRegistration = ({ isOpen, onClose, visitId, userId, giftRequestDetails
                 toast.error(`Số lượng đăng ký không được vượt quá ${remainingAmount} ${selectedGift.unit}`);
                 return;
             }
+
             const payload = {
-                amount: data.amount,
-                giftWeight: data.giftWeight,
-                length: data.length,
-                width: data.width,
-                height: data.height,
+                amount: Number(data.amount),
+                giftWeight: Number(data.giftWeight),
+                length: Number(data.length),
+                width: Number(data.width),
+                height: Number(data.height),
                 giftDeliveryMethod: data.giftDeliveryMethod,
                 giftType: selectedGift.giftType,
                 unit: selectedGift.unit,
@@ -73,11 +89,11 @@ const GiftRegistration = ({ isOpen, onClose, visitId, userId, giftRequestDetails
                 visitID: visitId
             };
 
-
             await createPhysicalDonation(payload).unwrap();
             toast.success('Đăng ký tặng quà thành công!');
             onClose();
             form.reset();
+            window.location.reload();
         } catch (error) {
             toast.error('Đã có lỗi xảy ra. Vui lòng thử lại!');
             console.error('Error submitting gift registration:', error);
@@ -87,7 +103,7 @@ const GiftRegistration = ({ isOpen, onClose, visitId, userId, giftRequestDetails
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
             <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto rounded-lg">
-                <DialogHeader className="bg-gradient-to-r from-rose-500 to-rose-600 text-white p-6 sticky top-0 z-10">
+                <DialogHeader className="bg-rose-400  text-white p-6 sticky top-0 z-10">
                     <DialogTitle className="text-2xl font-bold text-center">
                         Đăng ký tặng quà
                     </DialogTitle>
@@ -106,6 +122,7 @@ const GiftRegistration = ({ isOpen, onClose, visitId, userId, giftRequestDetails
                                             <Select
                                                 onValueChange={(value) => field.onChange(Number(value))}
                                                 defaultValue={field.value.toString()}
+                                                disabled={isLoading}
                                             >
                                                 <FormControl>
                                                     <SelectTrigger>
@@ -147,14 +164,10 @@ const GiftRegistration = ({ isOpen, onClose, visitId, userId, giftRequestDetails
                                             <FormLabel>Số lượng</FormLabel>
                                             <FormControl>
                                                 <Input
-                                                    type="number"
+                                                    type="text"
                                                     {...field}
                                                     onChange={(e) => handleNumberInput(e, field.onChange)}
-                                                    onKeyDown={(e) => {
-                                                        if (e.key === '-' || e.key === 'e') {
-                                                            e.preventDefault();
-                                                        }
-                                                    }}
+                                                    disabled={isLoading}
                                                 />
                                             </FormControl>
                                             <FormMessage />
@@ -170,14 +183,10 @@ const GiftRegistration = ({ isOpen, onClose, visitId, userId, giftRequestDetails
                                             <FormLabel>Khối lượng (kg)</FormLabel>
                                             <FormControl>
                                                 <Input
-                                                    type="number"
+                                                    type="text"
                                                     {...field}
                                                     onChange={(e) => handleNumberInput(e, field.onChange)}
-                                                    onKeyDown={(e) => {
-                                                        if (e.key === '-' || e.key === 'e') {
-                                                            e.preventDefault();
-                                                        }
-                                                    }}
+                                                    disabled={isLoading}
                                                 />
                                             </FormControl>
                                             <FormMessage />
@@ -195,14 +204,10 @@ const GiftRegistration = ({ isOpen, onClose, visitId, userId, giftRequestDetails
                                             <FormLabel>Chiều dài (cm)</FormLabel>
                                             <FormControl>
                                                 <Input
-                                                    type="number"
+                                                    type="text"
                                                     {...field}
                                                     onChange={(e) => handleNumberInput(e, field.onChange)}
-                                                    onKeyDown={(e) => {
-                                                        if (e.key === '-' || e.key === 'e') {
-                                                            e.preventDefault();
-                                                        }
-                                                    }}
+                                                    disabled={isLoading}
                                                 />
                                             </FormControl>
                                             <FormMessage />
@@ -218,14 +223,10 @@ const GiftRegistration = ({ isOpen, onClose, visitId, userId, giftRequestDetails
                                             <FormLabel>Chiều rộng (cm)</FormLabel>
                                             <FormControl>
                                                 <Input
-                                                    type="number"
+                                                    type="text"
                                                     {...field}
                                                     onChange={(e) => handleNumberInput(e, field.onChange)}
-                                                    onKeyDown={(e) => {
-                                                        if (e.key === '-' || e.key === 'e') {
-                                                            e.preventDefault();
-                                                        }
-                                                    }}
+                                                    disabled={isLoading}
                                                 />
                                             </FormControl>
                                             <FormMessage />
@@ -241,14 +242,10 @@ const GiftRegistration = ({ isOpen, onClose, visitId, userId, giftRequestDetails
                                             <FormLabel>Chiều cao (cm)</FormLabel>
                                             <FormControl>
                                                 <Input
-                                                    type="number"
+                                                    type="text"
                                                     {...field}
                                                     onChange={(e) => handleNumberInput(e, field.onChange)}
-                                                    onKeyDown={(e) => {
-                                                        if (e.key === '-' || e.key === 'e') {
-                                                            e.preventDefault();
-                                                        }
-                                                    }}
+                                                    disabled={isLoading}
                                                 />
                                             </FormControl>
                                             <FormMessage />
@@ -263,7 +260,11 @@ const GiftRegistration = ({ isOpen, onClose, visitId, userId, giftRequestDetails
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Phương thức giao quà</FormLabel>
-                                        <Select onValueChange={(value) => field.onChange(Number(value))} defaultValue={field.value.toString()}>
+                                        <Select
+                                            onValueChange={(value) => field.onChange(Number(value))}
+                                            defaultValue={field.value.toString()}
+                                            disabled={isLoading}
+                                        >
                                             <FormControl>
                                                 <SelectTrigger>
                                                     <SelectValue placeholder="Chọn phương thức giao quà" />
@@ -282,26 +283,39 @@ const GiftRegistration = ({ isOpen, onClose, visitId, userId, giftRequestDetails
                                 )}
                             />
 
-                            {/* {deliveryMethod === 2 && ( */}
                             <FormItem>
                                 <FormLabel>Địa chỉ mang đến</FormLabel>
                                 <FormControl>
                                     <Input
                                         value="Lô E2a-7, Đường D1, Đ. D1, Long Thạnh Mỹ, Thành Phố Thủ Đức"
                                         className="bg-gray-100"
+                                        disabled
                                     />
                                 </FormControl>
                             </FormItem>
-                            {/* )} */}
-
-
 
                             <div className="flex justify-end gap-4">
-                                <Button type="button" variant="outline" onClick={onClose}>
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    onClick={onClose}
+                                    disabled={isLoading}
+                                >
                                     Hủy
                                 </Button>
-                                <Button type="submit" className="bg-rose-500 hover:bg-rose-700 text-white">
-                                    Đăng ký
+                                <Button
+                                    type="submit"
+                                    className="bg-rose-500 hover:bg-rose-700 text-white"
+                                    disabled={isLoading}
+                                >
+                                    {isLoading ? (
+                                        <>
+                                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                            Đang xử lý
+                                        </>
+                                    ) : (
+                                        'Đăng ký'
+                                    )}
                                 </Button>
                             </div>
                         </form>
