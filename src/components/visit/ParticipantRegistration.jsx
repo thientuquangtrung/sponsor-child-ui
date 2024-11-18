@@ -12,6 +12,8 @@ const ParticipantRegistration = ({
     userId,
     maxParticipants,
     participantsCount,
+    visitCost,
+    eventStatus,
 }) => {
     const { data: canRegister, isLoading: isCheckingRegistration } = useCanRegisterForVisitQuery({ userId, visitId });
     const { data: registrationData } = useGetVisitTripRegistrationsByUserAndVisitQuery({
@@ -244,13 +246,13 @@ const ParticipantRegistration = ({
                                 </li>
                                 <li className="flex items-center gap-2">
                                     <CircleAlert className="w-5 h-5 shrink-0 text-teal-500" />
-                                    <span>Không hoàn tiền khi chuyến thăm đã bắt đầu</span>
+                                    <span>Không hoàn tiền khi chuyến thăm đã bắt đầu, nhưng được hoàn tiền nếu chuyến thăm bị hủy.</span>
                                 </li>
                             </ul>
                         </div>
                     </div>
 
-                    <div className="sticky bottom-0 border-t flex justify-end gap-3 mt-4">
+                    <div className="border-t flex justify-end gap-3 mt-4">
                         <Button
                             variant="outline"
                             onClick={() => setShowTermsDialog(false)}
@@ -280,6 +282,9 @@ const ParticipantRegistration = ({
                 onClose={() => setShowCancelDialog(false)}
                 registrationData={activeRegistration}
                 onConfirmCancel={handleConfirmCancel}
+                visitCost={visitCost}
+                eventStatus={eventStatus}
+
             />
         </>
     );

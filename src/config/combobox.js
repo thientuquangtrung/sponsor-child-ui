@@ -144,13 +144,20 @@ export const visitRegistrationStatus = [
     { label: 'Đã đăng ký', value: 1 },
     { label: 'Đang chờ hoàn tiền', value: 2 },
     { label: 'Hủy đăng ký', value: 3 },
+    { label: 'Góp vào quỹ chung', value: 4 },
+
+];
+export const visitRegistrationStatus2 = [
+    { label: 'vui lòng hủy và thanh toán lại. Lỗi đã được ghi nhận', value: 0 },
+    { label: 'đã đăng ký', value: 1 },
+    { label: 'thực hiện hoàn tiền', value: 2 },
+    { label: 'hủy đăng ký', value: 3 },
+    { label: 'góp vào quỹ chung', value: 4 },
+
 ];
 export const giftDeliveryMethod = [
     { label: 'Giao tận nơi', value: 0 },
     { label: 'Dịch vụ bưu chính', value: 1 },
-    { label: 'Tình nguyện viên lấy', value: 2 },
-    { label: 'Đối tác địa phương', value: 3 },
-    { label: 'Phân phát sự kiện', value: 4 },
 ];
 export const giftStatus = [
     { label: 'Chờ xử lý', value: 0 },

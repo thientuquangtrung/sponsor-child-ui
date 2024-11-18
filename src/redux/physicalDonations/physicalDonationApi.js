@@ -63,6 +63,11 @@ export const physicalDonationApi = baseApi.injectEndpoints({
                 body: data,
             }),
         }),
+        getPhysicalDonationsByUserAndVisit: builder.query({
+            query: ({ userId, visitId }) =>
+                `/PhysicalDonations/user/${userId}/visit/${visitId}`,
+            method: 'GET',
+        }),
     }),
 });
 
@@ -73,4 +78,5 @@ export const {
     useGetPhysicalDonationByIdQuery,
     useCreatePhysicalDonationMutation,
     useUpdatePhysicalDonationMutation,
+    useGetPhysicalDonationsByUserAndVisitQuery,
 } = physicalDonationApi;

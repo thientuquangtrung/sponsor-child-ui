@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -15,65 +15,42 @@ import { Icons } from '@/components/icons';
 import ParticipantRegistration from '@/components/visit/ParticipantRegistration';
 import { useSelector } from 'react-redux';
 import ParticipantList from '@/components/visit/ParticipantList';
-import RegistrationHistoryCard from '@/components//visit/RegistrationHistoryCard';
 import GiftRegistration from '@/components/visit/GiftRegistration';
-
-
+import HistoryTabs from '@/components/visit/HistoryTabs';
+import { useUpdateVisitTripRegistrationMutation } from '@/redux/visitTripRegistration/visitTripRegistrationApi';
+import CanceledEventRegistrationDialog from '@/components/visit/CanceledEventRegistratiobDialog';
 
 const EventDetail = () => {
+    const { user } = useSelector((state) => state.auth);
     const { id } = useParams();
     const { data: event, isLoading, error } = useGetChildrenVisitTripsByIdQuery(id);
     const [showGiftDialog, setShowGiftDialog] = useState(false);
-    const { user } = useSelector((state) => state.auth);
+    const [showCanceledRegistrationModal, setShowCanceledRegistrationModal] = useState(false);
+    const [updateRegistration] = useUpdateVisitTripRegistrationMutation();
 
+    const hasCanceledRegistration = event?.status === 5 &&
+        event?.visitRegistrations?.some(reg =>
+            reg.userID === user?.userID && (reg.status === 0 || reg.status === 1)
+        );
+
+    useEffect(() => {
+        if (hasCanceledRegistration) {
+            setShowCanceledRegistrationModal(true);
+        }
+    }, [hasCanceledRegistration, event, user]);
 
     const getStatusColor = (status) => {
         switch (status) {
-            case 0: // Đã lên kế hoạch
-                return 'text-rose-300';
-            case 1: // Đang mở đăng ký
-                return 'text-sky-500';
-            case 2: // Đã đóng đăng ký
-                return 'text-yellow-500';
-            case 3: // Đang chờ
-                return 'text-orange-500';
-            case 4: // Đã hoàn thành
-                return 'text-red-500';
-            case 5: // Đã hủy
-                return 'text-gray-500';
-            case 6: // Đã hoãn
-                return 'text-purple-500';
-            default:
-                return 'text-gray-500';
+            case 0: return 'text-rose-300';
+            case 1: return 'text-sky-500';
+            case 2: return 'text-yellow-500';
+            case 3: return 'text-orange-500';
+            case 4: return 'text-red-500';
+            case 5: return 'text-gray-500';
+            case 6: return 'text-purple-500';
+            default: return 'text-gray-500';
         }
     };
-    if (isLoading) {
-        return (
-            <div><LoadingScreen /></div>
-        );
-    }
-
-    if (error) {
-        return (
-            <div className="min-h-screen flex items-center justify-center">
-                <div className="text-center text-red-500">
-                    <p className="text-xl font-semibold">Đã có lỗi xảy ra</p>
-                    <p className="text-gray-600">Vui lòng thử lại sau</p>
-                </div>
-            </div>
-        );
-    }
-
-    if (!event) {
-        return (
-            <div className="min-h-screen flex items-center justify-center">
-                <div className="text-center text-gray-500">
-                    <p className="text-xl font-semibold">Không tìm thấy sự kiện</p>
-                </div>
-            </div>
-        );
-    }
-
 
     const handleShare = async () => {
         try {
@@ -93,6 +70,44 @@ const EventDetail = () => {
         }
     };
 
+    const handleCancelRegistration = async (params) => {
+        try {
+            const result = await updateRegistration(params).unwrap();
+
+            if (result?.success) {
+                setShowCanceledRegistrationModal(false);
+                window.location.reload();
+
+                toast.success(
+                    params.status === 2
+                        ? 'Yêu cầu hoàn tiền đã được gửi'
+                        : 'Cảm ơn sự ủng hộ của bạn!'
+                );
+            } else {
+                throw new Error(result?.message || 'Xử lý thất bại');
+            }
+        } catch (error) {
+            toast.error(error.message || 'Có lỗi xảy ra. Vui lòng thử lại!');
+            console.error('Cancel registration error:', error);
+        }
+    };
+
+    if (isLoading) return <div><LoadingScreen /></div>;
+    if (error) return (
+        <div className="min-h-screen flex items-center justify-center">
+            <div className="text-center text-red-500">
+                <p className="text-xl font-semibold">Đã có lỗi xảy ra</p>
+                <p className="text-gray-600">Vui lòng thử lại sau</p>
+            </div>
+        </div>
+    );
+    if (!event) return (
+        <div className="min-h-screen flex items-center justify-center">
+            <div className="text-center text-gray-500">
+                <p className="text-xl font-semibold">Không tìm thấy sự kiện</p>
+            </div>
+        </div>
+    );
 
     const renderEventHeader = () => (
         <Card>
@@ -152,14 +167,18 @@ const EventDetail = () => {
 
                         <div className="space-y-6 p-6 bg-gradient-to-r from-teal-50 to-rose-50 rounded-xl shadow-sm">
                             <div className="flex gap-4 justify-center">
-                                {event.status === 1 && (
-                                    <ParticipantRegistration
-                                        visitId={id}
-                                        userId={user?.userID}
-                                        maxParticipants={event?.maxParticipants}
-                                        participantsCount={event?.participantsCount}
-                                    />
-                                )}
+                                {(event.status === 1 || (event.status === 2 && event.visitRegistrations?.some(reg =>
+                                    reg.userID === user?.userID && reg.status === 1
+                                ))) && (
+                                        <ParticipantRegistration
+                                            visitId={id}
+                                            userId={user?.userID}
+                                            maxParticipants={event?.maxParticipants}
+                                            participantsCount={event?.participantsCount}
+                                            visitCost={event?.visitCost}
+                                            eventStatus={event?.status}
+                                        />
+                                    )}
                                 <Button
                                     onClick={handleShare}
                                     variant="outline"
@@ -176,7 +195,7 @@ const EventDetail = () => {
                                 <ul className="space-y-3 text-gray-600">
                                     <li className="flex items-center gap-2">
                                         <Calendar className="w-4 h-4 text-rose-400" />
-                                        Hạn đăng ký: <span className="font-medium">{formatDate(event.endDate)}</span>
+                                        Hạn đăng ký: <span className="font-medium">{formatDate(event.registrationEndDate)}</span>
                                     </li>
 
                                     <li className="flex items-center gap-2">
@@ -189,20 +208,23 @@ const EventDetail = () => {
                                     </li>
                                 </ul>
                                 <div className="flex justify-center">
-                                    <Button
-                                        onClick={() => setShowGiftDialog(true)}
-                                        className="h-12 mt-4 bg-rose-500 hover:bg-rose-600 text-white rounded-xl transition-all duration-300 hover:scale-[1.02]"
-                                    >
-                                        <Gift className="w-5 h-5 mr-2" />
-                                        Đăng ký tặng quà
-                                    </Button>
+                                    {event.status === 1 && (
+
+                                        <Button
+                                            onClick={() => setShowGiftDialog(true)}
+                                            className="h-12 mt-4 bg-rose-500 hover:bg-rose-600 text-white rounded-xl transition-all duration-300 hover:scale-[1.02]"
+                                        >
+                                            <Gift className="w-5 h-5 mr-2" />
+                                            Đăng ký tặng quà
+                                        </Button>
+                                    )}
                                 </div>
                             </div>
                         </div>
                     </CardContent>
                 </Card >
                 {user && (
-                    <RegistrationHistoryCard
+                    <HistoryTabs
                         visitId={id}
                         userId={user?.userID}
                     />
@@ -367,6 +389,17 @@ const EventDetail = () => {
                 userId={user?.userID}
                 giftRequestDetails={event.giftRequestDetails}
             />
+            {hasCanceledRegistration && (
+                <CanceledEventRegistrationDialog
+                    isOpen={showCanceledRegistrationModal}
+                    onClose={() => setShowCanceledRegistrationModal(false)}
+                    registrationData={event.visitRegistrations.find(
+                        reg => reg.userID === user?.userID && reg.status === 1
+                    )}
+                    onConfirmCancel={handleCancelRegistration}
+                    visitCost={event.visitCost}
+                />
+            )}
         </div>
     );
 };

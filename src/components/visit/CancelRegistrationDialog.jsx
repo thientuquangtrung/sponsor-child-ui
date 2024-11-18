@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
-import { Loader2, Calendar, CircleAlert } from 'lucide-react';
+import { Loader2, CircleAlert } from 'lucide-react';
 import { toast } from 'sonner';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { bankName } from '@/config/combobox';
@@ -12,23 +12,38 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 
 const cancelFormSchema = z.object({
-    reason: z.string().min(1, 'Vui lòng nhập lý do hủy đăng ký'),
+    reason: z.string({
+        required_error: 'Vui lòng nhập lý do hủy đăng ký'
+    }).min(1, 'Vui lòng nhập lý do hủy đăng ký'),
     bankAccount: z.object({
-        name: z.string().min(1, 'Vui lòng nhập tên chủ tài khoản'),
-        number: z.string()
-            .min(1, 'Vui lòng nhập số tài khoản')
+        name: z.string({
+            required_error: 'Vui lòng nhập tên chủ tài khoản'
+        }).min(1, 'Vui lòng nhập tên chủ tài khoản'),
+        number: z.string({
+            required_error: 'Vui lòng nhập số tài khoản'
+        }).min(1, 'Vui lòng nhập số tài khoản')
             .regex(/^\d+$/, 'Số tài khoản chỉ được chứa số'),
-        bank: z.string().min(1, 'Vui lòng chọn ngân hàng')
+        bank: z.string({
+            required_error: 'Vui lòng chọn ngân hàng'
+        }).min(1, 'Vui lòng chọn ngân hàng')
     }).optional()
 });
-
 const CancelRegistrationDialog = ({
     isOpen,
     onClose,
     registrationData,
-    onConfirmCancel
+    onConfirmCancel,
+    eventStatus,
+    visitCost
 }) => {
     const needsRefund = registrationData?.status === 1;
+
+    const calculateRefundAmount = () => {
+        if (!needsRefund || !visitCost) return 0;
+
+        const refundPercentage = eventStatus === 1 ? 0.85 : eventStatus === 2 ? 0.65 : 0;
+        return visitCost * refundPercentage;
+    };
 
     const formSchema = needsRefund
         ? cancelFormSchema
@@ -53,7 +68,7 @@ const CancelRegistrationDialog = ({
 
     const onSubmit = async (data) => {
         try {
-            await onConfirmCancel({
+            const result = await onConfirmCancel({
                 id: registrationData.id,
                 status: needsRefund ? 2 : 3,
                 cancellationReason: data.reason,
@@ -62,14 +77,19 @@ const CancelRegistrationDialog = ({
                 bankName: data.bankAccount?.bank ? parseInt(data.bankAccount.bank) : undefined
             });
 
-            toast.success(needsRefund ? 'Đã gửi yêu cầu hoàn tiền' : 'Đã hủy đăng ký thành công');
-            reset();
-            onClose();
+            if (result?.success) {
+                toast.success(needsRefund ? 'Đã gửi yêu cầu hoàn tiền' : 'Đã hủy đăng ký thành công');
+                reset();
+                onClose();
+            } else {
+                throw new Error(result?.message || 'Hủy đăng ký thất bại');
+            }
         } catch (error) {
-            toast.error('Có lỗi xảy ra. Vui lòng thử lại!');
+            toast.error(error.message || 'Có lỗi xảy ra. Vui lòng thử lại!');
             console.error('Cancel registration error:', error);
         }
     };
+    const refundAmount = calculateRefundAmount();
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
@@ -91,22 +111,23 @@ const CancelRegistrationDialog = ({
                             <>
                                 <div className="bg-red-50 rounded-lg p-4">
                                     <h3 className="text-xl font-semibold text-teal-700 mb-3">
-                                        Chính Sách Hoàn Tiền
+                                        Thông Tin Hoàn Tiền
                                     </h3>
-                                    <ul className="space-y-2 text-gray-700">
-                                        <li className="flex items-center gap-2">
-                                            <Calendar className="w-5 h-5 shrink-0 text-teal-500" />
-                                            <span>Hủy trước ngày kết thúc đăng ký: Hoàn lại 85% phí tham gia</span>
-                                        </li>
-                                        <li className="flex items-center gap-2">
-                                            <Calendar className="w-5 h-5 shrink-0 text-teal-500" />
-                                            <span>Hủy sau ngày kết thúc đăng ký: Hoàn lại 65% phí tham gia</span>
-                                        </li>
-                                        <li className="flex items-center gap-2">
-                                            <CircleAlert className="w-5 h-5 shrink-0 text-teal-500" />
-                                            <span>Không hoàn tiền khi chuyến thăm đã bắt đầu</span>
-                                        </li>
-                                    </ul>
+                                    <div className="space-y-3">
+                                        <div className="flex items-center gap-2">
+                                            <div className="space-y-1">
+                                                <p className="text-gray-700">
+                                                    Số tiền đã thanh toán: <span className="font-semibold">{visitCost?.toLocaleString('vi-VN')} VNĐ</span>
+                                                </p>
+                                                <p className="text-gray-700">
+                                                    Số tiền sẽ được hoàn lại ({eventStatus === 1 ? '85%' : '65%'}):
+                                                    <span className="font-semibold text-teal-600 ml-2">
+                                                        {refundAmount.toLocaleString('vi-VN')} VNĐ
+                                                    </span>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <div className="bg-red-50 rounded-lg p-4">
@@ -225,7 +246,7 @@ const CancelRegistrationDialog = ({
                         </div>
                     </div>
 
-                    <div className="sticky bottom-0 border-t flex justify-end gap-3 p-4 bg-white">
+                    <div className="border-t flex justify-end gap-3 p-4 bg-white">
                         <Button
                             type="button"
                             variant="outline"

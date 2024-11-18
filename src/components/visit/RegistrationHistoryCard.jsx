@@ -1,42 +1,15 @@
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { Badge } from '@/components/ui/badge';
-import { ClipboardList } from 'lucide-react';
+import { ClipboardList, AlertCircle, Image } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useGetVisitTripRegistrationsByUserAndVisitQuery } from '@/redux/visitTripRegistration/visitTripRegistrationApi';
-import { visitRegistrationStatus } from '@/config/combobox';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { visitRegistrationStatus2 } from '@/config/combobox';
 
-const getStatusDetails = (status) => {
-    const statusItem = visitRegistrationStatus.find(item => item.value === status);
-
-    switch (status) {
-        case 0:
-            return {
-                label: statusItem.label,
-                variant: "warning"
-            };
-        case 1:
-            return {
-                label: statusItem.label,
-                variant: "success"
-            };
-        case 2:
-            return {
-                label: statusItem.label,
-                variant: "secondary"
-            };
-        case 3:
-            return {
-                label: statusItem.label,
-                variant: "destructive"
-            };
-        default:
-            return {
-                label: 'Không xác định',
-                variant: "secondary"
-            };
-    }
+const getStatusText = (status) => {
+    const statusItem = visitRegistrationStatus2.find(item => item.value === status);
+    return statusItem?.label || 'Không xác định';
 };
 
 const formatDateTime = (dateString) => {
@@ -72,50 +45,64 @@ const RegistrationHistoryCard = ({
         );
     }
 
+    const sortedRegistrations = [...registrationData].sort((a, b) =>
+        new Date(b.updatedAt) - new Date(a.updatedAt)
+    );
+
     return (
         <Card className="mt-6">
-            <CardContent className="p-6 ">
-                <div className="bg-gradient-to-r from-teal-50 to-rose-50 rounded-xl" >
-                    <div className="flex items-center space-x-2 mb-4 ">
-                        <ClipboardList className="w-5 h-5 text-teal-500" />
-                        <h3 className="font-medium text-gray-900">Lịch sử đăng ký của bạn</h3>
-                    </div>
-
-                    <ScrollArea className="h-[240px] pr-4">
-                        <div className="space-y-4">
-                            {registrationData.map((registration, index) => {
-                                const statusDetails = getStatusDetails(registration.status);
-
-                                return (
-                                    <div key={registration.id} className="space-y-3">
-                                        <div className="p-4">
-                                            <div className="flex items-center justify-between mb-2">
-                                                <Badge variant={statusDetails.variant}>
-                                                    {statusDetails.label}
-                                                </Badge>
-                                                <span className="text-sm text-gray-700">
-                                                    {formatDateTime(registration.createdAt)}
-                                                </span>
-                                            </div>
-
-                                            <div className="text-sm text-gray-600">
-                                                {registration.cancellationReason && (
-                                                    <div className="mt-2 text-gray-700 italic">
-                                                        "Lý do: {registration.cancellationReason}"
-                                                    </div>
-                                                )}
-                                            </div>
-                                        </div>
-
-                                        {index < registrationData.length - 1 && (
-                                            <Separator className="my-2" />
-                                        )}
-                                    </div>
-                                );
-                            })}
-                        </div>
-                    </ScrollArea>
+            <CardContent className="p-6">
+                <div className="flex items-center space-x-2 mb-4">
+                    <ClipboardList className="w-5 h-5 text-teal-500" />
+                    <h3 className="font-medium text-gray-900">Lịch sử đăng ký của bạn</h3>
                 </div>
+                <ScrollArea className="h-[240px]">
+                    <div className="space-y-4">
+                        {sortedRegistrations.map((registration, index) => (
+                            <div key={registration.id}>
+                                <div className="p-4 rounded-lg bg-gradient-to-r from-teal-50 to-rose-50 hover:from-teal-100 hover:to-rose-100 transition-colors">
+                                    <div className="flex items-start justify-between">
+                                        <div className="flex-1">
+                                            <p className="text-gray-700">
+                                                Bạn <span className="font-medium text-sm">{getStatusText(registration.status)}</span> vào ngày{' '}
+                                                {formatDateTime(registration.updatedAt)}
+                                            </p>
+
+                                            {registration.transferProofImageUrl && (
+                                                <a
+                                                    href={registration.transferProofImageUrl}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="flex items-center text-blue-600 hover:text-blue-800"
+                                                >
+                                                    <Image className="w-4 h-4 mr-1" />
+                                                    <span className="text-sm">Xem minh chứng hoàn tiền</span>
+                                                </a>
+                                            )}
+                                            {registration.cancellationReason && (
+                                                <TooltipProvider>
+                                                    <Tooltip>
+                                                        <TooltipTrigger className="flex items-center text-yellow-600 text-sm">
+                                                            <AlertCircle className="w-4 h-4 mr-1" />
+                                                            Lý do hủy
+                                                        </TooltipTrigger>
+                                                        <TooltipContent>
+                                                            <p>{registration.cancellationReason}</p>
+                                                        </TooltipContent>
+                                                    </Tooltip>
+                                                </TooltipProvider>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {index < sortedRegistrations.length - 1 && (
+                                    <Separator className="my-4" />
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                </ScrollArea>
             </CardContent>
         </Card>
     );
