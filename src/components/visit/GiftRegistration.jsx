@@ -20,19 +20,19 @@ const giftSchema = z.object({
     ),
     giftWeight: z.preprocess(
         (val) => (val === '' ? undefined : Number(val)),
-        z.number({ required_error: 'Vui lòng nhập khối lượng' }).min(0, 'Khối lượng phải lớn hơn 0')
+        z.number({ required_error: 'Vui lòng nhập Tổng khối lượng' }).min(0, 'Tổng khối lượng phải lớn hơn 0')
     ),
     length: z.preprocess(
         (val) => (val === '' ? undefined : Number(val)),
-        z.number({ required_error: 'Vui lòng nhập chiều dài' }).min(0, 'Chiều dài phải lớn hơn 0')
+        z.number({ required_error: 'Vui lòng nhập Tổng chiều dài' }).min(0, 'Tổng chiều dài phải lớn hơn 0')
     ),
     width: z.preprocess(
         (val) => (val === '' ? undefined : Number(val)),
-        z.number({ required_error: 'Vui lòng nhập chiều rộng' }).min(0, 'Chiều rộng phải lớn hơn 0')
+        z.number({ required_error: 'Vui lòng nhập Tổng chiều rộng' }).min(0, 'Tổng chiều rộng phải lớn hơn 0')
     ),
     height: z.preprocess(
         (val) => (val === '' ? undefined : Number(val)),
-        z.number({ required_error: 'Vui lòng nhập chiều cao' }).min(0, 'Chiều cao phải lớn hơn 0')
+        z.number({ required_error: 'Vui lòng nhập Tổng chiều cao' }).min(0, 'Tổng chiều cao phải lớn hơn 0')
     ),
     giftDeliveryMethod: z.number({ required_error: 'Vui lòng chọn phương thức vận chuyển' }).min(0, 'Vui lòng chọn phương thức vận chuyển'),
 });
@@ -180,7 +180,7 @@ const GiftRegistration = ({ isOpen, onClose, visitId, userId, giftRequestDetails
                                     name="giftWeight"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Khối lượng (kg)</FormLabel>
+                                            <FormLabel>Tổng khối lượng quà (kg)</FormLabel>
                                             <FormControl>
                                                 <Input
                                                     type="text"
@@ -201,7 +201,7 @@ const GiftRegistration = ({ isOpen, onClose, visitId, userId, giftRequestDetails
                                     name="length"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Chiều dài (cm)</FormLabel>
+                                            <FormLabel>Tổng chiều dài (cm)</FormLabel>
                                             <FormControl>
                                                 <Input
                                                     type="text"
@@ -220,7 +220,7 @@ const GiftRegistration = ({ isOpen, onClose, visitId, userId, giftRequestDetails
                                     name="width"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Chiều rộng (cm)</FormLabel>
+                                            <FormLabel>Tổng chiều rộng (cm)</FormLabel>
                                             <FormControl>
                                                 <Input
                                                     type="text"
@@ -239,7 +239,7 @@ const GiftRegistration = ({ isOpen, onClose, visitId, userId, giftRequestDetails
                                     name="height"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Chiều cao (cm)</FormLabel>
+                                            <FormLabel>Tổng chiều cao (cm)</FormLabel>
                                             <FormControl>
                                                 <Input
                                                     type="text"
