@@ -167,15 +167,12 @@ const CampaignDetail = () => {
                             <TabsTrigger value="activities" className={`relative py-1 px-4 text-md font-medium`}>
                                 Hoạt động
                             </TabsTrigger>
-                            <TabsTrigger value="comments" className={`relative py-1 px-4 text-md font-medium`}>
-                                Bình luận
-                            </TabsTrigger>
                             <TabsTrigger value="donations" className={`relative py-1 px-4 text-md font-medium`}>
                                 Danh sách ủng hộ ({donationsTotal?.totalDonations || 0})
                             </TabsTrigger>
                         </TabsList>
 
-                        <TabsContent value="story" className="p-4">
+                        <TabsContent value="story" className="p-4 min-h-[400px]">
                             <h3 className="text-xl font-bold text-gray-800">Thông tin của trẻ</h3>
                             <p className="text-lg text-gray-700 mt-2">
                                 <strong>Tên:</strong> {campaign?.childName}
@@ -198,17 +195,12 @@ const CampaignDetail = () => {
                                 dangerouslySetInnerHTML={{ __html: campaign?.story }}
                             />
                         </TabsContent>
-                        <TabsContent value="activities" className="p-4">
+                        <TabsContent value="activities" className="p-4 min-h-[400px]">
                             <Activity campaign={campaign} />
                         </TabsContent>
-
-                        <TabsContent value="comments" className="p-4">
-                            <Comment />
-                        </TabsContent>
-
                         <TabsContent value="donations" className="p-4">
                             {donationsTotal?.totalDonations === 0 ? (
-                                <p className="text-gray-400 italic text-center mt-8">
+                                <p className="text-gray-400 italic text-center mt-8 min-h-[400px]">
                                     Hiện chiến dịch chưa có người ủng hộ.
                                 </p>
                             ) : donationsLoading ? (
@@ -225,6 +217,8 @@ const CampaignDetail = () => {
                             )}
                         </TabsContent>
                     </Tabs>
+
+                    <Comment />
                 </div>
 
                 <div className="w-full md:w-2/5 mt-4 md:mt-0 bg-white">

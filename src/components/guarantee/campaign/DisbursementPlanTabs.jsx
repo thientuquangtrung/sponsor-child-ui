@@ -239,7 +239,7 @@ const DisbursementPlanTabs = ({ disbursementPlans, navigate }) => {
     const allPlans = [currentPlan, ...oldPlans].filter(Boolean);
     return (
         <Card className="shadow-lg border-0 mb-6">
-            <CardHeader className="bg-rose-200">
+            <CardHeader className="bg-gradient-to-r from-rose-100 to-teal-100">
                 <CardTitle className="text-lg flex items-center gap-2 text-gray-800">
                     Kế hoạch giải ngân</CardTitle>
             </CardHeader>

@@ -1,302 +1,337 @@
 import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
 import line from '@/assets/images/line.png';
-import logo from '@/assets/images/logo-short.png';
-import { Heart, MessageCircleMore, Camera, X, Check, SendHorizonal } from 'lucide-react';
+import { Camera, X, SendHorizonal } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button';
+import { useSelector } from 'react-redux';
 
 const Comment = () => {
-    const { user } = useSelector((state) => state.auth);
-    const [visiblePostsCount, setVisiblePostsCount] = useState(2);
-    const [posts, setPosts] = useState([
+    const { user } = useSelector((state) => state.auth); 
+    const [uploadedImage, setUploadedImage] = useState(null);
+    const [inputValue, setInputValue] = useState('');
+    const [comments, setComments] = useState([
         {
             id: 1,
-            title: 'Tổ chức VNO',
-            content:
-                'Chào mừng Nhà sáng tạo nội dung kiêm Food creator Giao Heo gia nhập Biệt đội Anh Trai Vươn Đến Tương Lai. Thêm một nhân tố bí ẩn mang đến những điều cực kỳ đặc biệt cho điểm trường Tiểu học 3 Khánh Hải.',
-            avatar: `${logo}`,
-            image: 'https://via.placeholder.com/400x200',
-            likes: 12,
-            isLiked: false,
-            commentsVisible: false,
-            commentInput: '',
-            uploadedImage: null,
-            timePosted: '3 ngày trước',
-            isExpanded: false,
+            name: 'Nguyễn Đăng',
+            text: 'Hy vọng rằng mọi sự đóng góp sẽ giúp các bé có một tương lai tốt đẹp hơn.',
+            image: null,
+            time: '3 ngày trước',
+            replies: [
+                {
+                    id: 11,
+                    name: 'Nguyễn Thành Trung',
+                    text: 'Cảm động trước sự chung tay của cộng đồng. Hy vọng các bé sẽ sớm vượt qua khó khăn.',
+                    image: null,
+                    time: '2 ngày trước',
+                },
+            ],
         },
         {
             id: 2,
-            title: 'Chương trình "Ánh Sáng Tri Thức"',
-            content:
-                'Chúng tôi đã trao 200 bộ sách giáo khoa và dụng cụ học tập đến các em học sinh tại vùng cao Điện Biên. Cảm ơn các nhà hảo tâm đã đồng hành trong hành trình mang lại ánh sáng tri thức.',
-            avatar: `${logo}`,
-            image: 'https://via.placeholder.com/400x200',
-            likes: 45,
-            isLiked: false,
-            commentsVisible: false,
-            commentInput: '',
-            uploadedImage: null,
-            timePosted: '5 ngày trước',
-            isExpanded: false,
+            name: 'Ngô Hoàng Minh Đăng',
+            text: 'Hãy cùng nhau lan tỏa yêu thương và giúp các bé thực hiện ước mơ của mình.',
+            image: null,
+            time: '2 ngày trước',
+            replies: [
+                {
+                    id: 1,
+                    name: 'Nguyễn Minh Tú',
+                    text: 'Thật xúc động khi thấy những hành động nhỏ mang lại thay đổi lớn lao cho các bé.',
+                    image: null,
+                    time: '1 ngày trước',
+                },
+                {
+                    id: 2,
+                    name: 'Nguyễn Ngân',
+                    text: 'Cảm ơn chương trình đã giúp tôi có cơ hội đóng góp cho các bé. Chúc các em thật nhiều sức khỏe!',
+                    image: null,
+                    time: '5 phút trước',
+                },
+            ],
         },
         {
             id: 3,
-            title: 'Dự án "Bữa Ăn Đủ Chất"',
-            content:
-                'Nhờ sự đóng góp của cộng đồng, 300 trẻ em tại Hà Giang đã nhận được các bữa ăn đầy đủ dinh dưỡng trong 3 tháng qua. Hãy cùng chúng tôi tiếp tục hành trình này!',
-            avatar: `${logo}`,
-            image: 'https://via.placeholder.com/400x200',
-            likes: 78,
-            isLiked: false,
-            commentsVisible: false,
-            commentInput: '',
-            uploadedImage: null,
-            timePosted: '1 tuần trước',
-            isExpanded: false,
+            name: 'Nguyễn Minh Tú',
+            text: 'Mong các bé sớm tìm thấy nụ cười và hạnh phúc trong cuộc sống.',
+            image: null,
+            time: '3 tháng trước',
+            replies: [],
         },
         {
             id: 4,
-            title: 'Chiến dịch "Áo Ấm Cho Em"',
-            content:
-                'Chúng tôi đang vận động quyên góp để mua 500 áo ấm cho trẻ em tại các tỉnh miền núi phía Bắc trong mùa đông năm nay. Mỗi sự đóng góp đều mang đến hơi ấm cho các em nhỏ.',
-            avatar: `${logo}`,
-            image: 'https://via.placeholder.com/400x200',
-            likes: 92,
-            isLiked: false,
-            commentsVisible: false,
-            commentInput: '',
-            uploadedImage: null,
-            timePosted: '2 tuần trước',
-            isExpanded: false,
+            name: 'Minh Giang',
+            text: 'Chúng ta có thể làm được nhiều điều kỳ diệu nếu cùng nhau chung tay giúp đỡ các bé.',
+            image: null,
+            time: '4 tháng trước',
+            replies: [],
         },
         {
             id: 5,
-            title: 'Dự án "Cây Cầu Mơ Ước"',
-            content:
-                'Chúng tôi đã hoàn thành cây cầu treo dài 50m nối liền hai bản làng tại tỉnh Sơn La, giúp trẻ em đến trường an toàn hơn trong mùa lũ. Cảm ơn sự chung tay của các nhà hảo tâm!',
-            avatar: `${logo}`,
-            image: 'https://via.placeholder.com/400x200',
-            likes: 135,
-            isLiked: false,
-            commentsVisible: false,
-            commentInput: '',
-            uploadedImage: null,
-            timePosted: '1 tháng trước',
-            isExpanded: false,
+            name: 'Chim Trường An',
+            text: 'Những đóng góp nhỏ hôm nay sẽ là nền tảng cho tương lai các em mai sau.',
+            image: 'https://via.placeholder.com/150',
+            time: '5 tháng trước',
+            replies: [],
+        },
+        {
+            id: 6,
+            name: 'Phạm Hữu Lộc',
+            text: 'Hãy cùng trao đi yêu thương để các em nhỏ có cơ hội phát triển toàn diện.',
+            image: 'https://via.placeholder.com/150',
+            time: '5 tháng trước',
+            replies: [],
         },
     ]);
+    const [replyingCommentId, setReplyingCommentId] = useState(null);
+    const [replyValue, setReplyValue] = useState('');
+    const [replyImage, setReplyImage] = useState(null);
+    const [visibleCount, setVisibleCount] = useState(3);
 
-    const handleShowMore = () => {
-        setVisiblePostsCount((prevCount) => prevCount + 2);
-    };
-
-    const toggleExpand = (postId) => {
-        setPosts((prevPosts) =>
-            prevPosts.map((post) => (post.id === postId ? { ...post, isExpanded: !post.isExpanded } : post)),
-        );
-    };
-
-    const toggleComments = (postId) => {
-        setPosts((prevPosts) =>
-            prevPosts.map((post) =>
-                post.id === postId && !post.commentsVisible ? { ...post, commentsVisible: true } : post,
-            ),
-        );
-    };
-
-    const handleCommentChange = (postId, value) => {
-        setPosts((prevPosts) =>
-            prevPosts.map((post) => (post.id === postId ? { ...post, commentInput: value } : post)),
-        );
-    };
-
-    const handleImageUpload = (postId, file) => {
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
         if (file) {
             const imageUrl = URL.createObjectURL(file);
-            setPosts((prevPosts) =>
-                prevPosts.map((post) => (post.id === postId ? { ...post, uploadedImage: imageUrl } : post)),
-            );
+            setUploadedImage(imageUrl);
         }
     };
 
-    const handleImageRemove = (postId) => {
-        setPosts((prevPosts) =>
-            prevPosts.map((post) => (post.id === postId ? { ...post, uploadedImage: null } : post)),
-        );
+    const handleInputChange = (e) => {
+        setInputValue(e.target.value);
     };
 
-    const handleCommentSubmit = (postId) => {
-        const post = posts.find((post) => post.id === postId);
-        if (!post.commentInput.trim()) {
-            alert('Vui lòng nhập nội dung bình luận!');
+    const handleAddComment = () => {
+        if (!['Admin', 'Guarantee', 'Donor'].includes(user?.role)) {
             return;
         }
-        alert(`Bình luận đã gửi: ${post.commentInput}`);
-        setPosts((prevPosts) =>
-            prevPosts.map((post) =>
-                post.id === postId ? { ...post, commentInput: '', uploadedImage: null, commentsVisible: false } : post,
-            ),
-        );
+        if (inputValue.trim() || uploadedImage) {
+            const newComment = {
+                id: Date.now(),
+                name: user.name || 'Bạn',
+                text: inputValue,
+                image: uploadedImage,
+                time: 'Vừa xong',
+                replies: [],
+            };
+            setComments([newComment, ...comments]);
+            setInputValue('');
+            setUploadedImage(null);
+        }
     };
 
-    const handleLikeToggle = (postId) => {
-        setPosts((prevPosts) =>
-            prevPosts.map((post) =>
-                post.id === postId
-                    ? {
-                          ...post,
-                          likes: post.isLiked ? post.likes - 1 : post.likes + 1,
-                          isLiked: !post.isLiked,
-                      }
-                    : post,
-            ),
-        );
+    const handleReplyFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const imageUrl = URL.createObjectURL(file);
+            setReplyImage(imageUrl);
+        }
+    };
+
+    const handleReplyInputChange = (e) => {
+        setReplyValue(e.target.value);
+    };
+
+    const handleReplySubmit = (commentId) => {
+        if (!['Admin', 'Guarantee', 'Donor'].includes(user?.role)) {
+            return;
+        }
+        if (replyValue.trim() || replyImage) {
+            const updatedComments = comments.map((comment) => {
+                if (comment.id === commentId) {
+                    return {
+                        ...comment,
+                        replies: [
+                            ...comment.replies,
+                            {
+                                id: Date.now(),
+                                name: user.name || 'Bạn',
+                                text: replyValue,
+                                image: replyImage,
+                                time: 'Vừa xong',
+                            },
+                        ],
+                    };
+                }
+                return comment;
+            });
+            setComments(updatedComments);
+            setReplyingCommentId(null);
+            setReplyValue('');
+            setReplyImage(null);
+        }
+    };
+
+    const handleLoadMore = () => {
+        setVisibleCount((prevCount) => prevCount + 3);
     };
 
     return (
         <div className="min-h-screen">
-            {posts.slice(0, visiblePostsCount).map((post) => (
-                <div key={post.id} className="post w-full mb-4">
-                    <div className="flex items-center mb-4">
-                        <img src={post.avatar} alt="Avatar" className="w-12 h-12 rounded-full mr-4 border" />
-                        <div className="flex flex-col">
-                            <div className="flex items-center space-x-2">
-                                <h2 className="font-bold text-lg">{post.title}</h2>{' '}
-                                <div className="bg-[#69A6B8] p-1 rounded-full">
-                                    <Check className="text-white" size={10} />
-                                </div>
-                            </div>
-                            <p className="text-gray-600 text-sm">3 ngày trước</p>
-                        </div>
-                    </div>
+            <img src={line} alt="Decorative line" />
+            <h2 className="text-2xl font-bold py-8">Bình luận</h2>
 
-                    <div>
-                        <p className={`text-gray-600 ${!post.isExpanded ? 'line-clamp-2' : ''}`}>
-                            {!post.isExpanded && post.content.length > 100
-                                ? `${post.content.slice(0, 100)}...`
-                                : post.content}
-                        </p>
-                        {post.content.length > 100 && (
-                            <button
-                                className="text-blue-500 hover:underline text-sm mt-2"
-                                onClick={() => toggleExpand(post.id)}
-                            >
-                                {post.isExpanded ? 'Thu gọn' : 'Xem thêm'}
-                            </button>
-                        )}
-                    </div>
-                    <img src={post.image} alt="Post" className="w-full h-auto rounded-lg my-4" />
-
-                    {user.role !== 'Guest' && (
-                        <div className="flex items-center justify-between">
-                            <button
-                                className={`flex items-center ${post.isLiked ? 'text-red-500' : 'text-gray-500'}`}
-                                onClick={() => handleLikeToggle(post.id)}
-                            >
-                                <Heart
-                                    size={20}
-                                    className={`mr-2 ${post.isLiked ? 'fill-current text-red-500' : ''}`}
+            {['Admin', 'Guarantee', 'Donor'].includes(user?.role) ? (
+                <div className="post w-full">
+                    <div className="mb-8">
+                        <div className="flex items-center gap-2">
+                            <div className="w-10 h-10 flex items-center justify-center bg-gray-300 rounded-full">D</div>
+                            <Label className="cursor-pointer text-gray-500 hover:text-teal-500">
+                                <Camera size={24} />
+                                <Input type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
+                            </Label>
+                            <div className="relative flex-grow">
+                                <Input
+                                    type="text"
+                                    placeholder="Thêm bình luận"
+                                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                                    value={inputValue}
+                                    onChange={handleInputChange}
                                 />
-                                {post.likes} lượt thích
-                            </button>
-                            <button className="flex items-center text-gray-500" onClick={() => toggleComments(post.id)}>
-                                <MessageCircleMore size={20} className="mr-2" />
-                                Bình luận
-                            </button>
-                        </div>
-                    )}
-
-                    {post.commentsVisible && (
-                        <div className="mt-4">
-                            <div>
-                                <div className="flex items-center gap-2">
-                                    <div className="w-10 h-10 flex items-center justify-center bg-gray-300 rounded-full">
-                                        D
-                                    </div>
-                                    <Label
-                                        htmlFor={`upload-image-${post.id}`}
-                                        className="cursor-pointer text-gray-500 hover:text-teal-500"
-                                    >
-                                        <Camera size={24} />
-                                    </Label>
-                                    <div className="relative flex-grow">
-                                        <Input
-                                            type="text"
-                                            placeholder="Thêm bình luận"
-                                            value={post.commentInput}
-                                            onChange={(e) => handleCommentChange(post.id, e.target.value)}
-                                            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                        />
-                                        <SendHorizonal
-                                            size={20}
-                                            className={`absolute top-1/2 right-3 transform -translate-y-1/2 ${
-                                                post.commentInput.trim() || post.uploadedImage
-                                                    ? 'text-teal-500 cursor-pointer hover:text-teal-600'
-                                                    : 'text-gray-400 cursor-not-allowed'
-                                            }`}
-                                            onClick={() => {
-                                                if (post.commentInput.trim() || post.uploadedImage) {
-                                                    handleCommentSubmit(post.id);
-                                                }
-                                            }}
-                                            disabled={!post.commentInput.trim() && !post.uploadedImage}
-                                        />
-                                    </div>
-                                    <button
-                                        className="mt-2 text-red-500 hover:underline text-sm"
-                                        onClick={() =>
-                                            setPosts((prevPosts) =>
-                                                prevPosts.map((currentPost) =>
-                                                    currentPost.id === post.id
-                                                        ? { ...currentPost, commentsVisible: false }
-                                                        : currentPost,
-                                                ),
-                                            )
-                                        }
-                                    >
-                                        Hủy
-                                    </button>
-
-                                    <Input
-                                        id={`upload-image-${post.id}`}
-                                        type="file"
-                                        accept="image/*"
-                                        className="hidden"
-                                        onChange={(e) => handleImageUpload(post.id, e.target.files[0])}
-                                    />
-                                </div>
+                                <SendHorizonal
+                                    size={20}
+                                    className={`absolute top-1/2 right-3 transform -translate-y-1/2 ${
+                                        inputValue.trim() || uploadedImage
+                                            ? 'text-teal-500 cursor-pointer'
+                                            : 'text-gray-300'
+                                    }`}
+                                    style={{
+                                        pointerEvents: inputValue.trim() || uploadedImage ? 'auto' : 'none',
+                                    }}
+                                    onClick={handleAddComment}
+                                />
                             </div>
-
-                            {post.uploadedImage && (
-                                <div className="mt-4 relative inline-block">
-                                    <img
-                                        src={post.uploadedImage}
-                                        alt="Uploaded"
-                                        className="w-16 h-16 object-cover rounded-md border"
-                                    />
-
-                                    <button
-                                        onClick={() => handleImageRemove(post.id)}
-                                        className="absolute top-0 right-0 bg-teal-500 rounded-full p-1 shadow text-white hover:bg-teal-600"
-                                    >
-                                        <X size={12} />
-                                    </button>
-                                </div>
-                            )}
                         </div>
-                    )}
-                    <img src={line} className="py-6" />
+                    </div>
                 </div>
-            ))}
-            {visiblePostsCount < posts.length && (
-                <div className="text-center">
-                    <Button className="mt-4 bg-teal-500 text-white hover:bg-teal-600" onClick={handleShowMore}>
+            ) : null}
+
+            <div>
+                {comments.slice(0, visibleCount).map((comment) => (
+                    <div key={comment.id} className="py-4">
+                        <div className="flex items-start space-x-4">
+                            <div className="w-10 h-10 flex items-center justify-center bg-gray-300 rounded-full">
+                                {comment.name[0]}
+                            </div>
+                            <div className="flex-grow space-y-2">
+                                <div className="text-md font-semibold">{comment.name}</div>
+                                <div className="text-sm text-gray-800 mb-2">{comment.text}</div>
+                                {comment.image && (
+                                    <img
+                                        src={comment.image}
+                                        alt="Commented"
+                                        className="w-24 h-24 object-cover rounded-md border"
+                                    />
+                                )}
+                                <div className="flex items-center space-x-4">
+                                    <div className="text-xs text-gray-500">{comment.time}</div>
+                                    {['Admin', 'Guarantee', 'Donor'].includes(user?.role) && (
+                                        <button
+                                            className="text-sm text-teal-500"
+                                            onClick={() =>
+                                                setReplyingCommentId(
+                                                    replyingCommentId === comment.id ? null : comment.id,
+                                                )
+                                            }
+                                        >
+                                            Trả lời
+                                        </button>
+                                    )}
+                                </div>
+
+                                {['Admin', 'Guarantee', 'Donor'].includes(user?.role) &&
+                                    replyingCommentId === comment.id && (
+                                        <div className="flex items-center gap-2 py-2 ml-2">
+                                            <div className="w-8 h-8 flex items-center justify-center bg-gray-300 rounded-full">
+                                                T
+                                            </div>
+                                            <Label className="cursor-pointer text-gray-500 hover:text-teal-500">
+                                                <Camera size={24} />
+                                                <Input
+                                                    type="file"
+                                                    accept="image/*"
+                                                    className="hidden"
+                                                    onChange={handleReplyFileChange}
+                                                />
+                                            </Label>
+                                            <div className="relative flex-grow">
+                                                <Input
+                                                    type="text"
+                                                    placeholder={`Trả lời ${comment.name}`}
+                                                    className="flex-grow px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                                                    value={replyValue}
+                                                    onChange={handleReplyInputChange}
+                                                />
+                                                <SendHorizonal
+                                                    size={20}
+                                                    className={`absolute top-1/2 right-3 transform -translate-y-1/2 ${
+                                                        replyValue.trim() || replyImage
+                                                            ? 'text-teal-500 cursor-pointer'
+                                                            : 'text-gray-300'
+                                                    }`}
+                                                    style={{
+                                                        pointerEvents:
+                                                            replyValue.trim() || replyImage ? 'auto' : 'none',
+                                                    }}
+                                                    onClick={() => handleReplySubmit(comment.id)}
+                                                />
+                                            </div>
+                                        </div>
+                                    )}
+
+                                {[...comment.replies]
+                                    .sort((a, b) => {
+                                        const parseTime = (timeString) => {
+                                            if (timeString.includes('phút')) {
+                                                return new Date().getTime() - parseInt(timeString) * 60 * 1000;
+                                            } else if (timeString.includes('giờ')) {
+                                                return new Date().getTime() - parseInt(timeString) * 60 * 60 * 1000;
+                                            } else if (timeString.includes('ngày')) {
+                                                return (
+                                                    new Date().getTime() - parseInt(timeString) * 24 * 60 * 60 * 1000
+                                                );
+                                            } else if (timeString.includes('tháng')) {
+                                                return (
+                                                    new Date().getTime() -
+                                                    parseInt(timeString) * 30 * 24 * 60 * 60 * 1000
+                                                );
+                                            } else {
+                                                return new Date().getTime(); 
+                                            }
+                                        };
+
+                                        return parseTime(b.time) - parseTime(a.time); 
+                                    })
+                                    .map((reply) => (
+                                        <div key={reply.id} className="ml-2 pt-4 flex items-start gap-4">
+                                            <div className="w-8 h-8 flex items-center justify-center bg-gray-300 rounded-full">
+                                                {reply.name[0]}
+                                            </div>
+                                            <div className="flex-grow space-y-2">
+                                                <div className="text-sm font-semibold">{reply.name}</div>
+                                                <div className="text-sm text-gray-800">{reply.text}</div>
+                                                {reply.image && (
+                                                    <img
+                                                        src={reply.image}
+                                                        alt="Reply Image"
+                                                        className="w-16 h-16 object-cover rounded-md border mt-2"
+                                                    />
+                                                )}
+                                                <div className="text-xs text-gray-500">{reply.time}</div>
+                                            </div>
+                                        </div>
+                                    ))}
+                            </div>
+                        </div>
+                    </div>
+                ))}
+                {visibleCount < comments.length && (
+                    <button
+                        onClick={handleLoadMore}
+                        className="w-full py-2 text-center text-teal-500 border border-teal-500 rounded-md mt-4"
+                    >
                         Xem thêm
-                    </Button>
-                </div>
-            )}
+                    </button>
+                )}
+            </div>
         </div>
     );
 };
