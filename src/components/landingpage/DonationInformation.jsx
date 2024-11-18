@@ -143,7 +143,7 @@ const DonationInformation = () => {
 
             setPayOSConfig((oldConfig) => ({
                 ...oldConfig,
-                CHECKOUT_URL: response.paymentLink.checkoutUrl,
+                CHECKOUT_URL: response.data.paymentLink.checkoutUrl,
             }));
         } catch (error) {
             console.error('Error creating donation:', error);
