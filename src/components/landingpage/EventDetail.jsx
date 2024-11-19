@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Share2, MapPin, Calendar, Clock, Gift, Users } from 'lucide-react';
+import { Share2, MapPin, Calendar, Clock, Gift, Users, HeartHandshake } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from 'sonner';
 import { useParams } from 'react-router-dom';
@@ -26,7 +26,9 @@ const EventDetail = () => {
     const { data: event, isLoading, error } = useGetChildrenVisitTripsByIdQuery(id);
     const [showGiftDialog, setShowGiftDialog] = useState(false);
     const [showCanceledRegistrationModal, setShowCanceledRegistrationModal] = useState(false);
+    const [hasProcessedCancellation, setHasProcessedCancellation] = useState(false);
     const [updateRegistration] = useUpdateVisitTripRegistrationMutation();
+
 
     const hasCanceledRegistration = event?.status === 5 &&
         event?.visitRegistrations?.some(reg =>
@@ -56,7 +58,7 @@ const EventDetail = () => {
         try {
             if (navigator.share) {
                 await navigator.share({
-                    title: event.description,
+                    title: event.title,
                     text: event.description,
                     url: window.location.href,
                 });
@@ -76,6 +78,7 @@ const EventDetail = () => {
 
             if (result?.success) {
                 setShowCanceledRegistrationModal(false);
+                setHasProcessedCancellation(true);
                 window.location.reload();
 
                 toast.success(
@@ -167,6 +170,16 @@ const EventDetail = () => {
 
                         <div className="space-y-6 p-6 bg-gradient-to-r from-teal-50 to-rose-50 rounded-xl shadow-sm">
                             <div className="flex gap-4 justify-center">
+                                {hasCanceledRegistration && !hasProcessedCancellation && !showCanceledRegistrationModal && (
+                                    <div className="flex justify-center">
+                                        <Button
+                                            onClick={() => setShowCanceledRegistrationModal(true)}
+                                            className="h-14 w-20 bg-secondary text-white hover:bg-red-400"
+                                        >
+                                            <HeartHandshake className="w-7 h-7" />
+                                        </Button>
+                                    </div>
+                                )}
                                 {(event.status === 1 || (event.status === 2 && event.visitRegistrations?.some(reg =>
                                     reg.userID === user?.userID && reg.status === 1
                                 ))) && (

@@ -17,6 +17,7 @@ import { useGetFilteredChildrenVisitTripsQuery } from '@/redux/childrenVisitTrip
 import LoadingScreen from '@/components/common/LoadingScreen';
 import { visitStatus } from '@/config/combobox';
 import { formatDate } from '@/lib/utils';
+import { toast } from 'sonner';
 
 const VisitEvent = () => {
     const { provinces } = useLocationVN();
@@ -91,8 +92,25 @@ const VisitEvent = () => {
         navigate(`/event/${eventId}`);
     };
 
-    const handleShare = (e, eventId) => {
+    const handleShare = async (e, event) => {
         e.stopPropagation();
+        try {
+            const shareUrl = `${window.location.origin}/event/${event.id}`;
+
+            if (navigator.share) {
+                await navigator.share({
+                    title: event.title,
+                    text: event.description,
+                    url: shareUrl
+                });
+            } else {
+                await navigator.clipboard.writeText(shareUrl);
+                toast.success('Đã sao chép liên kết vào clipboard!');
+            }
+        } catch (error) {
+            console.error('Error sharing:', error);
+            toast.error('Không thể chia sẻ liên kết');
+        }
     };
 
     if (isLoading) {
@@ -227,7 +245,7 @@ const VisitEvent = () => {
                                     </span>
                                 </div>
                                 <button
-                                    onClick={(e) => handleShare(e, event.id)}
+                                    onClick={(e) => handleShare(e, event)}
                                     className="flex items-center text-blue-500 hover:text-blue-600 transition-colors"
                                 >
                                     <ExternalLink className="w-5 h-5 mr-1" />
