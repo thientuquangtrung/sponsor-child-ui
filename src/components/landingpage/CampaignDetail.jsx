@@ -13,6 +13,7 @@ import { Dialog, DialogClose, DialogContent } from '@/components/ui/dialog';
 import { getAssetsList } from '@/lib/cloudinary';
 import Activity from '@/components/landingpage/Activity';
 import Comment from './Comment';
+import { toast } from 'sonner';
 
 const partners = [
     {
@@ -119,6 +120,23 @@ const CampaignDetail = () => {
         return <p>Lỗi khi tải thông tin chiến dịch: {error.message}</p>;
     }
 
+    const handleShare = async () => {
+        try {
+            if (navigator.share) {
+                await navigator.share({
+                    title: campaign.title,
+                    text: campaign.description,
+                    url: window.location.href,
+                });
+            } else {
+                const url = window.location.href;
+                await navigator.clipboard.writeText(url);
+                toast.success('Đã sao chép liên kết vào clipboard!');
+            }
+        } catch (error) {
+            console.error('Error sharing:', error);
+        }
+    };
     return (
         <div className="container mx-auto py-8 px-4">
             <div className="flex flex-col md:flex-row md:space-x-8">
@@ -300,8 +318,10 @@ const CampaignDetail = () => {
                         </div>
 
                         <div className="flex mt-4 space-x-2">
-                            <Button variant="outline" className="flex-1 hover:bg-zinc-100">
-                                Đồng hành gây quỹ
+                            <Button variant="outline"
+                                onClick={handleShare}
+                                className="flex-1 hover:bg-zinc-100">
+                                Chia sẻ
                             </Button>
                             <Button
                                 className="flex-1 bg-gradient-to-r from-primary to-secondary text-white"
@@ -312,7 +332,7 @@ const CampaignDetail = () => {
                         </div>
                     </div>
 
-                    <div className="mt-12 shadow-xl p-4 rounded-lg">
+                    {/* <div className="mt-12 shadow-xl p-4 rounded-lg">
                         <h3 className="text-lg font-semibold text-black">
                             Đồng hành gây quỹ <span className="text-[#69A6B8]">({partners.length})</span>
                         </h3>
@@ -334,7 +354,7 @@ const CampaignDetail = () => {
                                 </div>
                             ))}
                         </div>
-                    </div>
+                    </div> */}
 
                     <div className="mt-12 shadow-xl p-4 rounded-lg shadow-gray-300">
                         <h3 className="text-lg font-semibold text-black">Thông tin người vận động</h3>
