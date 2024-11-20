@@ -15,6 +15,11 @@ export const campaignApi = baseApi.injectEndpoints({
         getCampaignById: builder.query({
             query: (id) => `/campaign/${id}`,
         }),
+
+        getCampaignDetailsById: builder.query({
+            query: (id) => `/campaign/details/${id}`,
+        }),
+
         createCampaign: builder.mutation({
             query: (data) => ({
                 url: '/campaign',
@@ -54,6 +59,7 @@ export const campaignApi = baseApi.injectEndpoints({
 export const {
     useGetAllCampaignsQuery,
     useGetCampaignByIdQuery,
+    useGetCampaignDetailsByIdQuery,
     useCreateCampaignMutation,
     useUpdateCampaignMutation,
     useDeleteCampaignMutation,
