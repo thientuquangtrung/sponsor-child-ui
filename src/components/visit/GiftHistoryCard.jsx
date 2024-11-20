@@ -65,19 +65,19 @@ const GiftHistoryCard = ({
                                             <p className="text-gray-700 mb-2">
                                                 Cảm ơn bạn đã quyên góp <span className="font-medium">{gift.amount} {gift.unit}</span> {gift.giftType}{' '}
                                             </p>
-                                            {gift.giftStatus !== 0 && gift.proofOfDonation ? (
-                                                <a
-                                                    href={gift.proofOfDonation}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="flex items-center text-sm text-gray-600 hover:text-teal-800"
-                                                >
-                                                    <span className="font-medium">
-                                                        <span className="underline">{getStatusText(gift.giftStatus)}</span> vào ngày: {formatDateTime(gift.updatedAt)}
-                                                    </span>
-                                                </a>
-                                            ) : (
-                                                gift.giftStatus !== 0 && (
+                                            {gift.giftStatus === 2 && (
+                                                gift.proofOfDonation ? (
+                                                    <a
+                                                        href={gift.proofOfDonation}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="flex items-center text-sm text-gray-600 hover:text-teal-800"
+                                                    >
+                                                        <span className="font-medium">
+                                                            <span className="underline">{getStatusText(gift.giftStatus)}</span> vào ngày: {formatDateTime(gift.updatedAt)}
+                                                        </span>
+                                                    </a>
+                                                ) : (
                                                     <p className="text-sm text-gray-600">
                                                         <span className="font-medium">
                                                             {getStatusText(gift.giftStatus)} vào ngày: {formatDateTime(gift.updatedAt)}
