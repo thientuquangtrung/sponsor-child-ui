@@ -58,7 +58,7 @@ const CanceledEventRegistrationDialog = ({
         try {
             await onConfirmCancel({
                 id: registrationData.id,
-                status: 5,
+                status: 2,
                 cancellationReason: 'Hoàn tiền do chuyến thăm bị hủy',
                 bankAccountName: data.bankAccount.name,
                 bankAccountNumber: data.bankAccount.number,
@@ -71,7 +71,6 @@ const CanceledEventRegistrationDialog = ({
             setTimeout(reloadPage, 1000);
         } catch (error) {
             toast.error('Có lỗi xảy ra. Vui lòng thử lại!');
-            console.error('Refund error:', error);
         }
     };
 
@@ -109,10 +108,10 @@ const CanceledEventRegistrationDialog = ({
                         Số tiền bạn đã thanh toán sẽ được hoàn lại đầy đủ. Nếu bạn cần hỗ trợ thêm, vui lòng chọn phương thức xử lý khoản thanh toán.</DialogDescription>
                 </DialogHeader>
 
-                <div className="p-6 space-y-4">
-                    <div className="bg-yellow-50 rounded-lg p-4">
+                <div className="space-y-4">
+                    <div className="bg-blue-100 rounded-lg p-4">
                         <p className="text-gray-700 mb-2">
-                            Bạn được hoàn lại 100% số tiền mà bạn đã thanh toán là: <span className="font-semibold">{visitCost?.toLocaleString('vi-VN')} VNĐ</span>.
+                            Bạn được hoàn lại 100% số tiền mà bạn đã thanh toán là: <span className="font-semibold text-teal-500">{visitCost?.toLocaleString('vi-VN')} VNĐ</span>.
                         </p>
                     </div>
 

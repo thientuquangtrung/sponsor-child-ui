@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Share2, MapPin, Calendar, Clock, Gift, Users, HeartHandshake } from 'lucide-react';
+import { Share2, MapPin, Calendar, Clock, Gift, Users, AlertCircle } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from 'sonner';
 import { useParams } from 'react-router-dom';
@@ -170,19 +170,9 @@ const EventDetail = () => {
 
                         <div className="space-y-6 p-6 bg-gradient-to-r from-teal-50 to-rose-50 rounded-xl shadow-sm">
                             <div className="flex gap-4 justify-center">
-                                {hasCanceledRegistration && !hasProcessedCancellation && !showCanceledRegistrationModal && (
-                                    <div className="flex justify-center">
-                                        <Button
-                                            onClick={() => setShowCanceledRegistrationModal(true)}
-                                            className="h-14 w-20 bg-secondary text-white hover:bg-red-400"
-                                        >
-                                            <HeartHandshake className="w-7 h-7" />
-                                        </Button>
-                                    </div>
-                                )}
                                 {(event.status === 1 || (event.status === 2 && event.visitRegistrations?.some(reg =>
                                     reg.userID === user?.userID && reg.status === 1
-                                ))) && (
+                                ))) && user?.userID && (
                                         <ParticipantRegistration
                                             visitId={id}
                                             userId={user?.userID}
@@ -357,6 +347,24 @@ const EventDetail = () => {
         <div className="min-h-screen bg-gray-50 py-8">
             <div className="max-w-7xl mx-auto px-4">
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div className="lg:col-span-3 space-y-6">
+                        {hasCanceledRegistration && !hasProcessedCancellation && (
+                            <div className="bg-orange-50 border-l-4 border-orange-500 p-4 flex items-center justify-between">
+                                <div className="flex items-center">
+                                    <AlertCircle className="text-orange-600 mr-2" />                                    <span className="mr-2 text-orange-600">
+                                        Chuyến thăm bạn đã đăng ký không thể diễn ra như dự kiến và đã bị hủy. Bạn
+                                    </span>
+                                    <Button
+                                        variant="link"
+                                        className="text-orange-500 underline p-0 hover:text-orange-700"
+                                        onClick={() => setShowCanceledRegistrationModal(true)}
+                                    >
+                                        vui lòng bấm vào đây
+                                    </Button>
+                                    <span className="ml-1 text-orange-500">chọn phương thức xử lý khoản thanh toán.</span>
+                                </div>
+                            </div>
+                        )}</div>
                     <div className="lg:col-span-2 space-y-6">
                         {renderEventHeader()}
 
