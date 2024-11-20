@@ -16,6 +16,7 @@ import { campaignStatusUser, campaignTypes } from '@/config/combobox';
 import { Button } from '../ui/button';
 import { BellRing, X } from 'lucide-react';
 import useLocationVN from '@/hooks/useLocationVN';
+import LoadingScreen from '@/components/common/LoadingScreen';
 
 const DonateTarget = () => {
     const { provinces } = useLocationVN();
@@ -59,7 +60,7 @@ const DonateTarget = () => {
     };
 
     if (isLoading) {
-        return <p>Đang tải thông tin chiến dịch...</p>;
+        return <div><LoadingScreen /></div>;
     }
 
     if (error) {

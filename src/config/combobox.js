@@ -145,7 +145,7 @@ export const visitRegistrationStatus = [
     { label: 'Đang chờ hoàn tiền', value: 2 },
     { label: 'Hủy đăng ký', value: 3 },
     { label: 'Góp vào quỹ chung', value: 4 },
-
+    { label: 'Đang chờ hoàn tiền do chuyến thăm hủy', value: 5 },
 ];
 export const visitRegistrationStatus2 = [
     { label: 'vui lòng hủy và thanh toán lại. Lỗi đã được ghi nhận', value: 0 },
@@ -153,6 +153,7 @@ export const visitRegistrationStatus2 = [
     { label: 'đã hủy và yêu cầu hoàn tiền', value: 2 },
     { label: 'hủy đăng ký', value: 3 },
     { label: 'góp vào quỹ chung', value: 4 },
+    { label: 'yêu cầu hoàn tiền', value: 5 },
 
 ];
 export const giftDeliveryMethod = [

@@ -14,6 +14,7 @@ import { getAssetsList } from '@/lib/cloudinary';
 import Activity from '@/components/landingpage/Activity';
 import Comment from './Comment';
 import { toast } from 'sonner';
+import LoadingScreen from '@/components/common/LoadingScreen';
 
 const partners = [
     {
@@ -113,7 +114,7 @@ const CampaignDetail = () => {
     };
 
     if (isLoading) {
-        return <p>Đang tải thông tin chiến dịch...</p>;
+        return <div><LoadingScreen /></div>;
     }
 
     if (error) {
