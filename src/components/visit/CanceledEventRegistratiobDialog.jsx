@@ -58,7 +58,7 @@ const CanceledEventRegistrationDialog = ({
         try {
             await onConfirmCancel({
                 id: registrationData.id,
-                status: 2,
+                status: 5,
                 cancellationReason: 'Hoàn tiền do chuyến thăm bị hủy',
                 bankAccountName: data.bankAccount.name,
                 bankAccountNumber: data.bankAccount.number,
