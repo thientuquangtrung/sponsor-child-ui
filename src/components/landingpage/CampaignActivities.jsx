@@ -1,5 +1,4 @@
 import React from 'react';
-import activity from '@/assets/images/activity.png';
 import { useParams } from 'react-router-dom';
 import { useGetCampaignDetailsByIdQuery } from '@/redux/campaign/campaignApi';
 import { Calendar, CircleArrowOutUpLeft, CircleArrowOutDownRight } from 'lucide-react';
@@ -24,7 +23,7 @@ const CampaignActivities = () => {
     if (isLoading) {
         return (
             <div className="flex justify-center items-center py-10">
-                <span className="text-gray-500">Loading campaign activities...</span>
+                <span className="text-gray-500">Đang tải hoạt động...</span>
             </div>
         );
     }
@@ -32,7 +31,7 @@ const CampaignActivities = () => {
     if (isError || !data || !data.campaignActivities) {
         return (
             <div className="flex justify-center items-center py-10">
-                <span className="text-red-500">Error loading campaign activities.</span>
+                <span className="text-red-500">Đã có lỗi tải hoạt động.</span>
             </div>
         );
     }
@@ -50,8 +49,7 @@ const CampaignActivities = () => {
     }
 
     return (
-        <div className="relative">
-            <img src={activity} alt="Campaign Activity" className="w-[50%] mx-auto" />
+        <div className="relative py-4">
             {/* Timeline vertical line */}
             <div className="absolute left-1/2 transform -translate-x-1/2 w-1 bg-gray-100 h-full"></div>
 
@@ -64,16 +62,16 @@ const CampaignActivities = () => {
 
                     // Choose icon alternately
                     const Icon = index % 2 === 0 ? CircleArrowOutUpLeft : CircleArrowOutDownRight;
-                    const iconColor = index % 2 === 0 ? 'text-rose-300' : 'text-yellow-500';
+                    const iconColor = index % 2 === 0 ? 'text-rose-400' : 'text-blue-500';
 
                     const imageUrl = activity.imageFolderUrl || 'https://via.placeholder.com/150';
 
                     return (
                         <div
                             key={activity.activityID}
-                            className={`relative flex items-center ${
+                            className={`h-44 relative flex items-center ${
                                 index % 2 === 0 ? 'justify-start' : 'justify-end'
-                            }`}
+                            }`} 
                         >
                             {/* Timeline Icon */}
                             <div className={`absolute left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10 mt-4`}>
@@ -82,19 +80,22 @@ const CampaignActivities = () => {
 
                             {/* Card Content */}
                             <div
-                                className={`p-4 rounded-lg shadow-lg w-5/12 ${
-                                    index % 2 === 0 ? 'ml-8 border-r-2 border-rose-300' : 'mr-8 border-l-2 border-yellow-500'
+                                className={`p-3 rounded-lg shadow-md w-5/12 bg-white ${
+                                    // Adjusted width and padding
+                                    index % 2 === 0
+                                        ? 'ml-4 bg-gradient-to-r from-sky-50 to-green-50'
+                                        : 'mr-4 bg-gradient-to-r from-green-50 to-sky-50'
                                 }`}
                             >
                                 {/* Image */}
                                 <img
                                     src={imageUrl}
                                     alt={activity.description || 'Activity Image'}
-                                    className="rounded-md mb-4 w-full h-32 object-cover"
+                                    className="rounded-md mb-2 w-full h-24 object-cover" 
                                 />
                                 {/* Description */}
-                                <h3 className="font-bold text-md text-gray-900">{activity.description}</h3>
-                                <div className="flex items-center justify-between text-sm text-gray-500 mt-2">
+                                <h3 className="font-semibold text-md text-gray-900">{activity.description}</h3>
+                                <div className="flex items-center justify-between text-sm text-gray-500 mt-4">
                                     <div className="flex items-center space-x-2">
                                         <Calendar className="w-4 h-4" />
                                         <span>{formatDate(activity.activityDate)}</span>
