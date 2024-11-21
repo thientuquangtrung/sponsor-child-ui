@@ -20,6 +20,8 @@ export const campaignStatusUser = [
     { label: 'Đang hoạt động', value: 4 },
     { label: 'Đang giải ngân', value: 8 },
     { label: 'Quá hạn', value: 7 },
+    { label: 'Đã kết thúc', value: 5 },
+
 ];
 
 export const campaignTypes = [
