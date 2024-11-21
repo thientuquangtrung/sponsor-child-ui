@@ -1,14 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
+import { useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
 import line from '@/assets/images/line.png';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useSelector } from 'react-redux';
-import { useParams } from 'react-router-dom';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import imageCompression from 'browser-image-compression';
 import { Camera, X, SendHorizonal, LoaderCircle } from 'lucide-react';
 import { useGetCommentByCampaignIdQuery, useCreateCommentMutation } from '@/redux/comment/commentApi';
-import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 
 const Comment = () => {
     const { id } = useParams();
@@ -22,18 +23,25 @@ const Comment = () => {
     const [visibleCount, setVisibleCount] = useState(3);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isReplySubmitting, setIsReplySubmitting] = useState(null);
-    const { data: comments = [], isLoading } = useGetCommentByCampaignIdQuery(id);
+    const { data: comments = [], isLoading, refetch } = useGetCommentByCampaignIdQuery(id);
 
-    const handleFileChange = (e) => {
+    const sortedComments = [...comments].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+    const handleFileChange = async (e) => {
         const file = e.target.files[0];
         if (file) {
             if (file.size > 5 * 1024 * 1024) {
-                // 5MB size limit
                 toast.error('Dung lượng ảnh không được vượt quá 5MB');
                 return;
             }
-            const imageUrl = URL.createObjectURL(file);
-            setUploadedImage(imageUrl);
+            try {
+                const compressedFile = await compressImage(file);
+                const imageUrl = URL.createObjectURL(compressedFile);
+                setUploadedImage(imageUrl);
+            } catch (error) {
+                console.error('Lỗi nén ảnh:', error);
+                toast.error('Nén ảnh thất bại!');
+            }
         }
     };
 
@@ -58,6 +66,7 @@ const Comment = () => {
                 toast.success('Thêm bình luận thành công!');
                 setInputValue('');
                 setUploadedImage(null);
+                refetch();
             } catch (error) {
                 console.error('Failed to add comment:', error);
                 toast.error('Thêm bình luận thất bại!');
@@ -81,17 +90,31 @@ const Comment = () => {
         });
     };
 
-    const handleReplyFileChange = (e) => {
+    const handleReplyFileChange = async (e) => {
         const file = e.target.files[0];
         if (file) {
             if (file.size > 5 * 1024 * 1024) {
-                // 5MB size limit
                 toast.error('Dung lượng ảnh không được vượt quá 5MB');
                 return;
             }
-            const imageUrl = URL.createObjectURL(file);
-            setReplyImage(imageUrl);
+            try {
+                const compressedFile = await compressImage(file);
+                const imageUrl = URL.createObjectURL(compressedFile);
+                setReplyImage(imageUrl);
+            } catch (error) {
+                console.error('Lỗi nén ảnh:', error);
+                toast.error('Nén ảnh thất bại!');
+            }
         }
+    };
+
+    const compressImage = async (file) => {
+        const options = {
+            maxSizeMB: 1,
+            maxWidthOrHeight: 1024,
+            useWebWorker: true,
+        };
+        return await imageCompression(file, options);
     };
 
     const handleReplyInputChange = (e) => {
@@ -125,6 +148,7 @@ const Comment = () => {
                 setReplyingCommentId(null);
                 setReplyValue('');
                 setReplyImage(null);
+                refetch();
             } catch (error) {
                 console.error('Failed to reply to comment:', error);
                 toast.error('Trả lời bình luận thất bại!');
@@ -143,7 +167,7 @@ const Comment = () => {
     }
 
     return (
-        <div className="min-h-screen">
+        <div className="min-h-[200px] mt-8">
             <img src={line} alt="Decorative line" />
             <h2 className="text-2xl font-bold py-8">Bình luận</h2>
 
@@ -151,7 +175,6 @@ const Comment = () => {
                 <div className="post w-full">
                     <div className="mb-4">
                         <div className="flex items-center gap-2">
-                            {/* <div className="w-10 h-10 flex items-center justify-center bg-gray-300 rounded-full">{user?.imageUrl}</div> */}
                             <Avatar className="h-14 w-14">
                                 <AvatarImage src={user?.imageUrl} alt={user?.fullname} />
                                 <AvatarFallback>{user?.fullname?.substring(0, 2).toUpperCase()}</AvatarFallback>
@@ -206,18 +229,17 @@ const Comment = () => {
             ) : null}
 
             <div>
-                {comments.slice(0, visibleCount).map((comment) => (
+                {sortedComments.slice(0, visibleCount).map((comment) => (
                     <div key={comment.id} className="py-4">
                         <div className="flex items-start space-x-4">
-                            {/* <div className="w-10 h-10 flex items-center justify-center bg-gray-300 rounded-full">
-                                {comment.userID[0]}
-                            </div> */}
                             <Avatar className="h-10 w-10">
-                                <AvatarImage src={comment.userID[0]} alt={comment?.fullname} />
-                                <AvatarFallback>{user?.fullname?.substring(0, 2).toUpperCase()}</AvatarFallback>
+                                <AvatarImage src={comment.userImageUrl} alt={comment?.userFullname} />
+                                <AvatarFallback>{comment?.userFullname?.substring(0, 2).toUpperCase()}</AvatarFallback>
                             </Avatar>
                             <div className="flex-grow space-y-2">
-                                <div className="text-md font-semibold">{comment.userID}</div>
+                                <div className="text-md font-semibold">
+                                    {comment.userFullname === user.fullname ? 'Bạn' : comment.userFullname}
+                                </div>
                                 <div className="text-sm text-gray-800 mb-2">{comment.content}</div>
                                 {comment.imageUrl && (
                                     <img
@@ -247,7 +269,7 @@ const Comment = () => {
                                 {replyingCommentId === comment.id && (
                                     <div className="flex flex-col space-y-2">
                                         <div className="flex items-center gap-2 py-2">
-                                            <Avatar className="h-14 w-14">
+                                            <Avatar className="h-10 w-10">
                                                 <AvatarImage src={user?.imageUrl} alt={user?.fullname} />
                                                 <AvatarFallback>
                                                     {user?.fullname?.substring(0, 2).toUpperCase()}
@@ -265,7 +287,7 @@ const Comment = () => {
                                             <div className="relative flex-grow">
                                                 <Input
                                                     type="text"
-                                                    placeholder={`Trả lời ${comment.userID}`}
+                                                    placeholder={`Trả lời ${comment.userFullname}`}
                                                     className="flex-grow px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
                                                     value={replyValue}
                                                     onChange={handleReplyInputChange}
@@ -309,38 +331,40 @@ const Comment = () => {
                                     </div>
                                 )}
 
-                                {comment.replies.map((reply) => (
-                                    <div key={reply.id} className="ml-2 pt-4 flex items-start gap-4">
-                                        {/* <div className="w-8 h-8 flex items-center justify-center bg-gray-300 rounded-full">
-                                            {reply.userID[0]}
-                                        </div> */}
-                                        <Avatar className="h-10 w-10">
-                                            <AvatarImage src={reply.userID[0]} alt={reply?.fullname} />
-                                            <AvatarFallback>
-                                                {user?.fullname?.substring(0, 2).toUpperCase()}
-                                            </AvatarFallback>
-                                        </Avatar>
-                                        <div className="flex-grow space-y-2">
-                                            <div className="text-md font-semibold">{reply.userID}</div>
-                                            <div className="text-sm text-gray-800">{reply.content}</div>
-                                            {reply.imageUrl && (
-                                                <img
-                                                    src={reply.imageUrl}
-                                                    alt="Reply Image"
-                                                    className="w-16 h-16 object-cover rounded-md border mt-2"
-                                                />
-                                            )}
-                                            <div className="text-xs text-gray-500">
-                                                {format(new Date(reply.createdAt), 'dd/MM/yyyy HH:mm:ss')}
+                                {comment.replies
+                                    .slice()
+                                    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+                                    .map((reply) => (
+                                        <div key={reply.id} className="ml-2 pt-4 flex items-start gap-4">
+                                            <Avatar className="h-10 w-10">
+                                                <AvatarImage src={reply.userImageUrl} alt={reply?.userFullname} />
+                                                <AvatarFallback>
+                                                    {reply?.userFullname?.substring(0, 2).toUpperCase()}
+                                                </AvatarFallback>
+                                            </Avatar>
+                                            <div className="flex-grow space-y-2">
+                                                <div className="text-md font-semibold">
+                                                    {reply.userFullname === user.fullname ? 'Bạn' : reply.userFullname}
+                                                </div>
+                                                <div className="text-sm text-gray-800">{reply.content}</div>
+                                                {reply.imageUrl && (
+                                                    <img
+                                                        src={reply.imageUrl}
+                                                        alt="Reply Image"
+                                                        className="w-24 h-24 object-cover rounded-md border mt-2"
+                                                    />
+                                                )}
+                                                <div className="text-xs text-gray-500">
+                                                    {format(new Date(reply.createdAt), 'dd/MM/yyyy HH:mm:ss')}
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                ))}
+                                    ))}
                             </div>
                         </div>
                     </div>
                 ))}
-                {visibleCount < comments.length && (
+                {visibleCount < sortedComments.length && (
                     <button
                         onClick={handleLoadMore}
                         className="w-full py-2 text-center text-teal-500 border border-teal-500 rounded-md mt-4"

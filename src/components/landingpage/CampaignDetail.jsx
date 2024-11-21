@@ -15,6 +15,7 @@ import Activity from '@/components/landingpage/Activity';
 import Comment from './Comment';
 import { toast } from 'sonner';
 import LoadingScreen from '@/components/common/LoadingScreen';
+import CampaignActivities from './CampaignActivities';
 
 const partners = [
     {
@@ -58,6 +59,7 @@ const partners = [
 const CampaignDetail = () => {
     const { id } = useParams();
     const [activeTab, setActiveTab] = useState('story');
+    const [subTab, setSubTab] = useState('disbursement activities');
     const navigate = useNavigate();
     const [currentPage, setCurrentPage] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -97,8 +99,9 @@ const CampaignDetail = () => {
 
                 //gen urls
                 const imageUrls = resources.map((resource) => {
-                    return `https://res.cloudinary.com/${import.meta.env.VITE_CLOUD_NAME}/image/${resource.type}/${resource.public_id
-                        }.${resource.format}`;
+                    return `https://res.cloudinary.com/${import.meta.env.VITE_CLOUD_NAME}/image/${resource.type}/${
+                        resource.public_id
+                    }.${resource.format}`;
                 });
                 setImages(imageUrls);
             } catch (error) {
@@ -114,7 +117,11 @@ const CampaignDetail = () => {
     };
 
     if (isLoading) {
-        return <div><LoadingScreen /></div>;
+        return (
+            <div>
+                <LoadingScreen />
+            </div>
+        );
     }
 
     if (error) {
@@ -180,13 +187,13 @@ const CampaignDetail = () => {
 
                     <Tabs value={activeTab} onValueChange={setActiveTab}>
                         <TabsList className="flex space-x-2 bg-inherit">
-                            <TabsTrigger value="story" className={`relative py-1 px-4 text-md font-medium`}>
+                            <TabsTrigger value="story" className="relative py-1 px-4 text-md font-medium">
                                 Câu chuyện
                             </TabsTrigger>
-                            <TabsTrigger value="activities" className={`relative py-1 px-4 text-md font-medium`}>
+                            <TabsTrigger value="activities" className="relative py-1 px-4 text-md font-medium">
                                 Hoạt động
                             </TabsTrigger>
-                            <TabsTrigger value="donations" className={`relative py-1 px-4 text-md font-medium`}>
+                            <TabsTrigger value="donations" className="relative py-1 px-4 text-md font-medium">
                                 Danh sách ủng hộ ({donationsTotal?.totalDonations || 0})
                             </TabsTrigger>
                         </TabsList>
@@ -208,15 +215,37 @@ const CampaignDetail = () => {
                                 <strong>Địa chỉ:</strong>{' '}
                                 {`${campaign?.childLocation}, ${campaign?.childWard}, ${campaign?.childDistrict}, ${campaign?.childProvince}`}
                             </p>
-
                             <div
                                 className="prose max-w-none text-gray-600 rounded-lg p-6"
                                 dangerouslySetInnerHTML={{ __html: campaign?.story }}
                             />
                         </TabsContent>
+
                         <TabsContent value="activities" className="p-4 min-h-[400px]">
-                            <Activity campaign={campaign} />
+                            <Tabs value={subTab} onValueChange={setSubTab}>
+                                <TabsList className="flex space-x-2 justify-center">
+                                    <TabsTrigger
+                                        value="disbursement activities"
+                                        className="relative px-4 py-2 duration-500"
+                                    >
+                                        Hoạt động giải ngân
+                                    </TabsTrigger>
+                                    <TabsTrigger
+                                        value="additional activities"
+                                        className="relative px-4 py-2 duration-500"
+                                    >
+                                        Hoạt động bổ sung
+                                    </TabsTrigger>
+                                </TabsList>
+                                <TabsContent value="disbursement activities" className="mt-4">
+                                    <Activity campaign={campaign} />
+                                </TabsContent>
+                                <TabsContent value="additional activities" className="mt-4">
+                                    <CampaignActivities />
+                                </TabsContent>
+                            </Tabs>
                         </TabsContent>
+
                         <TabsContent value="donations" className="p-4">
                             {donationsTotal?.totalDonations === 0 ? (
                                 <p className="text-gray-400 italic text-center mt-8 min-h-[400px]">
@@ -282,10 +311,10 @@ const CampaignDetail = () => {
                                     <div className="text-sm font-semibold">Thời gian còn lại</div>
                                     <div className="text-lg font-bold text-[#69A6B8]">
                                         {Math.ceil((new Date(campaign?.endDate) - new Date()) / (1000 * 60 * 60 * 24)) >
-                                            0
+                                        0
                                             ? `Còn ${Math.ceil(
-                                                (new Date(campaign?.endDate) - new Date()) / (1000 * 60 * 60 * 24),
-                                            )} ngày`
+                                                  (new Date(campaign?.endDate) - new Date()) / (1000 * 60 * 60 * 24),
+                                              )} ngày`
                                             : 'Hết hạn'}
                                     </div>
                                 </div>
@@ -319,9 +348,7 @@ const CampaignDetail = () => {
                         </div>
 
                         <div className="flex mt-4 space-x-2">
-                            <Button variant="outline"
-                                onClick={handleShare}
-                                className="flex-1 hover:bg-zinc-100">
+                            <Button variant="outline" onClick={handleShare} className="flex-1 hover:bg-zinc-100">
                                 Chia sẻ
                             </Button>
                             <Button
