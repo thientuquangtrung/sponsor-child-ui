@@ -238,7 +238,7 @@ const Comment = () => {
                             </Avatar>
                             <div className="flex-grow space-y-2">
                                 <div className="text-md font-semibold">
-                                    {comment.userFullname === user.fullname ? 'Bạn' : comment.userFullname}
+                                    {comment.userFullname === user?.fullname ? 'Bạn' : comment.userFullname}
                                 </div>
                                 <div className="text-sm text-gray-800 mb-2">{comment.content}</div>
                                 {comment.imageUrl && (
@@ -287,7 +287,7 @@ const Comment = () => {
                                             <div className="relative flex-grow">
                                                 <Input
                                                     type="text"
-                                                    placeholder={`Trả lời ${comment.userFullname}`}
+                                                    placeholder={`Trả lời ${comment.userFullname === user?.fullname ? 'Bạn' : comment.userFullname}`}
                                                     className="flex-grow px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
                                                     value={replyValue}
                                                     onChange={handleReplyInputChange}
@@ -344,7 +344,7 @@ const Comment = () => {
                                             </Avatar>
                                             <div className="flex-grow space-y-2">
                                                 <div className="text-md font-semibold">
-                                                    {reply.userFullname === user.fullname ? 'Bạn' : reply.userFullname}
+                                                    {reply.userFullname === user?.fullname ? 'Bạn' : reply.userFullname}
                                                 </div>
                                                 <div className="text-sm text-gray-800">{reply.content}</div>
                                                 {reply.imageUrl && (
