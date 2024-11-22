@@ -15,7 +15,7 @@ import Activity from '@/components/landingpage/Activity';
 import Comment from './Comment';
 import { toast } from 'sonner';
 import LoadingScreen from '@/components/common/LoadingScreen';
-import CampaignActivities from './CampaignActivities';
+import CampaignActivities from '@/components/landingpage/CampaignActivities';
 
 const partners = [
     {
@@ -99,9 +99,8 @@ const CampaignDetail = () => {
 
                 //gen urls
                 const imageUrls = resources.map((resource) => {
-                    return `https://res.cloudinary.com/${import.meta.env.VITE_CLOUD_NAME}/image/${resource.type}/${
-                        resource.public_id
-                    }.${resource.format}`;
+                    return `https://res.cloudinary.com/${import.meta.env.VITE_CLOUD_NAME}/image/${resource.type}/${resource.public_id
+                        }.${resource.format}`;
                 });
                 setImages(imageUrls);
             } catch (error) {
@@ -238,7 +237,7 @@ const CampaignDetail = () => {
                                     </TabsTrigger>
                                 </TabsList>
                                 <TabsContent value="disbursement activities" className="mt-4">
-                                    <Activity campaign={campaign} />
+                                    <Activity campaignId={id} />
                                 </TabsContent>
                                 <TabsContent value="additional activities" className="mt-4">
                                     <CampaignActivities />
@@ -311,10 +310,10 @@ const CampaignDetail = () => {
                                     <div className="text-sm font-semibold">Thời gian còn lại</div>
                                     <div className="text-lg font-bold text-[#69A6B8]">
                                         {Math.ceil((new Date(campaign?.endDate) - new Date()) / (1000 * 60 * 60 * 24)) >
-                                        0
+                                            0
                                             ? `Còn ${Math.ceil(
-                                                  (new Date(campaign?.endDate) - new Date()) / (1000 * 60 * 60 * 24),
-                                              )} ngày`
+                                                (new Date(campaign?.endDate) - new Date()) / (1000 * 60 * 60 * 24),
+                                            )} ngày`
                                             : 'Hết hạn'}
                                     </div>
                                 </div>
