@@ -50,7 +50,7 @@ const Comment = () => {
     };
 
     const handleAddComment = async () => {
-        if (!['Admin', 'Guarantee', 'Donor'].includes(user?.role)) {
+        if (!['Admin', 'Guarantee', 'Donor', 'ChildManager'].includes(user?.role)) {
             return;
         }
         if (inputValue.trim() || uploadedImage) {
@@ -122,7 +122,7 @@ const Comment = () => {
     };
 
     const handleReplySubmit = async (commentId) => {
-        if (!['Admin', 'Guarantee', 'Donor'].includes(user?.role)) {
+        if (!['Admin', 'Guarantee', 'Donor', 'ChildManager'].includes(user?.role)) {
             return;
         }
         if (replyValue.trim() || replyImage) {
@@ -171,7 +171,7 @@ const Comment = () => {
             <img src={line} alt="Decorative line" />
             <h2 className="text-2xl font-bold py-8">Bình luận</h2>
 
-            {['Admin', 'Guarantee', 'Donor'].includes(user?.role) ? (
+            {['Admin', 'Guarantee', 'Donor', 'ChildManager'].includes(user?.role) ? (
                 <div className="post w-full">
                     <div className="mb-4">
                         <div className="flex items-center gap-2">

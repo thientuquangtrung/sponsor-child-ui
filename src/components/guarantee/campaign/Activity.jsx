@@ -13,6 +13,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Plus, Upload, Trash2, X, Save, ChevronUp, ChevronDown, Calendar, LoaderCircle } from 'lucide-react';
 import { useCreateActivityMutation, useGetActivityByCampaignIdQuery } from '@/redux/activity/activityApi';
 import { UPLOAD_FOLDER, UPLOAD_NAME, uploadFile } from '@/lib/cloudinary';
+import { Input } from '@/components/ui/input';
 
 const Activity = () => {
     const { id } = useParams();
@@ -23,6 +24,7 @@ const Activity = () => {
         description: '',
         activityDate: null,
         imageFile: null,
+        cost: '',
     });
     const [createActivity] = useCreateActivityMutation();
 
@@ -40,12 +42,23 @@ const Activity = () => {
         setIsTable((prev) => !prev);
     };
 
+    const formatCost = (value) => {
+        return value.replace(/\B(?=(\d{3})+(?!\d))/g, ',');  
+    };
+
     const handleInputChange = (field, value) => {
+        if (field === 'cost') {
+            value = value.replace(/[^0-9]/g, '');  
+            value = formatCost(value);  
+        }
+    
         setNewActivity((prev) => ({
             ...prev,
             [field]: value,
         }));
     };
+    
+    
 
     const handleDateChange = (date) => {
         console.log(date);
@@ -73,36 +86,41 @@ const Activity = () => {
     };
 
     const handleSubmit = async () => {
+        const cleanedCost = parseInt(newActivity.cost.replace(/,/g, ''), 10) || 0;  
+    
         const campaignID = uuidv4();
         const campaignActivityFolder = UPLOAD_FOLDER.getCampaignActivityFolder(campaignID);
-
+    
         const imageUrl = await uploadFile({
             file: newActivity.imageFile,
             folder: campaignActivityFolder,
             customFilename: UPLOAD_NAME.CAMPAIGN_ACTIVITY,
         });
+    
         setIsSubmitting(true);
-
+    
         try {
             const payload = {
                 campaignID: id,
                 description: newActivity.description,
                 activityDate: newActivity.activityDate ? format(newActivity.activityDate, 'yyyy-MM-dd') : null,
                 imageFolderUrl: imageUrl.secure_url,
+                cost: cleanedCost,  // Gửi số nguyên đã được xử lý
             };
-
+    
             const response = await createActivity(payload);
-
+    
             console.log('Response:', response);
-
+    
             if (!response.error) {
                 toast.success('Hoạt động đã được thêm thành công.');
-
+    
                 refetch();
                 setNewActivity({
                     description: '',
                     activityDate: null,
                     imageFile: null,
+                    cost: '',  // Reset cost
                 });
                 setIsCreating(false);
             } else {
@@ -115,6 +133,8 @@ const Activity = () => {
             setIsSubmitting(false);
         }
     };
+    
+    
 
     const handleDeleteActivity = () => {
         setNewActivity({
@@ -146,13 +166,14 @@ const Activity = () => {
                 </Button>
             </CardHeader>
 
-            <CardContent className={`px-32 py-10 ${isTable ? 'block duration-500' : 'hidden duration-500'}`}>
+            <CardContent className={`px-10 py-10 ${isTable ? 'block duration-500' : 'hidden duration-500'}`}>
                 <Table className="shadow-lg">
                     {activities.length > 0 && (
                         <TableHeader>
                             <TableRow className="bg-gray-100">
                                 <TableHead className="py-4 text-center">Hoạt động</TableHead>
                                 <TableHead className="text-center">Mô tả hoạt động</TableHead>
+                                <TableHead className="text-center">Chi phí</TableHead>
                                 <TableHead className="text-center">Ngày hoạt động</TableHead>
                                 <TableHead className="text-center">Hình ảnh</TableHead>
                                 {isCreating && <TableHead className="py-3 px-4 text-center"></TableHead>}
@@ -184,6 +205,9 @@ const Activity = () => {
                                     </div>
                                 </TableCell>
                                 <TableCell className="py-4 px-4 text-center">
+                                    {activity.cost.toLocaleString('vi-VN')} ₫
+                                </TableCell>
+                                <TableCell className="py-4 px-4 text-center">
                                     <div className="flex space-x-2 items-center justify-center">
                                         <Calendar className="w-6 h-6 mr-2" />
                                         {activity.activityDate
@@ -191,7 +215,6 @@ const Activity = () => {
                                             : 'Không có dữ liệu'}
                                     </div>
                                 </TableCell>
-
                                 <TableCell className="py-4 px-4 text-center">
                                     <div className="flex justify-center">
                                         {activity.imageFolderUrl && (
@@ -224,12 +247,23 @@ const Activity = () => {
                                     />
                                 </TableCell>
                                 <TableCell className="py-4 px-4 text-center">
+                                    <Input
+                                        type="text"
+                                        value={newActivity.cost}
+                                        onChange={(e) => handleInputChange('cost', e.target.value)}
+                                        placeholder="Chi phí"
+                                        className="w-full h-10 border border-gray-200 rounded-lg shadow-inner focus:border-teal-500 focus:ring-2 focus:ring-teal-200"
+                                    />
+                                </TableCell>
+
+                                <TableCell className="py-4 px-4 text-center">
                                     <DatePicker
                                         date={newActivity.activityDate}
                                         onDateSelect={handleDateChange}
                                         className="w-[70%] border border-gray-200 rounded-lg shadow-inner focus:border-teal-500 focus:ring-2 focus:ring-teal-200"
                                     />
                                 </TableCell>
+
                                 <TableCell className="py-4 px-4">
                                     <div className="flex justify-center">
                                         <div className="relative w-40 h-40 border-dashed border-2 border-gray-300 rounded-lg bg-gray-50 hover:bg-gray-100 flex justify-center items-center">

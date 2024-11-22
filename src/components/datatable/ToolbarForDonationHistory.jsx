@@ -15,6 +15,7 @@ export function ToolbarForDonationHistory({ table }) {
             options: [
                 { value: 'Cá nhân', label: 'Cá nhân' },
                 { value: 'Chiến dịch', label: 'Chiến dịch' },
+                { value: 'Sự kiện', label: 'Sự kiện' },
             ],
         },
     ];

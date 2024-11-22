@@ -23,14 +23,26 @@ const columns = [
         cell: ({ row }) => <div className="font-medium">{row.getValue('sourceName')}</div>,
     },
     {
-        accessorKey: 'amountAdded',
-        header: ({ column }) => <DataTableColumnHeader column={column} title="Số tiền" />,
-        cell: ({ row }) => <div className="font-medium">{row.getValue('amountAdded').toLocaleString('vi-VN')} ₫</div>,
+        accessorKey: 'description',
+        header: ({ column }) => <DataTableColumnHeader column={column} title="Nội dung quyên góp" />,
+        cell: ({ row }) => <div className="font-medium">{row.getValue('description')}</div>,
     },
     {
         accessorKey: 'dateAdded',
         header: ({ column }) => <DataTableColumnHeader column={column} title="Ngày" />,
         cell: ({ row }) => <div>{new Date(row.getValue('dateAdded')).toLocaleDateString('vi-VN')}</div>,
+    },
+    {
+        accessorKey: 'amountAdded',
+        header: ({ column }) => <DataTableColumnHeader column={column} title="Số tiền" />,
+        cell: ({ row }) => <div className="font-medium">{row.getValue('amountAdded').toLocaleString('vi-VN')} ₫</div>,
+    },
+    {
+        accessorKey: 'commonFundTotal',
+        header: ({ column }) => <DataTableColumnHeader column={column} title="Tổng quỹ chung" />,
+        cell: ({ row }) => (
+            <div className="font-medium">{row.getValue('commonFundTotal').toLocaleString('vi-VN')} ₫</div>
+        ),
     },
     {
         accessorKey: 'fundSourceType',
@@ -40,7 +52,11 @@ const columns = [
             return (
                 <Badge
                     className={
-                        row.getValue('fundSourceType') === 0 ? 'bg-teal-50 text-teal-500' : 'bg-rose-50 text-rose-400'
+                        row.getValue('fundSourceType') === 0
+                            ? 'bg-teal-50 text-teal-500'
+                            : row.getValue('fundSourceType') === 1
+                            ? 'bg-rose-50 text-rose-400'
+                            : 'bg-yellow-50 text-yellow-500'
                     }
                 >
                     {fundTypeLabel?.label || 'Không xác định'}
@@ -50,7 +66,23 @@ const columns = [
 
         filterFn: (row, id, value) => {
             const fundSourceType = row.getValue(id);
-            return value.includes(fundSourceType ? 'Chiến dịch' : 'Cá nhân');
+            let label;
+
+            switch (fundSourceType) {
+                case 0:
+                    label = 'Cá nhân';
+                    break;
+                case 1:
+                    label = 'Chiến dịch';
+                    break;
+                case 2:
+                    label = 'Sự kiện';
+                    break;
+                default:
+                    label = 'Không xác định';
+            }
+
+            return value.includes(label);
         },
     },
 ];
@@ -112,9 +144,7 @@ export function GeneralFundTable() {
                                 {headerGroup.headers.map((header) => (
                                     <TableHead
                                         key={header.id}
-                                        className={`px-4 py-2 font-semibold text-gray-700 text-center ${
-                                            header.column.id === 'sourceName' ? 'w-1/2' : 'w-1/6'
-                                        }`}
+                                        className={'px-4 py-2 font-semibold text-gray-700 text-center'}
                                     >
                                         {flexRender(header.column.columnDef.header, header.getContext())}
                                     </TableHead>
