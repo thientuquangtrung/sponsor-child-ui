@@ -12,7 +12,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import { campaignStatusUser, campaignTypes } from '@/config/combobox';
+import { campaignStatus, campaignStatusUser, campaignTypes } from '@/config/combobox';
 import { Button } from '../ui/button';
 import { BellRing, X } from 'lucide-react';
 import useLocationVN from '@/hooks/useLocationVN';
@@ -67,6 +67,32 @@ const DonateTarget = () => {
         return <p>Lỗi khi tải thông tin chiến dịch: {error.message}</p>;
     }
 
+    const getStatusColor = (status) => {
+        switch (status) {
+            case 0:
+                return 'text-rose-300';
+            case 1:
+                return 'text-sky-500';
+            case 2:
+                return 'text-yellow-500';
+            case 3:
+                return 'text-red-500';
+            case 4:
+                return 'text-green-500';
+            case 5:
+                return 'text-purple-500';
+            case 6:
+                return 'text-gray-500';
+            case 7:
+                return 'text-orange-500';
+            case 8:
+                return 'text-teal-500';
+            case 9:
+                return 'text-blue-500';
+            default:
+                return 'text-gray-500';
+        }
+    };
     return (
         <div className="mx-auto py-8">
             <div className="relative bg-cover bg-center">
@@ -158,7 +184,7 @@ const DonateTarget = () => {
                                 }}
                                 variant="outline"
                             >
-                                <X className="w-4 h-4 mr-1" /> xoá bộ lọc
+                                <X className="w-4 h-4 mr-1" /> Xoá bộ lọc
                             </Button>
                         )}
                 </div>
@@ -217,14 +243,22 @@ const DonateTarget = () => {
                                     alt={campaign?.title}
                                     className="w-full h-48 object-cover rounded-t-md"
                                 />
-                                <div className="absolute top-2 left-2 bg-white text-rose-400 font-semibold rounded-full px-3 py-1 text-xs">
-                                    Còn{' '}
-                                    {Math.max(
-                                        0,
-                                        Math.ceil((new Date(campaign.endDate) - new Date()) / (1000 * 60 * 60 * 24)),
-                                    )}{' '}
-                                    ngày
-                                </div>
+                                <span className="absolute top-[10px] left-[10px] bg-white text-rose-400 font-semibold rounded-full px-3 py-1 text-xs">
+                                    {Math.ceil((new Date(campaign?.endDate) - new Date()) / (1000 * 60 * 60 * 24)) > 0
+                                        ? `Còn ${Math.ceil(
+                                            (new Date(campaign?.endDate) - new Date()) / (1000 * 60 * 60 * 24),
+                                        )} ngày`
+                                        : 'Hết hạn gây quỹ'}
+                                </span>
+
+                                <span
+                                    className={`
+        bg-white  absolute top-[10px] right-[10px] font-semibold rounded-full px-3 py-1 text-xs
+        ${getStatusColor(campaign.status)}
+    `}
+                                >
+                                    {campaignStatus.find(status => status.value === campaign.status)?.label || 'Không xác định'}
+                                </span>
                             </div>
                             <div className="p-4">
                                 <h3 className="mt-2 font-semibold line-clamp-2">{campaign?.title}</h3>
@@ -249,9 +283,12 @@ const DonateTarget = () => {
                                             </span>
                                         </p>
                                         <p className="font-bold text-sm">
-                                            {Math.round((campaign?.raisedAmount / campaign?.targetAmount) * 100)}%
+                                            {campaign?.raisedAmount >= campaign?.targetAmount
+                                                ? '100%'
+                                                : Math.floor((campaign?.raisedAmount / campaign?.targetAmount) * 100) + '%'}
                                         </p>
                                     </div>
+
                                 </div>
                             </div>
                         </Link>

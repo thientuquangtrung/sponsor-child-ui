@@ -32,6 +32,7 @@ const Activity = () => {
 
     const { data: activitiesData, refetch } = useGetActivityByCampaignIdQuery(id);
 
+
     useEffect(() => {
         if (activitiesData) {
             setActivities(activitiesData);
@@ -43,22 +44,22 @@ const Activity = () => {
     };
 
     const formatCost = (value) => {
-        return value.replace(/\B(?=(\d{3})+(?!\d))/g, ',');  
+        return value.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
     };
 
     const handleInputChange = (field, value) => {
         if (field === 'cost') {
-            value = value.replace(/[^0-9]/g, '');  
-            value = formatCost(value);  
+            value = value.replace(/[^0-9]/g, '');
+            value = formatCost(value);
         }
-    
+
         setNewActivity((prev) => ({
             ...prev,
             [field]: value,
         }));
     };
-    
-    
+
+
 
     const handleDateChange = (date) => {
         console.log(date);
@@ -86,19 +87,19 @@ const Activity = () => {
     };
 
     const handleSubmit = async () => {
-        const cleanedCost = parseInt(newActivity.cost.replace(/,/g, ''), 10) || 0;  
-    
+        const cleanedCost = parseInt(newActivity.cost.replace(/,/g, ''), 10) || 0;
+
         const campaignID = uuidv4();
         const campaignActivityFolder = UPLOAD_FOLDER.getCampaignActivityFolder(campaignID);
-    
+
         const imageUrl = await uploadFile({
             file: newActivity.imageFile,
             folder: campaignActivityFolder,
             customFilename: UPLOAD_NAME.CAMPAIGN_ACTIVITY,
         });
-    
+
         setIsSubmitting(true);
-    
+
         try {
             const payload = {
                 campaignID: id,
@@ -107,14 +108,14 @@ const Activity = () => {
                 imageFolderUrl: imageUrl.secure_url,
                 cost: cleanedCost,  // Gửi số nguyên đã được xử lý
             };
-    
+
             const response = await createActivity(payload);
-    
+
             console.log('Response:', response);
-    
+
             if (!response.error) {
                 toast.success('Hoạt động đã được thêm thành công.');
-    
+
                 refetch();
                 setNewActivity({
                     description: '',
@@ -133,8 +134,8 @@ const Activity = () => {
             setIsSubmitting(false);
         }
     };
-    
-    
+
+
 
     const handleDeleteActivity = () => {
         setNewActivity({
