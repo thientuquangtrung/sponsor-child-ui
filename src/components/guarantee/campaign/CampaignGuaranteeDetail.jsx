@@ -251,8 +251,8 @@ const CampaignGuaranteeDetail = () => {
                                                 contract.status === 2
                                                     ? 'success'
                                                     : contract.status === 0 || contract.status === 1
-                                                    ? 'secondary'
-                                                    : 'outline'
+                                                        ? 'secondary'
+                                                        : 'outline'
                                             }
                                         >
                                             {getContractStatusLabel(contract.status)}
@@ -276,9 +276,21 @@ const CampaignGuaranteeDetail = () => {
                     </Button>
                 </div>
             )}
+            {campaignData.status >= 4 ? (
 
-            <Activity onAddActivity={handleAddActivity} />
-
+                <Activity onAddActivity={handleAddActivity} />
+            ) : (
+                <Card className="border border-gray-100 shadow-md">
+                    <CardHeader className="bg-rose-200 border-b border-gray-100">
+                        <CardTitle className="text-lg text-gray-800">Hoạt động chiến dịch</CardTitle>
+                    </CardHeader>
+                    <CardContent className="py-8">
+                        <div className="text-center text-gray-600">
+                            Chưa có hoạt động chiến dịch
+                        </div>
+                    </CardContent>
+                </Card>
+            )}
             {/* Danh sách hoạt động */}
             {activities.length > 0 && (
                 <Card className="border border-gray-100 shadow-md hover:shadow-lg transition-shadow duration-300">

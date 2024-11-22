@@ -16,6 +16,8 @@ import Comment from './Comment';
 import { toast } from 'sonner';
 import LoadingScreen from '@/components/common/LoadingScreen';
 import CampaignActivities from '@/components/landingpage/CampaignActivities';
+import { campaignStatus } from '@/config/combobox';
+import ImageGallery from '@/components/landingpage/ImageGallery';
 
 const partners = [
     {
@@ -126,7 +128,21 @@ const CampaignDetail = () => {
     if (error) {
         return <p>Lỗi khi tải thông tin chiến dịch: {error.message}</p>;
     }
-
+    const getStatusStyle = (status) => {
+        switch (status) {
+            case 0: return 'bg-gray-200 text-gray-800';
+            case 1: return 'bg-yellow-200 text-yellow-800';
+            case 2: return 'bg-green-200 text-green-800';
+            case 3: return 'bg-red-200 text-red-800';
+            case 4: return 'bg-blue-200 text-blue-800';
+            case 5: return 'bg-teal-200 text-teal-800';
+            case 6: return 'bg-pink-200 text-pink-800';
+            case 7: return 'bg-orange-200 text-orange-800';
+            case 8: return 'bg-indigo-200 text-indigo-800';
+            case 9: return 'bg-purple-200 text-purple-800';
+            default: return 'bg-gray-200 text-gray-800';
+        }
+    };
     const handleShare = async () => {
         try {
             if (navigator.share) {
@@ -149,7 +165,7 @@ const CampaignDetail = () => {
             <div className="flex flex-col md:flex-row md:space-x-8">
                 <div className="w-full md:w-3/5 bg-white">
                     <h1 className="text-2xl font-semibold">{campaign?.title}</h1>
-                    <div className="campaign-image-container relative mb-6">
+                    {/* <div className="campaign-image-container relative mb-6">
                         <img
                             src={campaign?.thumbnailUrl || 'https://via.placeholder.com/400x300'}
                             alt={campaign?.title}
@@ -182,7 +198,17 @@ const CampaignDetail = () => {
                                 <DialogClose asChild></DialogClose>
                             </div>
                         </DialogContent>
-                    </Dialog>
+                    </Dialog> */}
+                    <ImageGallery
+                        thumbnailUrl={campaign?.thumbnailUrl}
+                        imagesFolderUrl={campaign?.imagesFolderUrl}
+                    />
+                    <div className="text-right">
+                        <span
+                            className={`px-2 py-1 rounded-full text-xs ${getStatusStyle(campaign?.status)}`}>
+                            {campaignStatus.find(item => item.value === campaign?.status)?.label}
+                        </span>
+                    </div>
 
                     <Tabs value={activeTab} onValueChange={setActiveTab}>
                         <TabsList className="flex space-x-2 bg-inherit">
@@ -342,20 +368,25 @@ const CampaignDetail = () => {
                                         {campaign?.raisedAmount.toLocaleString('vi-VN')} VND
                                     </span>
                                 </div>
-                                <p>{Math.round((campaign?.raisedAmount / campaign?.targetAmount) * 100) || 0}%</p>
-                            </div>
+                                <p className="font-bold text-sm">
+                                    {campaign?.raisedAmount >= campaign?.targetAmount
+                                        ? '100%'
+                                        : Math.floor((campaign?.raisedAmount / campaign?.targetAmount) * 100) + '%'}
+                                </p>                            </div>
                         </div>
 
                         <div className="flex mt-4 space-x-2">
                             <Button variant="outline" onClick={handleShare} className="flex-1 hover:bg-zinc-100">
                                 Chia sẻ
                             </Button>
-                            <Button
-                                className="flex-1 bg-gradient-to-r from-primary to-secondary text-white"
-                                onClick={navigateToInfoDonate}
-                            >
-                                Ủng hộ
-                            </Button>
+                            {campaign?.status === 4 && (
+                                <Button
+                                    className="flex-1 bg-gradient-to-r from-primary to-secondary text-white"
+                                    onClick={navigateToInfoDonate}
+                                >
+                                    Ủng hộ
+                                </Button>
+                            )}
                         </div>
                     </div>
 
