@@ -71,7 +71,7 @@ const CampaignActivities = () => {
                             key={activity.activityID}
                             className={`h-44 relative flex items-center ${
                                 index % 2 === 0 ? 'justify-start' : 'justify-end'
-                            }`} 
+                            }`}
                         >
                             {/* Timeline Icon */}
                             <div className={`absolute left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10 mt-4`}>
@@ -91,10 +91,15 @@ const CampaignActivities = () => {
                                 <img
                                     src={imageUrl}
                                     alt={activity.description || 'Activity Image'}
-                                    className="rounded-md mb-2 w-full h-24 object-cover" 
+                                    className="rounded-md mb-2 w-full h-24 object-cover"
                                 />
                                 {/* Description */}
                                 <h3 className="font-semibold text-md text-gray-900">{activity.description}</h3>
+                                <div>
+                                    <p className="text-sm text-teal-600 mt-2 font-medium">
+                                        Chi phí: <span>{activity.cost.toLocaleString('vi-VN')} ₫</span>
+                                    </p>
+                                </div>
                                 <div className="flex items-center justify-between text-sm text-gray-500 mt-4">
                                     <div className="flex items-center space-x-2">
                                         <Calendar className="w-4 h-4" />
