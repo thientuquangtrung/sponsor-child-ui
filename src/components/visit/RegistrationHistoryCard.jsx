@@ -68,12 +68,13 @@ const RegistrationHistoryCard = ({
                                                 {formatDateTime(registration.updatedAt)}
                                             </p>
 
+
                                             {registration.transferProofImageUrl && (
                                                 <a
                                                     href={registration.transferProofImageUrl}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
-                                                    className="flex items-center text-blue-600 hover:text-blue-800"
+                                                    className="flex items-center text-blue-600 hover:text-blue-800 mt-1"
                                                 >
                                                     <Image className="w-4 h-4 mr-1" />
                                                     <span className="text-sm">Xem minh chứng hoàn tiền</span>
@@ -82,7 +83,7 @@ const RegistrationHistoryCard = ({
                                             {registration.cancellationReason && (
                                                 <TooltipProvider>
                                                     <Tooltip>
-                                                        <TooltipTrigger className="flex items-center text-yellow-600 text-sm">
+                                                        <TooltipTrigger className="flex items-center text-yellow-600 text-sm mt-1">
                                                             <AlertCircle className="w-4 h-4 mr-1" />
                                                             Lý do hủy
                                                         </TooltipTrigger>
@@ -91,6 +92,12 @@ const RegistrationHistoryCard = ({
                                                         </TooltipContent>
                                                     </Tooltip>
                                                 </TooltipProvider>
+                                            )}
+                                            {[2, 3, 4].includes(registration.status) && (
+                                                <p className="text-gray-700 mt-1">
+                                                    Bạn đã đăng ký vào ngày{' '}
+                                                    {formatDateTime(registration.createdAt)}
+                                                </p>
                                             )}
                                         </div>
                                     </div>
