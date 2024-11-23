@@ -17,7 +17,7 @@ export default function GeneralFund() {
     useEffect(() => {
         if (generalFunds?.totalAmount) {
             let start = 0;
-            const increment = 1000000;
+            const increment = 20000000;
             const counter = setInterval(() => {
                 start += increment;
                 if (start >= generalFunds.totalAmount) {
