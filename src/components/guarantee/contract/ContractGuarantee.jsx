@@ -73,16 +73,14 @@ const ContractGuarantee = () => {
                     {steps.map((step, index) => (
                         <li
                             key={index}
-                            className={`flex items-center ${
-                                currentStep === index ? 'text-green-600 dark:text-green-500' : ''
-                            }`}
+                            className={`flex items-center ${currentStep === index ? 'text-green-600 dark:text-green-500' : ''
+                                }`}
                         >
                             <span
-                                className={`flex items-center justify-center w-5 h-5 mr-2 text-xl border ${
-                                    currentStep === index
+                                className={`flex items-center justify-center w-5 h-5 mr-2 text-xl border ${currentStep === index
                                         ? 'border-green-600 dark:border-green-500'
                                         : 'border-gray-500 dark:border-gray-400'
-                                } rounded-full shrink-0`}
+                                    } rounded-full shrink-0`}
                             >
                                 {index + 1}
                             </span>

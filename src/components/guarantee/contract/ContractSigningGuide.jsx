@@ -5,6 +5,8 @@ import { Truck, Send } from 'lucide-react';
 import { useCheckGuaranteeStatusQuery } from '@/redux/guarantee/guaranteeApi';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
 
 const GuideStep = ({ icon, title, content }) => (
     <Card className="mb-4">
@@ -26,14 +28,36 @@ const ContractSigningGuide = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (!isLoading && (!guaranteeStatus || guaranteeStatus.status !== 1)) {
-            // not InContractSigning
+        if (!isLoading && (!guaranteeStatus || (guaranteeStatus.status !== 1 && guaranteeStatus.status !== 3))) {
             navigate('/');
         }
     }, [guaranteeStatus, isLoading, navigate]);
 
+    const handleCreateNew = () => {
+        navigate('/register');
+    };
+
     if (isLoading) {
         return <div className="flex justify-center items-center h-48">Loading...</div>;
+    }
+
+    if (guaranteeStatus?.status === 3) {
+        return (
+            <div className="container mx-auto p-4">
+                <Alert variant="destructive" className="mb-4">
+                    <AlertTitle className="text-lg font-semibold">Yêu cầu bảo lãnh bị từ chối</AlertTitle>
+                    <AlertDescription className="mt-2">
+                        {guaranteeStatus.rejectionReason || "Yêu cầu bảo lãnh của bạn không được chấp nhận"}
+                    </AlertDescription>
+                </Alert>
+                <Button
+                    onClick={handleCreateNew}
+                    className="bg-gradient-to-b from-teal-400 to-teal-600 text-white px-6 py-2 rounded-lg shadow"
+                >
+                    Tạo yêu cầu mới
+                </Button>
+            </div>
+        );
     }
 
     return (
