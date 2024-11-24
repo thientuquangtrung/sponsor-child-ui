@@ -277,7 +277,6 @@ const CampaignGuaranteeDetail = () => {
                 </div>
             )}
             {campaignData.status >= 4 ? (
-
                 <Activity onAddActivity={handleAddActivity} />
             ) : (
                 <Card className="border border-gray-100 shadow-md">

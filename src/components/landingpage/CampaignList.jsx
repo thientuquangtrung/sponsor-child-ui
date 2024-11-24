@@ -76,7 +76,6 @@ const CampaignList = ({ excludeCampaignId }) => {
                                         )} ngày`
                                         : 'Hết hạn gây quỹ'}
                                 </span>
-
                                 <span
                                     className={`bg-white  absolute top-[10px] right-[10px] font-semibold rounded-full px-3 py-1 text-xs ${getStatusColor(campaign.status)}`}>
                                     {campaignStatus.find(status => status.value === campaign.status)?.label || 'Không xác định'}
