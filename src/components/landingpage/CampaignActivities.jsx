@@ -69,9 +69,8 @@ const CampaignActivities = () => {
                     return (
                         <div
                             key={activity.activityID}
-                            className={`h-44 relative flex items-center ${
-                                index % 2 === 0 ? 'justify-start' : 'justify-end'
-                            }`}
+                            className={`h-44 relative flex items-center ${index % 2 === 0 ? 'justify-start' : 'justify-end'
+                                }`}
                         >
                             {/* Timeline Icon */}
                             <div className={`absolute left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10 mt-4`}>
@@ -85,7 +84,7 @@ const CampaignActivities = () => {
                                     index % 2 === 0
                                         ? 'ml-4 bg-gradient-to-r from-sky-50 to-green-50'
                                         : 'mr-4 bg-gradient-to-r from-green-50 to-sky-50'
-                                }`}
+                                    }`}
                             >
                                 {/* Image */}
                                 <img
@@ -96,9 +95,12 @@ const CampaignActivities = () => {
                                 {/* Description */}
                                 <h3 className="font-semibold text-md text-gray-900">{activity.description}</h3>
                                 <div>
-                                    <p className="text-sm text-teal-600 mt-2 font-medium">
-                                        Chi phí: <span>{activity.cost.toLocaleString('vi-VN')} ₫</span>
-                                    </p>
+                                    {activity.cost && (
+                                        <p className="text-sm text-teal-600 mt-2 font-medium">
+                                            Chi phí: <span>{activity.cost.toLocaleString('vi-VN')} ₫</span>
+                                        </p>
+                                    )}
+
                                 </div>
                                 <div className="flex items-center justify-between text-sm text-gray-500 mt-4">
                                     <div className="flex items-center space-x-2">

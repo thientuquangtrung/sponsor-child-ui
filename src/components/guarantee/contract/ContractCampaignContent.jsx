@@ -81,7 +81,6 @@ const ContractCampaignContent = ({ signature, campaignDetails }) => {
                         </div>
                         <div className="space-y-2">
                             <p><span className="inline-block w-36">Số điện thoại:</span> {guaranteeProfile.organizationPhoneNumber}</p>
-                            <p><span className="inline-block w-36">Chức vụ:</span> {guaranteeProfile.position}</p>
 
                         </div>
                     </div>
@@ -119,7 +118,7 @@ const ContractCampaignContent = ({ signature, campaignDetails }) => {
                             </div>
                         </div>
                     </div>
-                    <p className="mt-2"><span className="inline-block w-36">Địa chỉ thường trú:</span> 123 ABC</p>
+                    <p className="mt-2"><span className="inline-block w-36">Địa chỉ thường trú:</span> Lô E2a-7, Đường D1, Đ. D1, Long Thạnh Mỹ, Thành Phố Thủ Đức</p>
                     <p className="font-semibold mt-2">Sau đây gọi là Bên A</p>
                 </div>
 

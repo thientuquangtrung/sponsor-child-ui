@@ -7,17 +7,32 @@ import {
     getSortedRowModel,
     useReactTable,
 } from '@tanstack/react-table';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { DataTableColumnHeader } from '@/components/datatable/DataTableColumnHeader';
 import { DataTablePagination } from '@/components/datatable/DataTablePagination';
 import { useGetFundUsageHistoryQuery } from '@/redux/fund/fundApi';
 import DateRangePicker from '../ui/calendar-range';
+import { useNavigate } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { Eye, MoreHorizontal } from 'lucide-react';
 
 const columns = [
     {
         accessorKey: 'purpose',
         header: ({ column }) => <DataTableColumnHeader column={column} title="Mục đích sử dụng" />,
         cell: ({ row }) => <div className="font-medium">{row.getValue('purpose')}</div>,
+    },
+    {
+        accessorKey: 'campaignTitle',
+        header: ({ column }) => <DataTableColumnHeader column={column} title="Tên chiến dịch" />,
+        cell: ({ row }) => <div className="font-medium max-w-[400px] truncate">{row.getValue('campaignTitle')}</div>,
     },
     {
         accessorKey: 'amountUsed',
@@ -29,7 +44,33 @@ const columns = [
         header: ({ column }) => <DataTableColumnHeader column={column} title="Ngày" />,
         cell: ({ row }) => <div>{new Date(row.getValue('dateUsed')).toLocaleDateString('vi-VN')}</div>,
     },
+    // {
+    //     id: 'actions',
+    //     cell: ({ row }) => <ActionMenu row={row} />,
+    // },
 ];
+const ActionMenu = ({ row }) => {
+    const navigate = useNavigate();
+
+
+    return (
+        <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="h-8 w-8 p-0">
+                    <span className="sr-only">Mở menu</span>
+                    <MoreHorizontal className="h-4 w-4" />
+                </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+                <DropdownMenuLabel>Hành động</DropdownMenuLabel>
+                <DropdownMenuItem onClick={() => navigate(`/campaign-detail/${row.original.campaignID}`)}>
+                    <Eye className="mr-2 h-4 w-4" />
+                    Xem chi tiết chiến dịch
+                </DropdownMenuItem>
+            </DropdownMenuContent>
+        </DropdownMenu>
+    );
+};
 
 export function UsageFundTable() {
     const { data, error, isLoading } = useGetFundUsageHistoryQuery();
@@ -87,9 +128,8 @@ export function UsageFundTable() {
                                 {headerGroup.headers.map((header) => (
                                     <TableHead
                                         key={header.id}
-                                        className={`px-4 py-2 font-semibold text-gray-700 text-center ${
-                                            header.column.id === 'purpose' ? 'w-1/2' : 'w-1/6'
-                                        }`}
+                                        className={`px-4 py-2 font-semibold text-gray-700 text-center ${header.column.id === 'purpose' ? 'w-1/2' : 'w-1/6'
+                                            }`}
                                     >
                                         {flexRender(header.column.columnDef.header, header.getContext())}
                                     </TableHead>
@@ -116,9 +156,8 @@ export function UsageFundTable() {
                                     {row.getVisibleCells().map((cell) => (
                                         <TableCell
                                             key={cell.id}
-                                            className={`px-4 py-3 text-gray-800 ${
-                                                cell.column.id === 'purpose' ? 'w-1/3' : 'w-1/4'
-                                            }`}
+                                            className={`px-4 py-3 text-gray-800 ${cell.column.id === 'purpose' ? 'w-1/3' : 'w-1/4'
+                                                }`}
                                         >
                                             {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                         </TableCell>

@@ -26,6 +26,7 @@ const OrganizationRegistrationForm = ({ onSubmit }) => {
     const fileInputRef = useRef();
     const [uploadedFiles, setUploadedFiles] = useState([]);
     const [showConfirmation, setShowConfirmation] = useState(false);
+    const [isUploading, setIsUploading] = useState(false);
 
     const steps = [
         { name: 'Điền đơn đăng ký', status: 'active' },
@@ -50,22 +51,30 @@ const OrganizationRegistrationForm = ({ onSubmit }) => {
     const [createOrganizationGuarantee, { isLoading, isSuccess, isError }] = useCreateOrganizationGuaranteeMutation();
     const { data: bankNames, isLoading: isLoadingBanks } = useGetBankNamesQuery();
 
-    const handleFileChange = (event) => {
+    const handleFileChange = async (event) => {
         const files = Array.from(event.target.files);
         const maxFileSize = 20 * 1024 * 1024;
 
         if (files.length > 5) {
-            alert('Bạn chỉ được tải lên tối đa 5 file.');
+            toast.error('Bạn chỉ được tải lên tối đa 5 file.');
             return;
         }
 
         for (let file of files) {
             if (file.size > maxFileSize) {
-                alert('Mỗi file không được vượt quá 20MB.');
+                toast.error('Mỗi file không được vượt quá 20MB.');
                 return;
             }
         }
-        setUploadedFiles(files);
+
+        setIsUploading(true);
+        try {
+            setUploadedFiles(files);
+        } catch (error) {
+            console.error('Error uploading files:', error);
+        } finally {
+            setIsUploading(false);
+        }
     };
 
     const handleButtonAddFile = () => {
@@ -77,15 +86,18 @@ const OrganizationRegistrationForm = ({ onSubmit }) => {
             let experienceUrls = '';
 
             if (uploadedFiles.length > 0) {
+                setIsUploading(true);
                 const res = await uploadMultipleFiles({
                     files: uploadedFiles,
                     folder: UPLOAD_FOLDER.getUserExperienceFolder(user?.userID),
                 });
                 experienceUrls = res.map((file) => file.secure_url).join(',');
+                setIsUploading(false);
             }
 
             return experienceUrls;
         } catch (error) {
+            setIsUploading(false);
             console.error('Lỗi khi lưu ảnh:', error);
             throw error;
         }
@@ -136,6 +148,7 @@ const OrganizationRegistrationForm = ({ onSubmit }) => {
     const handleCloseModal = () => {
         setShowConfirmation(false);
     };
+    const isLoadingState = isLoading || isUploading;
 
     return (
         <div className="flex flex-col p-8 rounded-lg mx-auto my-8 bg-[#c3e2da]">
@@ -277,9 +290,10 @@ const OrganizationRegistrationForm = ({ onSubmit }) => {
                         <Button
                             className="hover:bg-transparent flex items-center justify-center border border-gray-300 text-teal-600 px-4 py-2 rounded-sm shadow-sm bg-white"
                             onClick={handleButtonAddFile}
+                            disabled={isLoadingState}
                         >
                             <ArrowBigUpDash fill="teal" className="mr-2" />{' '}
-                            {uploadedFiles.length > 0 ? 'Tải lại' : 'Thêm tệp'}
+                            {isUploading ? 'Đang tải...' : uploadedFiles.length > 0 ? 'Tải lại' : 'Thêm tệp'}
                         </Button>
                         <Input
                             type="file"
@@ -408,9 +422,9 @@ const OrganizationRegistrationForm = ({ onSubmit }) => {
                     variant="solid"
                     className="bg-gradient-to-b from-teal-400 to-teal-600 text-white px-6 py-2 rounded-lg shadow"
                     onClick={handleFinish}
-                    disabled={isLoading}
+                    disabled={isLoadingState}
                 >
-                    {isLoading ? 'Đang đăng ký...' : 'Đăng ký'}
+                    {isLoadingState ? 'Đang xử lý...' : 'Đăng ký'}
                 </Button>
             </div>
 
@@ -429,6 +443,7 @@ const OrganizationRegistrationForm = ({ onSubmit }) => {
                                 variant="solid"
                                 onClick={handleCloseModal}
                                 className="text-teal-600 hover:bg-[#e6f7f3]"
+                                disabled={isLoadingState}
                             >
                                 HỦY BỎ
                             </Button>
@@ -436,9 +451,9 @@ const OrganizationRegistrationForm = ({ onSubmit }) => {
                                 variant="solid"
                                 onClick={handleSubmitForm}
                                 className="bg-teal-600 text-white"
-                                disabled={isLoading}
+                                disabled={isLoadingState}
                             >
-                                {isLoading ? 'Đang đăng ký...' : 'ĐĂNG KÝ'}
+                                {isLoadingState ? 'Đang xử lý...' : 'ĐĂNG KÝ'}
                             </Button>
                         </DialogFooter>
                     </DialogContent>

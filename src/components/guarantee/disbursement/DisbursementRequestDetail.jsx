@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import LoadingScreen from '@/components/common/LoadingScreen';
 import { AlertCircle, Calendar, CircleDollarSign, Plus, Undo2, User } from 'lucide-react';
-import { useGetDisbursementRequestByIdSimplifiedQuery } from '@/redux/guarantee/disbursementRequestApi';
+import { useCanCreateDisbursementRequestQuery, useGetDisbursementRequestByIdSimplifiedQuery } from '@/redux/guarantee/disbursementRequestApi';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import UpdateDisbursementRequest from './UpdateDisbursementRequest';
 import UploadDisbursementReport from './UploadDisbursementReport';
@@ -28,7 +28,12 @@ export default function DisbursementRequestDetail() {
     const { id } = useParams();
     const navigate = useNavigate();
     const { data: disbursementRequests, isLoading, error, refetch } = useGetDisbursementRequestByIdSimplifiedQuery(id);
-
+    const { data: createRequestStatus } = useCanCreateDisbursementRequestQuery(
+        disbursementRequests?.disbursementStage?.stageID,
+        {
+            skip: !disbursementRequests?.disbursementStage?.stageID,
+        }
+    );
     if (isLoading) {
         return <LoadingScreen />;
     }
@@ -58,9 +63,8 @@ export default function DisbursementRequestDetail() {
                         .map((stage, index) => (
                             <div
                                 key={stage.stageID}
-                                className={`flex justify-between items-center w-full mb-8 ${
-                                    index % 2 === 0 ? 'flex-row' : 'flex-row-reverse'
-                                }`}
+                                className={`flex justify-between items-center w-full mb-8 ${index % 2 === 0 ? 'flex-row' : 'flex-row-reverse'
+                                    }`}
                             >
                                 <div className="w-5/12">
                                     <div className="bg-white p-6 rounded shadow-lg">
@@ -77,21 +81,20 @@ export default function DisbursementRequestDetail() {
                                         <p className="mt-2 text-black">
                                             Trạng thái:{' '}
                                             <span
-                                                className={`font-semibold ${
-                                                    stage.status === 0
-                                                        ? 'text-yellow-500'
-                                                        : stage.status === 1
+                                                className={`font-semibold ${stage.status === 0
+                                                    ? 'text-yellow-500'
+                                                    : stage.status === 1
                                                         ? 'text-blue-500'
                                                         : stage.status === 2
-                                                        ? 'text-green-600'
-                                                        : stage.status === 3
-                                                        ? 'text-red-500'
-                                                        : stage.status === 4
-                                                        ? 'text-gray-500'
-                                                        : stage.status === 5
-                                                        ? 'text-purple-500'
-                                                        : 'text-black'
-                                                }`}
+                                                            ? 'text-green-600'
+                                                            : stage.status === 3
+                                                                ? 'text-red-500'
+                                                                : stage.status === 4
+                                                                    ? 'text-gray-500'
+                                                                    : stage.status === 5
+                                                                        ? 'text-purple-500'
+                                                                        : 'text-black'
+                                                    }`}
                                             >
                                                 {getPlanStatus(stage.status)}
                                             </span>
@@ -136,8 +139,8 @@ export default function DisbursementRequestDetail() {
                             {disbursementRequests?.disbursementStage?.actualDisbursementAmount &&
                                 disbursementRequests?.disbursementStage?.disbursementAmount &&
                                 disbursementRequests.disbursementStage.actualDisbursementAmount -
-                                    disbursementRequests.disbursementStage.disbursementAmount >
-                                    0 && (
+                                disbursementRequests.disbursementStage.disbursementAmount >
+                                0 && (
                                     <div className="flex items-center">
                                         <div className="flex items-center w-1/2">
                                             <CircleDollarSign className="mr-2 h-5 w-5 text-teal-500" />
@@ -286,15 +289,15 @@ export default function DisbursementRequestDetail() {
                                     {disbursementRequests?.disbursementReports?.every(
                                         (report) => !report.isCurrent,
                                     ) && (
-                                        <TableRow>
-                                            <TableCell
-                                                colSpan={2}
-                                                className="px-6 py-4 text-center text-gray-500 border-t border-gray-200"
-                                            >
-                                                Không có chi tiết báo cáo hiện tại
-                                            </TableCell>
-                                        </TableRow>
-                                    )}
+                                            <TableRow>
+                                                <TableCell
+                                                    colSpan={2}
+                                                    className="px-6 py-4 text-center text-gray-500 border-t border-gray-200"
+                                                >
+                                                    Không có chi tiết báo cáo hiện tại
+                                                </TableCell>
+                                            </TableRow>
+                                        )}
                                 </TableBody>
                             </Table>
                         </div>
@@ -310,6 +313,7 @@ export default function DisbursementRequestDetail() {
                         <Undo2 className="mr-2 h-4 w-4" />
                         Trở lại
                     </Button>
+
                     {disbursementRequests.requestStatus === 0 ? (
                         <p className="text-center text-blue-500 font-semibold mt-4 italic">
                             Yêu cầu giải ngân đang chờ phê duyệt!
@@ -326,18 +330,20 @@ export default function DisbursementRequestDetail() {
                             <p className="text-center text-red-500 mt-2">
                                 (Lý do: {disbursementRequests.rejectionReason})
                             </p>
-                            <Button
-                                variant="outline"
-                                onClick={() =>
-                                    navigate(
-                                        `/guarantee/create-disbursement-request?stageID=${disbursementRequests.disbursementStage.stageID}`,
-                                    )
-                                }
-                                className="mt-4 text-teal-600 border-teal-600 hover:bg-normal hover:text-teal-600"
-                            >
-                                <Plus className="h-4 w-4 mr-2" />
-                                Tạo yêu cầu giải ngân mới
-                            </Button>
+                            {disbursementRequests.disbursementStage?.stageID && createRequestStatus?.canCreate && (
+                                <Button
+                                    variant="outline"
+                                    onClick={() =>
+                                        navigate(
+                                            `/guarantee/create-disbursement-request?stageID=${disbursementRequests.disbursementStage.stageID}`,
+                                        )
+                                    }
+                                    className="mt-4 text-teal-600 border-teal-600 hover:bg-normal hover:text-teal-600"
+                                >
+                                    <Plus className="h-4 w-4 mr-2" />
+                                    Tạo yêu cầu giải ngân mới
+                                </Button>
+                            )}
                         </div>
                     ) : disbursementRequests.requestStatus === 4 ? (
                         <p className="text-center text-black font-semibold mt-4 italic">
