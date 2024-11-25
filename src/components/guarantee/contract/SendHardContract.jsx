@@ -110,9 +110,7 @@ const ContractContent = ({ guaranteeProfile }) => {
                                 <span className="inline-block w-36">Số điện thoại:</span>{' '}
                                 {guaranteeProfile.organizationPhoneNumber}
                             </p>
-                            <p>
-                                <span className="inline-block w-36">Chức vụ:</span> {guaranteeProfile.position}
-                            </p>
+
                         </div>
                     </div>
                     <p className="mt-2">
@@ -167,7 +165,7 @@ const ContractContent = ({ guaranteeProfile }) => {
                         </div>
                     </div>
                     <p className="mt-2">
-                        <span className="inline-block w-36">Địa chỉ thường trú:</span> 123 ABC
+                        <span className="inline-block w-36">Địa chỉ thường trú:</span> Lô E2a-7, Đường D1, Đ. D1, Long Thạnh Mỹ, Thành Phố Thủ Đức
                     </p>
                     <p className="font-semibold mt-2">Sau đây gọi là Bên A</p>
                 </div>
@@ -342,10 +340,11 @@ const SendHardContract = ({ signedContract, guaranteeProfile }) => {
                     <li>Gửi hợp đồng đã ký qua chuyển phát đến địa chỉ:</li>
                 </ol>
                 <p className="mt-4 font-semibold">
-                    Công ty ABC
+                    Lô E2a-7
                     <br />
-                    123 Đường D, Quận 1<br />
-                    Thành phố Hồ Chí Minh, Việt Nam
+                    Đường D1, Đ. D1, Long Thạnh Mỹ
+                    <br />
+                    Thành Phố Thủ Đức, Việt Nam
                 </p>
                 <div className="flex justify-center mt-4">
                     <Button

@@ -12,6 +12,12 @@ import { useGetDonationsByCampaignIdQuery, useGetTotalDonationsByCampaignIdQuery
 import { Dialog, DialogClose, DialogContent } from '@/components/ui/dialog';
 import { getAssetsList } from '@/lib/cloudinary';
 import Activity from '@/components/landingpage/Activity';
+import Comment from './Comment';
+import { toast } from 'sonner';
+import LoadingScreen from '@/components/common/LoadingScreen';
+import CampaignActivities from '@/components/landingpage/CampaignActivities';
+import { campaignStatus } from '@/config/combobox';
+import ImageGallery from '@/components/landingpage/ImageGallery';
 
 const partners = [
     {
@@ -55,6 +61,7 @@ const partners = [
 const CampaignDetail = () => {
     const { id } = useParams();
     const [activeTab, setActiveTab] = useState('story');
+    const [subTab, setSubTab] = useState('disbursement activities');
     const navigate = useNavigate();
     const [currentPage, setCurrentPage] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -111,19 +118,54 @@ const CampaignDetail = () => {
     };
 
     if (isLoading) {
-        return <p>Đang tải thông tin chiến dịch...</p>;
+        return (
+            <div>
+                <LoadingScreen />
+            </div>
+        );
     }
 
     if (error) {
         return <p>Lỗi khi tải thông tin chiến dịch: {error.message}</p>;
     }
-
+    const getStatusStyle = (status) => {
+        switch (status) {
+            case 0: return 'bg-gray-200 text-gray-800';
+            case 1: return 'bg-yellow-200 text-yellow-800';
+            case 2: return 'bg-green-200 text-green-800';
+            case 3: return 'bg-red-200 text-red-800';
+            case 4: return 'bg-blue-200 text-blue-800';
+            case 5: return 'bg-teal-200 text-teal-800';
+            case 6: return 'bg-pink-200 text-pink-800';
+            case 7: return 'bg-orange-200 text-orange-800';
+            case 8: return 'bg-indigo-200 text-indigo-800';
+            case 9: return 'bg-purple-200 text-purple-800';
+            default: return 'bg-gray-200 text-gray-800';
+        }
+    };
+    const handleShare = async () => {
+        try {
+            if (navigator.share) {
+                await navigator.share({
+                    title: campaign.title,
+                    text: campaign.description,
+                    url: window.location.href,
+                });
+            } else {
+                const url = window.location.href;
+                await navigator.clipboard.writeText(url);
+                toast.success('Đã sao chép liên kết vào clipboard!');
+            }
+        } catch (error) {
+            console.error('Error sharing:', error);
+        }
+    };
     return (
         <div className="container mx-auto py-8 px-4">
             <div className="flex flex-col md:flex-row md:space-x-8">
                 <div className="w-full md:w-3/5 bg-white">
                     <h1 className="text-2xl font-semibold">{campaign?.title}</h1>
-                    <div className="campaign-image-container relative mb-6">
+                    {/* <div className="campaign-image-container relative mb-6">
                         <img
                             src={campaign?.thumbnailUrl || 'https://via.placeholder.com/400x300'}
                             alt={campaign?.title}
@@ -156,22 +198,32 @@ const CampaignDetail = () => {
                                 <DialogClose asChild></DialogClose>
                             </div>
                         </DialogContent>
-                    </Dialog>
+                    </Dialog> */}
+                    <ImageGallery
+                        thumbnailUrl={campaign?.thumbnailUrl}
+                        imagesFolderUrl={campaign?.imagesFolderUrl}
+                    />
+                    <div className="text-right">
+                        <span
+                            className={`px-2 py-1 rounded-full text-xs ${getStatusStyle(campaign?.status)}`}>
+                            {campaignStatus.find(item => item.value === campaign?.status)?.label}
+                        </span>
+                    </div>
 
                     <Tabs value={activeTab} onValueChange={setActiveTab}>
                         <TabsList className="flex space-x-2 bg-inherit">
-                            <TabsTrigger value="story" className={`relative py-1 px-4 text-md font-medium`}>
+                            <TabsTrigger value="story" className="relative py-1 px-4 text-md font-medium">
                                 Câu chuyện
                             </TabsTrigger>
-                            <TabsTrigger value="activities" className={`relative py-1 px-4 text-md font-medium`}>
+                            <TabsTrigger value="activities" className="relative py-1 px-4 text-md font-medium">
                                 Hoạt động
                             </TabsTrigger>
-                            <TabsTrigger value="donations" className={`relative py-1 px-4 text-md font-medium`}>
+                            <TabsTrigger value="donations" className="relative py-1 px-4 text-md font-medium">
                                 Danh sách ủng hộ ({donationsTotal?.totalDonations || 0})
                             </TabsTrigger>
                         </TabsList>
 
-                        <TabsContent value="story" className="p-4">
+                        <TabsContent value="story" className="p-4 min-h-[400px]">
                             <h3 className="text-xl font-bold text-gray-800">Thông tin của trẻ</h3>
                             <p className="text-lg text-gray-700 mt-2">
                                 <strong>Tên:</strong> {campaign?.childName}
@@ -188,19 +240,40 @@ const CampaignDetail = () => {
                                 <strong>Địa chỉ:</strong>{' '}
                                 {`${campaign?.childLocation}, ${campaign?.childWard}, ${campaign?.childDistrict}, ${campaign?.childProvince}`}
                             </p>
-
                             <div
                                 className="prose max-w-none text-gray-600 rounded-lg p-6"
                                 dangerouslySetInnerHTML={{ __html: campaign?.story }}
                             />
                         </TabsContent>
-                        <TabsContent value="activities" className="p-4">
-                            <Activity campaign={campaign} />
+
+                        <TabsContent value="activities" className="p-4 min-h-[400px]">
+                            <Tabs value={subTab} onValueChange={setSubTab}>
+                                <TabsList className="flex space-x-2 justify-center">
+                                    <TabsTrigger
+                                        value="disbursement activities"
+                                        className="relative px-4 py-2 duration-500"
+                                    >
+                                        Hoạt động giải ngân
+                                    </TabsTrigger>
+                                    <TabsTrigger
+                                        value="additional activities"
+                                        className="relative px-4 py-2 duration-500"
+                                    >
+                                        Hoạt động bổ sung
+                                    </TabsTrigger>
+                                </TabsList>
+                                <TabsContent value="disbursement activities" className="mt-4">
+                                    <Activity campaignId={id} />
+                                </TabsContent>
+                                <TabsContent value="additional activities" className="mt-4">
+                                    <CampaignActivities />
+                                </TabsContent>
+                            </Tabs>
                         </TabsContent>
 
                         <TabsContent value="donations" className="p-4">
                             {donationsTotal?.totalDonations === 0 ? (
-                                <p className="text-gray-400 italic text-center mt-8">
+                                <p className="text-gray-400 italic text-center mt-8 min-h-[400px]">
                                     Hiện chiến dịch chưa có người ủng hộ.
                                 </p>
                             ) : donationsLoading ? (
@@ -217,6 +290,8 @@ const CampaignDetail = () => {
                             )}
                         </TabsContent>
                     </Tabs>
+
+                    <Comment />
                 </div>
 
                 <div className="w-full md:w-2/5 mt-4 md:mt-0 bg-white">
@@ -293,24 +368,29 @@ const CampaignDetail = () => {
                                         {campaign?.raisedAmount.toLocaleString('vi-VN')} VND
                                     </span>
                                 </div>
-                                <p>{Math.round((campaign?.raisedAmount / campaign?.targetAmount) * 100) || 0}%</p>
-                            </div>
+                                <p className="font-bold text-sm">
+                                    {campaign?.raisedAmount >= campaign?.targetAmount
+                                        ? '100%'
+                                        : Math.floor((campaign?.raisedAmount / campaign?.targetAmount) * 100) + '%'}
+                                </p>                            </div>
                         </div>
 
                         <div className="flex mt-4 space-x-2">
-                            <Button variant="outline" className="flex-1 hover:bg-zinc-100">
-                                Đồng hành gây quỹ
+                            <Button variant="outline" onClick={handleShare} className="flex-1 hover:bg-zinc-100">
+                                Chia sẻ
                             </Button>
-                            <Button
-                                className="flex-1 bg-gradient-to-r from-primary to-secondary text-white"
-                                onClick={navigateToInfoDonate}
-                            >
-                                Ủng hộ
-                            </Button>
+                            {campaign?.status === 4 && (
+                                <Button
+                                    className="flex-1 bg-gradient-to-r from-primary to-secondary text-white"
+                                    onClick={navigateToInfoDonate}
+                                >
+                                    Ủng hộ
+                                </Button>
+                            )}
                         </div>
                     </div>
 
-                    <div className="mt-12 shadow-xl p-4 rounded-lg">
+                    {/* <div className="mt-12 shadow-xl p-4 rounded-lg">
                         <h3 className="text-lg font-semibold text-black">
                             Đồng hành gây quỹ <span className="text-[#69A6B8]">({partners.length})</span>
                         </h3>
@@ -332,7 +412,7 @@ const CampaignDetail = () => {
                                 </div>
                             ))}
                         </div>
-                    </div>
+                    </div> */}
 
                     <div className="mt-12 shadow-xl p-4 rounded-lg shadow-gray-300">
                         <h3 className="text-lg font-semibold text-black">Thông tin người vận động</h3>

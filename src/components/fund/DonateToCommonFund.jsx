@@ -16,8 +16,7 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { useCancelDonationByOrderCodeMutation } from '@/redux/donation/donationApi';
-import { useCreateIndividualFundSourceMutation } from '@/redux/fund/fundApi';
+import { useCancelReserveFundSourceTransactionByOrderCodeMutation, useCreateIndividualFundSourceMutation } from '@/redux/fund/fundApi';
 
 const formSchema = z.object({
     amount: z.string().refine((val) => parseInt(val.replace(/\./g, ''), 10) >= 1, {
@@ -31,7 +30,7 @@ const DonateToCommonFund = () => {
     const navigate = useNavigate();
     const { user } = useSelector((state) => state.auth);
     const [createDonation] = useCreateIndividualFundSourceMutation();
-    const [cancelDonation] = useCancelDonationByOrderCodeMutation();
+    const [cancelDonation] = useCancelReserveFundSourceTransactionByOrderCodeMutation();
     const [isTermsDialogOpen, setIsTermsDialogOpen] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
 

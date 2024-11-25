@@ -1,15 +1,44 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ArrowLeft, ArrowRight, LoaderCircle, Search } from 'lucide-react';
-import { Input } from '../ui/input';
+import { Input } from '@/components/ui/input';
 
 const DonationList = ({ donations, currentPage, totalPages, onPageChange }) => {
     const [isLoading, setIsLoading] = useState(false);
-  
+    const [searchTerm, setSearchTerm] = useState('');
+    const [filteredDonations, setFilteredDonations] = useState(donations);
+
+    useEffect(() => {
+        setFilteredDonations(donations);
+    }, [donations]);
+
+    const normalizeString = (str) => {
+        return str
+            .toLowerCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "");
+    };
+
+    const handleSearch = (e) => {
+        const value = e.target.value;
+        setSearchTerm(value);
+
+        if (!value.trim()) {
+            setFilteredDonations(donations);
+            return;
+        }
+
+        const normalizedSearchTerm = normalizeString(value);
+        const filtered = donations.filter(donation =>
+            normalizeString(donation.donorName).includes(normalizedSearchTerm)
+        );
+        setFilteredDonations(filtered);
+    };
+
     const handlePageChange = (page) => {
         if (page !== currentPage) {
             setIsLoading(true);
             onPageChange(page);
-            setTimeout(() => setIsLoading(false), 200); 
+            setTimeout(() => setIsLoading(false), 200);
         }
     };
 
@@ -47,18 +76,17 @@ const DonationList = ({ donations, currentPage, totalPages, onPageChange }) => {
     };
 
     return (
-        <div className="shadow-xl">
-            <div className="w-full bg-zinc-100 py-2 relative">
-                <h2 className="text-lg ml-5 font-semibold text-teal-600">Danh sách ủng hộ</h2>
-                <div className="absolute bottom-0 left-0 w-48 border-b-2 border-teal-600"></div>
+        <div className="shadow-md">
+            <div className="w-full bg-zinc-100 pt-1 relative">
             </div>
-
             <div className="px-4">
                 <div className="relative my-8">
                     <Input
                         placeholder="Nhập tên người ủng hộ"
                         type="text"
-                        className="w-full pl-12 rounded-full shadow-[0px_1px_16px_0px_rgba(0,0,0,0.059)] border-none"
+                        value={searchTerm}
+                        onChange={handleSearch}
+                        className="w-full pl-12 rounded-full shadow-[0px_1px_16px_0px_rgba(0,0,0,0.059)] border-2"
                     />
                     <Search className="absolute left-4 top-3 text-teal-600" size={20} />
                 </div>
@@ -78,12 +106,10 @@ const DonationList = ({ donations, currentPage, totalPages, onPageChange }) => {
                                 </tr>
                             </thead>
                             <tbody className="text-gray-600">
-                                {donations.map((donation, index) => (
+                                {filteredDonations.map((donation, index) => (
                                     <tr
                                         key={donation.donationID}
-                                        className={`border-b border-gray-200 ${
-                                            index % 2 ? 'bg-white' : 'bg-zinc-50'
-                                        } hover:bg-zinc-100`}
+                                        className={`border-b border-gray-200 ${index % 2 ? 'bg-white' : 'bg-zinc-50'} hover:bg-zinc-100`}
                                     >
                                         <td className="py-3 px-4">{donation.donorName}</td>
                                         <td className="py-3 px-4">{donation.amount.toLocaleString()} VND</td>
@@ -116,11 +142,10 @@ const DonationList = ({ donations, currentPage, totalPages, onPageChange }) => {
                                     <button
                                         key={page}
                                         onClick={() => handlePageChange(page)}
-                                        className={`px-3 py-1 rounded ${
-                                            currentPage === page
-                                                ? 'bg-teal-600 text-white'
-                                                : 'bg-white text-gray-700 hover:bg-gray-100'
-                                        }`}
+                                        className={`px-3 py-1 rounded ${currentPage === page
+                                            ? 'bg-teal-600 text-white'
+                                            : 'bg-white text-gray-700 hover:bg-gray-100'
+                                            }`}
                                     >
                                         {page}
                                     </button>

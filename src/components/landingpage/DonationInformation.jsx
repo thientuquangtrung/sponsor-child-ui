@@ -19,18 +19,10 @@ import { useGetCampaignByIdQuery } from '@/redux/campaign/campaignApi';
 import {
     useCancelDonationByOrderCodeMutation,
     useCreateDonationMutation,
-    useGetDonationsByCampaignIdQuery,
+    useGetTotalDonationsByCampaignIdQuery,
 } from '@/redux/donation/donationApi';
+import LoadingScreen from '@/components/common/LoadingScreen';
 
-const formSchema = z.object({
-    amount: z.string().refine((val) => parseInt(val.replace(/\./g, ''), 10) >= 1, {
-        message: 'Số tiền ủng hộ tối thiểu là 1 VND',
-    }),
-    message: z.string().optional(),
-    name: z.string().min(1, 'Vui lòng nhập họ và tên'),
-    email: z.string().email('Email không hợp lệ'),
-    anonymous: z.boolean().optional(),
-});
 
 const DonationInformation = () => {
     const { id } = useParams();
@@ -38,21 +30,86 @@ const DonationInformation = () => {
     const { user } = useSelector((state) => state.auth);
 
     const { data: campaign, isLoading, error } = useGetCampaignByIdQuery(id, { skip: !id || !user });
-    const { data: donation } = useGetDonationsByCampaignIdQuery(id, { skip: !id || !user });
+    const { data: donationsTotal } = useGetTotalDonationsByCampaignIdQuery(id);
     const [createDonation, { isLoading: isCreatingDonation }] = useCreateDonationMutation();
     const [cancelDonation, { isLoading: isCancellingDonation }] = useCancelDonationByOrderCodeMutation();
     const [isTermsDialogOpen, setIsTermsDialogOpen] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const createFormSchema = () => {
+        return z.object({
+            amount: z.string().refine(
+                (val) => {
+                    const numericAmount = parseInt(val.replace(/\D/g, ''), 10);
+                    if (!campaign) return true;
 
+                    const remainingTarget = campaign.targetAmount - campaign.raisedAmount;
+                    return numericAmount >= 5000 && numericAmount <= remainingTarget;
+                },
+                (val) => {
+                    const numericAmount = parseInt(val.replace(/\D/g, ""), 10);
+                    const remainingTarget = campaign?.targetAmount - campaign?.raisedAmount;
+
+                    if (numericAmount < 5000) {
+                        return {
+                            message: "Số tiền ủng hộ tối thiểu là 5,000 VND"
+                        };
+                    }
+                    return {
+                        message: `Số tiền ủng hộ không được vượt quá ${remainingTarget?.toLocaleString("vi-VN")} VND`
+                    };
+                }
+            ),
+            message: z.string().optional(),
+            name: z.string().min(1, 'Vui lòng nhập họ và tên'),
+            email: z.string().email('Email không hợp lệ'),
+            anonymous: z.boolean().optional(),
+        });
+    };
+    const formSchema = createFormSchema();
+    const form = useForm({
+        resolver: zodResolver(formSchema),
+        defaultValues: {
+            amount: '0',
+            message: '',
+            name: user?.fullname || '',
+            email: user?.email || '',
+            anonymous: false,
+        },
+    });
+
+    const [amount, setAmount] = useState('0');
+
+    const handleAmountChange = async (e) => {
+        let value = e.target.value.replace(/\D/g, '');
+        if (!value) {
+            value = '0';
+        }
+        if (value.startsWith('0') && value.length > 1) {
+            value = value.replace(/^0+/, '');
+        }
+        const formattedValue = formatNumber(value);
+        form.setValue('amount', formattedValue);
+        setAmount(formattedValue);
+        if (parseInt(value, 10) >= 5000) {
+            await form.trigger('amount');
+        }
+    };
+
+    const handlePresetAmount = (preset) => {
+        const formattedPreset = formatNumber(preset.toString());
+        setAmount(formattedPreset);
+        form.setValue('amount', formattedPreset);
+    };
     const [payOSConfig, setPayOSConfig] = useState({
         RETURN_URL: window.location.origin, // required
         ELEMENT_ID: 'payment-container', // required
         CHECKOUT_URL: null, // required
         embedded: false, // Nếu dùng giao diện nhúng
         onSuccess: (event) => {
-            //TODO: Hành động sau khi người dùng thanh toán đơn hàng thành công
             toast.success('Thanh toán thành công');
-            navigate(-1);
+            setTimeout(() => {
+                window.location.reload();
+            }, 1500);
         },
         onCancel: async (event) => {
             //TODO: Hành động fail
@@ -73,47 +130,9 @@ const DonationInformation = () => {
         }
     }, [payOSConfig]);
 
-    const [amount, setAmount] = useState('0');
     const [openDialog, setOpenDialog] = useState(false);
     const presetAmounts = [50000, 100000, 200000, 500000];
     const [copied, setCopied] = useState(false);
-
-    const form = useForm({
-        resolver: zodResolver(formSchema),
-        defaultValues: {
-            amount: '0',
-            message: '',
-            name: user?.fullname || '',
-            email: user?.email || '',
-            anonymous: false,
-        },
-    });
-
-    const handleAmountChange = async (e) => {
-        let value = e.target.value.replace(/\D/g, '');
-        if (!value) {
-            value = '0';
-        }
-        if (value.startsWith('0') && value.length > 1) {
-            value = value.replace(/^0+/, '');
-        }
-
-        const amountValue = parseInt(value, 10);
-
-        const formattedValue = formatNumber(value);
-        form.setValue('amount', formattedValue);
-        setAmount(formattedValue);
-
-        if (amountValue > 0) {
-            await form.trigger('amount');
-        }
-    };
-
-    const handlePresetAmount = (preset) => {
-        const formattedPreset = formatNumber(preset.toString());
-        setAmount(formattedPreset);
-        form.setValue('amount', formattedPreset);
-    };
 
     const handleCopy = () => {
         const copyContent = document.getElementById('copyContent').textContent;
@@ -126,9 +145,15 @@ const DonationInformation = () => {
     };
 
     const onSubmit = async (data) => {
-        setIsSubmitting(true); 
-    
         const amountValue = parseInt(amount.replace(/,/g, ''), 10);
+        if (campaign) {
+            const remainingTarget = campaign.targetAmount - campaign.raisedAmount;
+            if (amountValue > remainingTarget) {
+                toast.error(`Số tiền ủng hộ không được vượt quá ${remainingTarget.toLocaleString('vi-VN')} VND`);
+                return;
+            }
+        }
+        setIsSubmitting(true);
         const donationData = {
             donorID: user?.userID,
             campaignID: id,
@@ -137,13 +162,12 @@ const DonationInformation = () => {
             cancelUrl: window.location.origin,
             returnUrl: window.location.origin,
         };
-    
         try {
             const response = await createDonation(donationData).unwrap();
-    
+
             setPayOSConfig((oldConfig) => ({
                 ...oldConfig,
-                CHECKOUT_URL: response.paymentLink.checkoutUrl,
+                CHECKOUT_URL: response.data.paymentLink.checkoutUrl,
             }));
         } catch (error) {
             console.error('Error creating donation:', error);
@@ -152,10 +176,10 @@ const DonationInformation = () => {
             setIsSubmitting(false);
         }
     };
-    
+
 
     if (isLoading) {
-        return <p>Đang tải thông tin chiến dịch...</p>;
+        <div><LoadingScreen /></div>;
     }
 
     if (error) {
@@ -194,7 +218,7 @@ const DonationInformation = () => {
                                 ? `Còn ${Math.ceil(
                                     (new Date(campaign?.endDate) - new Date()) / (1000 * 60 * 60 * 24),
                                 )} ngày`
-                                : 'Hết hạn'}
+                                : 'Hết hạn '}
                         </p>
                         <img
                             src={campaign?.thumbnailUrl || 'https://via.placeholder.com/400x300'}
@@ -215,8 +239,10 @@ const DonationInformation = () => {
                                     {campaign?.raisedAmount.toLocaleString('vi-VN')} VND
                                 </span>
                             </p>
-                            <p className="font-bold text-lg">
-                                {Math.round((campaign?.raisedAmount / campaign?.targetAmount) * 100) || 0}%
+                            <p className="font-bold text-sm">
+                                {campaign?.raisedAmount >= campaign?.targetAmount
+                                    ? '100%'
+                                    : Math.floor((campaign?.raisedAmount / campaign?.targetAmount) * 100) + '%'}
                             </p>
                         </div>
                         <div className="h-2 w-full bg-gray-300 rounded">
@@ -236,7 +262,7 @@ const DonationInformation = () => {
                                 </span>
                             </p>
                             <p className="font-bold">
-                                {donation?.length || 0}{' '}
+                                {donationsTotal?.totalDonations || 0}{' '}
                                 <span className="text-gray-500 font font-semibold">người đã ủng hộ</span>
                             </p>
                         </div>

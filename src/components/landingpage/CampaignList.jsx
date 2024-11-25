@@ -1,6 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useGetAllCampaignsQuery } from '@/redux/campaign/campaignApi';
+import LoadingScreen from '@/components/common/LoadingScreen';
+import { campaignStatus } from '@/config/combobox';
 
 const CampaignList = ({ excludeCampaignId }) => {
     const {
@@ -13,13 +15,38 @@ const CampaignList = ({ excludeCampaignId }) => {
     const filteredCampaigns = campaigns.filter((campaign) => campaign.campaignID !== excludeCampaignId);
 
     if (isLoading) {
-        return <p>Đang tải các chiến dịch...</p>;
+        return <div><LoadingScreen /></div>;
     }
 
     if (error) {
         return <p>Lỗi khi tải các chiến dịch: {error.message}</p>;
     }
-
+    const getStatusColor = (status) => {
+        switch (status) {
+            case 0:
+                return 'text-rose-300';
+            case 1:
+                return 'text-sky-500';
+            case 2:
+                return 'text-yellow-500';
+            case 3:
+                return 'text-red-500';
+            case 4:
+                return 'text-green-500';
+            case 5:
+                return 'text-purple-500';
+            case 6:
+                return 'text-gray-500';
+            case 7:
+                return 'text-orange-500';
+            case 8:
+                return 'text-teal-500';
+            case 9:
+                return 'text-blue-500';
+            default:
+                return 'text-gray-500';
+        }
+    };
     return (
         <div>
             <div className="flex justify-between items-center">
@@ -45,9 +72,13 @@ const CampaignList = ({ excludeCampaignId }) => {
                                 <span className="absolute top-[10px] left-[10px] bg-white text-rose-400 font-semibold rounded-full px-3 py-1 text-xs">
                                     {Math.ceil((new Date(campaign?.endDate) - new Date()) / (1000 * 60 * 60 * 24)) > 0
                                         ? `Còn ${Math.ceil(
-                                              (new Date(campaign?.endDate) - new Date()) / (1000 * 60 * 60 * 24),
-                                          )} ngày`
-                                        : 'Hết hạn'}
+                                            (new Date(campaign?.endDate) - new Date()) / (1000 * 60 * 60 * 24),
+                                        )} ngày`
+                                        : 'Hết hạn gây quỹ'}
+                                </span>
+                                <span
+                                    className={`bg-white  absolute top-[10px] right-[10px] font-semibold rounded-full px-3 py-1 text-xs ${getStatusColor(campaign.status)}`}>
+                                    {campaignStatus.find(status => status.value === campaign.status)?.label || 'Không xác định'}
                                 </span>
                             </div>
                         </div>
@@ -74,7 +105,9 @@ const CampaignList = ({ excludeCampaignId }) => {
                                         </span>
                                     </p>
                                     <p className="font-bold text-sm">
-                                        {Math.round((campaign?.raisedAmount / campaign?.targetAmount) * 100)}%
+                                        {campaign?.raisedAmount >= campaign?.targetAmount
+                                            ? '100%'
+                                            : Math.floor((campaign?.raisedAmount / campaign?.targetAmount) * 100) + '%'}
                                     </p>
                                 </div>
                             </div>

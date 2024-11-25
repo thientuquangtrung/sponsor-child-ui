@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { DataTableViewOptions } from '@/components/datatable/DataTableViewOptions';
 import { DataTableFacetedFilter } from '@/components/datatable/DataTableFacetedFilter';
-import { fundType } from '@/config/combobox';
 
 export function ToolbarForDonationHistory({ table }) {
     const isFiltered = table.getState().columnFilters.length > 0;
@@ -13,10 +12,11 @@ export function ToolbarForDonationHistory({ table }) {
     const filters = [
         {
             name: 'fundSourceType',
-            options: fundType.map((type) => ({
-                value: type.value.toString(),
-                label: type.label,
-            })),
+            options: [
+                { value: 'Cá nhân', label: 'Cá nhân' },
+                { value: 'Chiến dịch', label: 'Chiến dịch' },
+                { value: 'Sự kiện', label: 'Sự kiện' },
+            ],
         },
     ];
 

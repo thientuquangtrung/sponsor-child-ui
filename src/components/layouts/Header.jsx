@@ -144,9 +144,9 @@ export function Header() {
                                     mainMenu.findIndex((item) =>
                                         item.items !== undefined
                                             ? item.items
-                                                  .filter((subitem) => subitem.to !== undefined)
-                                                  .map((subitem) => subitem.to)
-                                                  .includes(location.pathname)
+                                                .filter((subitem) => subitem.to !== undefined)
+                                                .map((subitem) => subitem.to)
+                                                .includes(location.pathname)
                                             : false,
                                     )
                                 }
@@ -252,7 +252,7 @@ export function Header() {
                                         </div>
                                     </DropdownMenuLabel>
                                     {user?.role === 'Guarantee' && (
-                                        <NavLink to="/guarantee">
+                                        <NavLink to="/guarantee/campaigns">
                                             <DropdownMenuItem>Nhà bảo lãnh</DropdownMenuItem>
                                         </NavLink>
                                     )}

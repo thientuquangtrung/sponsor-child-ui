@@ -1,141 +1,195 @@
-import React, { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+'use client';
 
-function CalendarRange({ onSelect }) {
-    const today = new Date();
-    const [currentMonth, setCurrentMonth] = useState(today.getMonth());
-    const [currentYear, setCurrentYear] = useState(today.getFullYear());
+import React, { useState } from 'react';
+import { format, isEqual } from 'date-fns';
+import { vi } from 'date-fns/locale';
+import { Calendar as CalendarIcon, ChevronLeft, ChevronRight } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
-    const [range, setRange] = useState({ from: null, to: null });
+function Calendar({ mode = 'single', selected, onSelect, className, numberOfMonths = 1, defaultMonth, ...props }) {
+    const [currentDate, setCurrentDate] = useState(defaultMonth || new Date());
 
-    useEffect(() => {
-        if (range.from && range.to && range.from > range.to) {
-            setRange({ from: range.from, to: null });
-        }
-        if (range.from && range.to) {
-            onSelect && onSelect(range); 
-        }
-    }, [range, onSelect]);
-
-    const daysInMonth = (month, year) => {
-        return new Date(year, month + 1, 0).getDate();
-    };
-
-    const getFirstDayOfMonth = (month, year) => {
-        return new Date(year, month, 1).getDay();
-    };
-
-    const handlePreviousMonth = () => {
-        if (currentMonth === 0) {
-            setCurrentMonth(11);
-            setCurrentYear(currentYear - 1);
-        } else {
-            setCurrentMonth(currentMonth - 1);
-        }
-    };
-
-    const handleNextMonth = () => {
-        if (currentMonth === 11) {
-            setCurrentMonth(0);
-            setCurrentYear(currentYear + 1);
-        } else {
-            setCurrentMonth(currentMonth + 1);
-        }
-    };
-
-    const handleDayClick = (date) => {
-        if (!range.from || (range.from && range.to)) {
-            setRange({ from: date, to: null });
-        } else if (range.from && !range.to) {
-            setRange({
-                from: range.from,
-                to: date > range.from ? date : null,
-            });
-        }
-    };
-
-    const isInRange = (day) => {
-        if (!range.from || !range.to) return false;
-        const date = new Date(currentYear, currentMonth, day);
-        return date >= range.from && date <= range.to;
-    };
+    const daysInMonth = (month, year) => new Date(year, month + 1, 0).getDate();
+    const getFirstDayOfMonth = (month, year) => new Date(year, month, 1).getDay();
 
     const monthNames = [
-        'Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6',
-        'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12',
+        'Tháng 1',
+        'Tháng 2',
+        'Tháng 3',
+        'Tháng 4',
+        'Tháng 5',
+        'Tháng 6',
+        'Tháng 7',
+        'Tháng 8',
+        'Tháng 9',
+        'Tháng 10',
+        'Tháng 11',
+        'Tháng 12',
     ];
 
-    const weekDays = ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'];
+    const weekDays = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
 
-    const renderCalendar = (month, year) => {
-        const totalDays = daysInMonth(month, year);
+    const isStartDate = (date) => {
+        return selected?.from && isEqual(date, selected.from);
+    };
+
+    const isEndDate = (date) => {
+        return selected?.to && isEqual(date, selected.to);
+    };
+
+    const isInBetween = (date) => {
+        if (!selected?.from || !selected?.to) return false;
+        return date > selected.from && date < selected.to;
+    };
+
+    const renderMonth = (monthOffset = 0) => {
+        const currentMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + monthOffset, 1);
+        const month = currentMonth.getMonth();
+        const year = currentMonth.getFullYear();
+
         const firstDay = getFirstDayOfMonth(month, year);
-        const blankDays = Array(firstDay).fill(null);
-        const daysArray = [...Array(totalDays).keys()].map((i) => i + 1);
+        const daysCount = daysInMonth(month, year);
+        const days = [];
+
+        for (let i = 0; i < firstDay; i++) {
+            days.push(<div key={`empty-${i}`} className="h-10" />);
+        }
+
+        for (let day = 1; day <= daysCount; day++) {
+            const date = new Date(year, month, day);
+
+            days.push(
+                <button
+                    key={date.toString()}
+                    onClick={() => {
+                        if (mode === 'range') {
+                            let newRange = { ...selected };
+                            if (!selected?.from || (selected?.from && selected?.to)) {
+                                newRange = { from: date, to: undefined };
+                            } else {
+                                if (date < selected.from) {
+                                    newRange = { from: date, to: selected.from };
+                                } else {
+                                    newRange = { from: selected.from, to: date };
+                                }
+                            }
+                            onSelect(newRange);
+                        }
+                    }}
+                    className={cn(
+                        'h-11 w-11 hover:bg-gray-100',
+                        isStartDate(date) && 'bg-teal-500 text-white hover:bg-teal-600 rounded',
+                        isEndDate(date) && 'bg-teal-500 text-white hover:bg-teal-600 rounded',
+                        isInBetween(date) && 'bg-teal-100 hover:bg-teal-200',
+                    )}
+                >
+                    {day}
+                </button>,
+            );
+        }
 
         return (
-            <div className="p-4">
-                <div className="text-lg font-medium text-center mb-4">
-                    <span>{monthNames[month]}</span> <span>{year}</span>
+            <div className="p-3 w-[320px] h-[370px]">
+                <div className="text-center mb-2 font-semibold">
+                    {monthNames[month]} {year}
                 </div>
-                <div className="grid grid-cols-7 gap-2">
-                    {weekDays.map((day, index) => (
-                        <div key={index} className="text-center text-sm font-medium text-gray-500">
+                <div className="grid grid-cols-7 gap-1">
+                    {weekDays.map((day) => (
+                        <div key={day} className="h-10 flex items-center justify-center text-sm font-medium">
                             {day}
                         </div>
                     ))}
-
-                    {blankDays.map((_, index) => (
-                        <div key={index} className="h-10"></div>
-                    ))}
-
-                    {daysArray.map((day) => {
-                        const date = new Date(year, month, day);
-                        const isFrom = range.from && date.getTime() === range.from.getTime();
-                        const isTo = range.to && date.getTime() === range.to.getTime();
-                        const isInRange = range.from && range.to && date > range.from && date < range.to;
-
-                        return (
-                            <div
-                                key={day}
-                                onClick={() => handleDayClick(date)}
-                                className={`h-10 w-10 flex items-center justify-center rounded cursor-pointer 
-                                    ${isFrom || isTo ? 'bg-black text-white' : isInRange ? 'bg-gray-200 text-black' : 'text-black'}
-                                    hover:bg-normal`}
-                            >
-                                {day}
-                            </div>
-                        );
-                    })}
+                    {days}
                 </div>
             </div>
         );
     };
 
-    const nextMonth = currentMonth === 11 ? 0 : currentMonth + 1;
-    const nextYear = currentMonth === 11 ? currentYear + 1 : currentYear;
-
     return (
-        <div className="flex flex-col items-center max-w-4xl mx-auto">
-            <div className="flex justify-between items-center w-full my-4">
-                <button onClick={handlePreviousMonth}>
-                    <ChevronLeft size={24} className="text-gray-600 hover:text-black" />
-                </button>
+        <div className={cn('w-fit', className)} {...props}>
+            <div className="flex items-center justify-between px-3">
+                <Button
+                    className="hover:bg-gray-100"
+                    variant="ghost"
+                    onClick={() => setCurrentDate((prev) => new Date(prev.getFullYear(), prev.getMonth() - 1, 1))}
+                >
+                    <ChevronLeft className="h-4 w-4" />
+                </Button>
                 <span className="text-lg font-medium space-x-2">
-                    <span>{monthNames[currentMonth]}</span>
-                    <span>{currentYear}</span> - <span>{monthNames[nextMonth]}</span> <span>{nextYear}</span>
+                    <span>{monthNames[currentDate.getMonth()]}</span>
+                    <span>{currentDate.getFullYear()}</span> -{' '}
+                    <span>{monthNames[(currentDate.getMonth() + 1) % 12]}</span>
+                    <span>
+                        {currentDate.getMonth() === 11 ? currentDate.getFullYear() + 1 : currentDate.getFullYear()}
+                    </span>
                 </span>
-                <button onClick={handleNextMonth}>
-                    <ChevronRight size={24} className="text-gray-600 hover:text-black" />
-                </button>
+                <Button
+                    className="hover:bg-gray-100"
+                    variant="ghost"
+                    onClick={() => setCurrentDate((prev) => new Date(prev.getFullYear(), prev.getMonth() + 1, 1))}
+                >
+                    <ChevronRight className="h-4 w-4" />
+                </Button>
             </div>
-
-            <div className="flex gap-8">
-                {renderCalendar(currentMonth, currentYear)}
-                {renderCalendar(nextMonth, nextYear)}
-            </div>
+            <div className="flex">{[...Array(numberOfMonths)].map((_, i) => renderMonth(i))}</div>
         </div>
     );
 }
 
-export { CalendarRange };
+function DateRangePicker({ className, onRangeChange }) {
+    const [date, setDate] = useState({
+        from: null,
+        to: null,
+    });
+
+    const handleSelect = (range) => {
+        setDate(range);
+        if (onRangeChange) {
+            onRangeChange(range);
+        }
+    };
+
+    return (
+        <div className={cn('grid gap-2 place-items-center', className)}>
+            <Popover>
+                <PopoverTrigger asChild>
+                    <Button
+                        id="date"
+                        variant="outline"
+                        className={cn(
+                            'w-[250px] justify-center text-center font-medium hover:bg-gray-200',
+                            !date && 'text-muted-foreground',
+                        )}
+                    >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {date?.from ? (
+                            date.to ? (
+                                <>
+                                    {format(date.from, 'dd/MM/yyyy', { locale: vi })} -{' '}
+                                    {format(date.to, 'dd/MM/yyyy', { locale: vi })}
+                                </>
+                            ) : (
+                                format(date.from, 'dd/MM/yyyy', { locale: vi })
+                            )
+                        ) : (
+                            <span>Chọn khoảng thời gian</span>
+                        )}
+                    </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-fit p-0" align="center">
+                    <Calendar
+                        mode="range"
+                        defaultMonth={date?.from}
+                        selected={date}
+                        onSelect={handleSelect}
+                        numberOfMonths={2}
+                    />
+                </PopoverContent>
+            </Popover>
+        </div>
+    );
+}
+
+export default DateRangePicker;

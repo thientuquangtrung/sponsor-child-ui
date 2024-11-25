@@ -22,10 +22,16 @@ export const childrenVisitTripsApi = baseApi.injectEndpoints({
                 body: data,
             }),
         }),
-        getChildrenVisitTripsByProvince: builder.query({
-            query: (province) => ({
-                url: `/ChildrenVisitTrips/province`,
-                params: { province }
+        getFilteredChildrenVisitTrips: builder.query({
+            query: ({ status, startDate, endDate, province, visitCost }) => ({
+                url: '/ChildrenVisitTrips/filter',
+                params: {
+                    status,
+                    startDate,
+                    endDate,
+                    province,
+                    visitCost
+                }
             }),
         }),
     }),
@@ -36,5 +42,5 @@ export const {
     useCreateChildrenVisitTripsMutation,
     useGetChildrenVisitTripsByIdQuery,
     useUpdateChildrenVisitTripsMutation,
-    useGetChildrenVisitTripsByProvinceQuery,
+    useGetFilteredChildrenVisitTripsQuery,
 } = childrenVisitTripsApi;

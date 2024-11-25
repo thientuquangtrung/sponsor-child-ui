@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { useCreateDisbursementRequestMutation } from '@/redux/guarantee/disbursementRequestApi';
+import { useCanCreateDisbursementRequestQuery, useCreateDisbursementRequestMutation } from '@/redux/guarantee/disbursementRequestApi';
 import { useGetDisbursementStageByStageIdQuery } from '@/redux/guarantee/disbursementStageApi';
 import { AlertCircle, Calendar, CircleDollarSign, LoaderCircle, Plus, Trash2, User } from 'lucide-react';
 import {
@@ -32,7 +32,12 @@ export default function CreateDisbursementRequest() {
     const [showConfirmDialog, setShowConfirmDialog] = useState(false);
     const { data: disbursementStage } = useGetDisbursementStageByStageIdQuery(stageID);
     const [createDisbursementRequest] = useCreateDisbursementRequestMutation();
-
+    const { data: canCreateData } = useCanCreateDisbursementRequestQuery(
+        disbursementStage?.stageID,
+        {
+            skip: !disbursementStage?.stageID,
+        }
+    );
     const [guaranteeInfo, setGuaranteeInfo] = useState({
         fullname: '',
         bankAccountNumber: '',
@@ -65,7 +70,16 @@ export default function CreateDisbursementRequest() {
         toast.error('Bạn không có quyền tạo yêu cầu giải ngân cho chiến dịch này!');
         navigate('/guarantee/disbursement-requests');
     }
-
+    if (canCreateData && !canCreateData.canCreate) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-[400px] p-4">
+                <AlertCircle className="h-12 w-12 text-red-500 mb-4" />
+                <p className="text-lg text-center text-red-600">
+                    Bạn không được phép tạo yêu cầu giải ngân mới. Yêu cầu hiện tại đã phê duyệt hoặc đã yêu cầu.
+                </p>
+            </div>
+        );
+    }
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setGuaranteeInfo((prevInfo) => ({
@@ -232,7 +246,7 @@ export default function CreateDisbursementRequest() {
                             {disbursementStage?.actualDisbursementAmount &&
                                 disbursementStage?.disbursementAmount &&
                                 disbursementStage.actualDisbursementAmount - disbursementStage.disbursementAmount >
-                                    0 && (
+                                0 && (
                                     <div className="flex items-center">
                                         <div className="flex items-center w-1/2">
                                             <CircleDollarSign className="mr-2 h-5 w-5 text-teal-500" />

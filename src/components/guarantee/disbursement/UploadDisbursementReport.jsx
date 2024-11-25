@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { toast } from 'sonner';
-import { Upload, LoaderCircle } from 'lucide-react';
+import { Upload, LoaderCircle, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { X } from 'lucide-react';
@@ -12,14 +12,18 @@ import { useUpdateDisbursementReportMutation } from '@/redux/guarantee/disbursem
 
 export default function UploadDisbursementReport() {
     const { id } = useParams();
-    const { data: disbursementRequests, isLoading, error } = useGetDisbursementRequestByIdSimplifiedQuery(id);
+    const { data: disbursementRequests, isLoading, error, refetch } = useGetDisbursementRequestByIdSimplifiedQuery(id);
     const [updateDisbursementReport] = useUpdateDisbursementReportMutation();
-
     const [reportDetails, setReportDetails] = useState({});
     const [loadingRows, setLoadingRows] = useState([]);
 
     const [isModalOpen, setModalOpen] = useState(false);
     const [modalImage, setModalImage] = useState(null);
+
+    const formatCurrency = (value) => {
+        if (!value && value !== 0) return '';
+        return value.toLocaleString('vi-VN') + ' VNĐ';
+    };
 
     const isRowUpdated = (detail) => {
         return detail.comments && detail.actualAmountSpent && detail.receiptUrl;
@@ -33,6 +37,16 @@ export default function UploadDisbursementReport() {
     const closeModal = () => {
         setModalOpen(false);
         setModalImage(null);
+    };
+
+    const removeImage = (detailId) => {
+        setReportDetails((prev) => ({
+            ...prev,
+            [detailId]: {
+                ...prev[detailId],
+                receiptUrl: '',
+            },
+        }));
     };
 
     if (isLoading) return <LoadingScreen />;
@@ -75,7 +89,13 @@ export default function UploadDisbursementReport() {
         const file = event.target.files[0];
         if (!file) return;
 
+        if (!file.type.startsWith('image/')) {
+            toast.error('Vui lòng chọn file hình ảnh');
+            return;
+        }
+
         try {
+            setLoadingRows((prev) => [...prev, detailId]);
             const receiptUrl = await uploadToCloudinary(file);
 
             setReportDetails((prev) => ({
@@ -86,11 +106,25 @@ export default function UploadDisbursementReport() {
                 },
             }));
         } catch (error) {
-            toast.error('Failed to upload the file. Please try again.');
+            toast.error('Không thể tải lên file. Vui lòng thử lại.');
+        } finally {
+            setLoadingRows((prev) => prev.filter((id) => id !== detailId));
         }
     };
 
+    const validateAmount = (value) => {
+        const numericValue = parseFloat(value.replace(/\./g, '').replace(/,/g, ''));
+        return !isNaN(numericValue) && numericValue >= 0;
+    };
+
     const handleChange = (detailId, field, value) => {
+        if (field === 'actualAmountSpent') {
+            if (value && !validateAmount(value)) {
+                toast.error('Vui lòng nhập số tiền hợp lệ và không âm');
+                return;
+            }
+        }
+
         setReportDetails((prev) => ({
             ...prev,
             [detailId]: {
@@ -102,13 +136,29 @@ export default function UploadDisbursementReport() {
 
     const updateSingleDisbursementDetail = async (detailId) => {
         const detail = reportDetails[detailId];
-        if (!detail || !detail.comments || !detail.receiptUrl) {
-            toast.error(`Detail ID ${detailId}: Comments and Receipt URL are required.`);
+        if (!detail?.comments) {
+            toast.error('Vui lòng nhập ghi chú');
+            return;
+        }
+
+        if (!detail?.actualAmountSpent) {
+            toast.error('Vui lòng nhập số tiền thực tế');
+            return;
+        }
+
+        if (!detail?.receiptUrl) {
+            toast.error('Vui lòng tải lên hóa đơn');
+            return;
+        }
+
+        const numericAmount = parseFloat(detail.actualAmountSpent.replace(/\./g, '').replace(/,/g, ''));
+        if (isNaN(numericAmount) || numericAmount < 0) {
+            toast.error('Số tiền không hợp lệ');
             return;
         }
 
         const payload = {
-            actualAmountSpent: parseFloat(detail.actualAmountSpent.replace(/\./g, '').replace(/,/g, '')) || 0,
+            actualAmountSpent: numericAmount,
             receiptUrl: detail.receiptUrl,
             comments: detail.comments,
         };
@@ -118,6 +168,7 @@ export default function UploadDisbursementReport() {
         try {
             await updateDisbursementReport({ reportDetailId: detailId, data: payload }).unwrap();
             toast.success(`Cập nhật chi tiết báo cáo thành công!`);
+            await refetch();
         } catch (error) {
             console.error(`Không cập nhật được ID ${detailId}:`, error);
             toast.error(`Không cập nhật được: ${error.message}`);
@@ -174,8 +225,7 @@ export default function UploadDisbursementReport() {
                                     report.disbursementReportDetails.map((detail) => {
                                         const actualAmountSpent =
                                             reportDetails[detail.id]?.actualAmountSpent ||
-                                            detail.actualAmountSpent ||
-                                            '';
+                                            (detail.actualAmountSpent ? formatCurrency(detail.actualAmountSpent) : '');
                                         const comments = reportDetails[detail.id]?.comments || detail.comments || '';
                                         const receiptUrl =
                                             reportDetails[detail.id]?.receiptUrl || detail.receiptUrl || '';
@@ -192,52 +242,70 @@ export default function UploadDisbursementReport() {
                                                     {detail.itemDescription || 'Không có mô tả'}
                                                 </TableCell>
                                                 <TableCell className="p-3 border border-slate-300 text-teal-500 font-semibold">
-                                                    {detail.amountSpent?.toLocaleString('vi-VN') + ' VNĐ'}
+                                                    {formatCurrency(detail.amountSpent)}
                                                 </TableCell>
                                                 <TableCell className="p-3 border border-slate-300">
-                                                    <Input
-                                                        type="text"
-                                                        value={actualAmountSpent}
-                                                        placeholder="Số tiền"
-                                                        onChange={(e) => {
-                                                            const formattedAmount = e.target.value
-                                                                .replace(/\./g, '')
-                                                                .replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-                                                            handleChange(
-                                                                detail.id,
-                                                                'actualAmountSpent',
-                                                                formattedAmount,
-                                                            );
-                                                        }}
-                                                        disabled={isUpdated}
-                                                    />
-                                                </TableCell>
-                                                <TableCell className="p-3 border border-slate-300">
-                                                    <div
-                                                        className="border-dashed border-2 border-gray-400 p-2 rounded-lg flex flex-col items-center justify-center relative"
-                                                        onClick={() =>
-                                                            !isUpdated &&
-                                                            document.getElementById(`fileInput-${detail.id}`).click()
-                                                        }
-                                                    >
-                                                        {receiptUrl ? (
-                                                            <img
-                                                                src={receiptUrl}
-                                                                alt="Uploaded receipt"
-                                                                className="max-w-full max-h-32"
-                                                            />
-                                                        ) : (
-                                                            <Upload size={24} className="text-gray-500 mb-2" />
-                                                        )}
+                                                    {isUpdated ? (
+                                                        <div className="text-teal-500 font-semibold">
+                                                            {formatCurrency(detail.actualAmountSpent)}
+                                                        </div>
+                                                    ) : (
                                                         <Input
-                                                            id={`fileInput-${detail.id}`}
-                                                            type="file"
-                                                            accept="image/*"
-                                                            onChange={(e) => handleFileChange(e, detail.id)}
-                                                            className="absolute inset-0 opacity-0 cursor-pointer"
-                                                            style={{ zIndex: 100 }}
+                                                            type="text"
+                                                            value={actualAmountSpent}
+                                                            placeholder="Số tiền"
+                                                            onChange={(e) => {
+                                                                const formattedAmount = e.target.value
+                                                                    .replace(/\D/g, '')
+                                                                    .replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+                                                                handleChange(
+                                                                    detail.id,
+                                                                    'actualAmountSpent',
+                                                                    formattedAmount,
+                                                                );
+                                                            }}
                                                             disabled={isUpdated}
                                                         />
+                                                    )}
+                                                </TableCell>
+                                                <TableCell className="p-3 border border-slate-300">
+                                                    <div className="border-dashed border-2 border-gray-400 p-2 rounded-lg flex flex-col items-center justify-center relative">
+                                                        {receiptUrl ? (
+                                                            <div className="relative group">
+                                                                <img
+                                                                    src={receiptUrl}
+                                                                    alt="Uploaded receipt"
+                                                                    className="max-w-full max-h-32 cursor-pointer"
+                                                                    onClick={() => openModal(receiptUrl)}
+                                                                />
+                                                                {!isUpdated && (
+                                                                    <button
+                                                                        type="button"
+                                                                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full  hover:bg-red-600 transition-colors z-20"
+                                                                        onClick={() => removeImage(detail.id)}
+                                                                    >
+                                                                        <X size={20} />
+                                                                    </button>
+                                                                )}
+                                                            </div>
+                                                        ) : (
+                                                            <>
+                                                                <Upload size={24} className="text-gray-500 mb-2" />
+                                                                <span className="text-sm text-gray-500">
+                                                                    Click để tải lên hóa đơn
+                                                                </span>
+                                                            </>
+                                                        )}
+                                                        {!isUpdated && (
+                                                            <Input
+                                                                id={`fileInput-${detail.id}`}
+                                                                type="file"
+                                                                accept="image/*"
+                                                                onChange={(e) => handleFileChange(e, detail.id)}
+                                                                className="absolute inset-0 opacity-0 cursor-pointer"
+                                                                disabled={isUpdated || isLoading}
+                                                            />
+                                                        )}
                                                     </div>
                                                 </TableCell>
                                                 <TableCell className="p-3 border border-slate-300">

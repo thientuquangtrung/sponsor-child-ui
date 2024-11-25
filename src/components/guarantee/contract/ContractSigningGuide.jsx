@@ -5,6 +5,8 @@ import { Truck, Send } from 'lucide-react';
 import { useCheckGuaranteeStatusQuery } from '@/redux/guarantee/guaranteeApi';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
 
 const GuideStep = ({ icon, title, content }) => (
     <Card className="mb-4">
@@ -26,14 +28,45 @@ const ContractSigningGuide = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (!isLoading && (!guaranteeStatus || guaranteeStatus.status !== 1)) {
-            // not InContractSigning
+        if (!isLoading && (!guaranteeStatus || (guaranteeStatus.status !== 1 && guaranteeStatus.status !== 3))) {
             navigate('/');
         }
     }, [guaranteeStatus, isLoading, navigate]);
 
+    const handleCreateNew = () => {
+        navigate('/register');
+    };
+
     if (isLoading) {
         return <div className="flex justify-center items-center h-48">Loading...</div>;
+    }
+
+    if (guaranteeStatus?.status === 3) {
+        return (
+            <div className="container mx-auto p-4 max-w-2xl">
+                <div className="space-y-6">
+                    <Alert variant="destructive" className="bg-red-50 border border-red-200 rounded-lg p-4">
+                        <AlertTitle className="text-xl font-semibold text-red-700 mb-2">
+                            Yêu cầu trở thành bảo lãnh bị từ chối
+                        </AlertTitle>
+                        <AlertDescription className="text-red-600">
+                            {guaranteeStatus.rejectionReason || "Yêu cầu bảo lãnh của bạn không được chấp nhận"}
+                        </AlertDescription>
+                    </Alert>
+
+                    <div className="flex justify-center">
+                        <Button
+                            onClick={handleCreateNew}
+                            className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 
+                                  text-white px-8 py-3 rounded-lg shadow-lg transform transition-transform 
+                                  duration-200 hover:scale-105 font-medium"
+                        >
+                            Tạo yêu cầu mới
+                        </Button>
+                    </div>
+                </div>
+            </div>
+        );
     }
 
     return (

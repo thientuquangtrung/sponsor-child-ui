@@ -153,7 +153,7 @@ const ListDisbursementCampaign = () => {
     };
 
     return (
-        <div className="w-full space-y-4">
+        <div className="grid grid-cols-1 gap-4">
             <h1 className="text-4xl text-center font-bold py-4 bg-gradient-to-b from-teal-500 to-rose-300 text-transparent bg-clip-text">
                 Danh sách chiến dịch yêu cầu giải ngân
             </h1>
