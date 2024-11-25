@@ -11,12 +11,12 @@ const SidebarGuarantee = () => {
     const [open, setOpen] = useState(true);
 
     const menus = [
-        { icon: Home, label: 'Trang Chủ', path: '/guarantee' },
+        // { icon: Home, label: 'Trang Chủ', path: '/guarantee' },
         { icon: LayoutDashboard, label: 'Quản Lý Chiến Dịch', path: '/guarantee/campaigns' },
-        { icon: BarChart2, label: 'Thống Kê', path: '/guarantee/statistics' },
-        { icon: History, label: 'Lịch sử quyên góp', path: '/guarantee/donation-history' },
-        { icon: Newspaper, label: 'Tin Tức & Cập Nhật', path: '/guarantee/news' },
-        { icon: User, label: 'Hồ Sơ Người Bảo Lãnh', path: '/guarantee/profile' },
+        // { icon: BarChart2, label: 'Thống Kê', path: '/guarantee/statistics' },
+        // { icon: History, label: 'Lịch sử quyên góp', path: '/guarantee/donation-history' },
+        // { icon: Newspaper, label: 'Tin Tức & Cập Nhật', path: '/guarantee/news' },
+        // { icon: User, label: 'Hồ Sơ Người Bảo Lãnh', path: '/guarantee/profile' },
         { icon: ReceiptText, label: 'Hợp đồng', path: '/guarantee/contracts' },
         { icon: CircleDollarSign, label: 'Yêu cầu giải ngân', path: '/guarantee/disbursement-requests' },
     ];

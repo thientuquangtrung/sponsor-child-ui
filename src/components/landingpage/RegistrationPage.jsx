@@ -9,6 +9,7 @@ import PersonalRegistrationForm from './PersonalRegistrationForm';
 import { useCheckGuaranteeStatusQuery } from '@/redux/guarantee/guaranteeApi';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import LoadingScreen from '@/components/common/LoadingScreen';
 
 const RegistrationPage = () => {
     const { user } = useSelector((state) => state.auth);
@@ -67,16 +68,16 @@ const RegistrationPage = () => {
 
 
     if (isLoading) {
-        return <p className="text-center text-2xl font-semibold">Loading...</p>;
+        return <div><LoadingScreen /></div>;
     }
 
     if (!guaranteeStatus || guaranteeStatus.status === 3) {
         return (
             <div className="container mx-auto px-4">
                 {guaranteeStatus?.status === 3 && (
-                    <Alert variant="destructive" className="mb-6">
-                        <AlertTitle className="text-lg font-semibold">Yêu cầu đăng ký bị từ chối</AlertTitle>
-                        <AlertDescription className="mt-2">
+                    <Alert className="mt-4 p-4 bg-red-50 border mb-4 border-red-200 rounded-md">
+                        <AlertTitle className="text-red-700 font-semibold mb-2">Yêu cầu đăng ký bị từ chối</AlertTitle>
+                        <AlertDescription className="text-red-600">
                             Lý do:  {guaranteeStatus.rejectionReason || "Yêu cầu đăng ký của bạn không được chấp nhận"}
                         </AlertDescription>
                     </Alert>
