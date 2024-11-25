@@ -4,6 +4,13 @@ import { Input } from '@/components/ui/input';
 
 const ITEMS_PER_PAGE = 10;
 
+const removeAccents = (str) => {
+    return str.normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/đ/g, 'd')
+        .replace(/Đ/g, 'D');
+};
+
 const ParticipantList = ({ visitRegistrations = [] }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
@@ -11,9 +18,12 @@ const ParticipantList = ({ visitRegistrations = [] }) => {
 
     const filteredRegistrations = visitRegistrations
         .filter(registration => registration.status === 1)
-        .filter(registration =>
-            registration.userName.toLowerCase().includes(searchTerm.toLowerCase())
-        );
+        .filter(registration => {
+            const normalizedSearchTerm = removeAccents(searchTerm.toLowerCase());
+            const normalizedUserName = removeAccents(registration.userName.toLowerCase());
+
+            return normalizedUserName.includes(normalizedSearchTerm);
+        });
 
     const totalItems = filteredRegistrations.length;
     const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
@@ -68,10 +78,8 @@ const ParticipantList = ({ visitRegistrations = [] }) => {
         setCurrentPage(1);
     };
 
-
     return (
         <div className="shadow-xl">
-
             <div className="px-4 py-1">
                 <div className="relative my-4">
                     <Input
