@@ -10,28 +10,9 @@ import { MemberLayout } from '@/components/layouts/MemberLayout';
 // config
 import { DEFAULT_PATH } from '../config/app';
 import LoadingScreen from '@/components/common/LoadingScreen';
-import CampaignDetail from '@/components/landingpage/CampaignDetail';
-import DonateTarget from '@/components/landingpage/DonateTarget';
-import PageIntroduction from '@/components/landingpage/PageIntroduction';
-import RegistrationPage from '@/components/landingpage/RegistrationPage';
-import DonationInformation from '@/components/landingpage/DonationInformation';
-import CampaignsNoGuarantee from '@/components/landingpage/CampaignsNoGuarantee';
-import ContractCampaign from '@/components/guarantee/contract/ContractCampaign';
-import CampaignOverview from '@/components/landingpage/CampaignOverview';
-import ContractPage from '@/components/guarantee/contract/ContractPage';
-import ContractDetail from '@/components/guarantee/contract/ContractDetail';
-import ContractGuarantee from '@/components/guarantee/contract/ContractGuarantee';
-import CampaignGuaranteeDetail from '@/components/guarantee/campaign/CampaignGuaranteeDetail';
 
-import VisitEvents from '@/components/landingpage/VisitEvents';
-import EventDetail from '@/components/landingpage/EventDetail';
 
-import DisbursementRequest from '@/components/guarantee/disbursement/DisbursementRequest';
-import CreateDisbursementRequest from '@/components/guarantee/disbursement/CreateDisbursementRequest';
-import CampaignInfo from '@/components/guarantee/campaign/CampaignInfo';
-import DisbursementRequestDetail from '@/components/guarantee/disbursement/DisbursementRequestDetail';
-import ListDisbursementCampaign from '@/components/guarantee/disbursement/ListDisbursementCampaign';
-import GeneralFund from '@/components/fund/GeneralFund';
+
 
 const Loadable = (Component) => {
     const LoadableComponent = (props) => {
@@ -173,4 +154,23 @@ const Page404 = Loadable(lazy(() => import('../pages/NoMatch')));
 const GuaranteeHome = Loadable(lazy(() => import('@/components/guarantee/GuaranteeHome')));
 const GuaranteeCampaigns = Loadable(lazy(() => import('@/components/guarantee/campaign/GuaranteeCampaigns')));
 const DonationHistory = Loadable(lazy(() => import('@/components/guarantee/DonationHistory')));
-// const CampaignCreate = Loadable(lazy(() => import('@/components/guarantee/campaign/CampaignCreate')));
+const CampaignInfo = Loadable(lazy(() => import('@/components/guarantee/campaign/CampaignInfo')));
+const ContractCampaign = Loadable(lazy(() => import('@/components/guarantee/contract/ContractCampaign')));
+const CampaignGuaranteeDetail = Loadable(lazy(() => import('@/components/guarantee/campaign/CampaignGuaranteeDetail')));
+const EventDetail = Loadable(lazy(() => import('@/components/landingpage/EventDetail')));
+const VisitEvents = Loadable(lazy(() => import('@/components/landingpage/VisitEvents')));
+const CampaignDetail = Loadable(lazy(() => import('@/components/landingpage/CampaignDetail')));
+const DonateTarget = Loadable(lazy(() => import('@/components/landingpage/DonateTarget')));
+const PageIntroduction = Loadable(lazy(() => import('@/components/landingpage/PageIntroduction')));
+const RegistrationPage = Loadable(lazy(() => import('@/components/landingpage/RegistrationPage')));
+const DonationInformation = Loadable(lazy(() => import('@/components/landingpage/DonationInformation')));
+const CampaignsNoGuarantee = Loadable(lazy(() => import('@/components/landingpage/CampaignsNoGuarantee')));
+const CampaignOverview = Loadable(lazy(() => import('@/components/landingpage/CampaignOverview')));
+const ContractPage = Loadable(lazy(() => import('@/components/guarantee/contract/ContractPage')));
+const ContractDetail = Loadable(lazy(() => import('@/components/guarantee/contract/ContractDetail')));
+const ContractGuarantee = Loadable(lazy(() => import('@/components/guarantee/contract/ContractGuarantee')));
+const DisbursementRequest = Loadable(lazy(() => import('@/components/guarantee/disbursement/DisbursementRequest')));
+const CreateDisbursementRequest = Loadable(lazy(() => import('@/components/guarantee/disbursement/CreateDisbursementRequest')));
+const DisbursementRequestDetail = Loadable(lazy(() => import('@/components/guarantee/disbursement/DisbursementRequestDetail')));
+const ListDisbursementCampaign = Loadable(lazy(() => import('@/components/guarantee/disbursement/ListDisbursementCampaign')));
+const GeneralFund = Loadable(lazy(() => import('@/components/fund/GeneralFund')));

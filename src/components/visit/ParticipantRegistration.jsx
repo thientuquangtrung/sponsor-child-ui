@@ -107,15 +107,13 @@ const ParticipantRegistration = ({
 
     const handleConfirmCancel = async (params) => {
         try {
-            await updateRegistration(params).unwrap();
-            toast.success('Cập nhật trạng thái thành công');
-            window.location.reload();
+            const result = await updateRegistration(params).unwrap();
+            return result;
         } catch (error) {
-            toast.error('Có lỗi xảy ra khi cập nhật trạng thái');
             console.error('Update error:', error);
+            throw error;
         }
     };
-
     useEffect(() => {
         if (payOSConfig.CHECKOUT_URL != null) {
             open();
