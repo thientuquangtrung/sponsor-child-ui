@@ -281,8 +281,10 @@ const CampaignInfo = () => {
             });
             const imageResponses = await uploadMultipleFiles({
                 files: data.imagesFolderUrl,
-                folder: campaignMediaFolder
+                folder: campaignMediaFolder,
+                resourceType: data.imagesFolderUrl.some(file => file.type.startsWith('video/')) ? 'video' : 'auto'
             });
+
 
             // Upload child identification 
             const childDocResponse = await uploadFile({

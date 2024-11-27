@@ -14,10 +14,10 @@ import {
     DialogContent,
     DialogTrigger,
 } from '@/components/ui/dialog';
-import { Carousel, CarouselPrevious, CarouselNext, CarouselContent, CarouselItem } from '@/components/ui/carousel';
 import { useSelector } from 'react-redux';
 import { formatNumber } from '@/lib/utils';
 import { ScrollArea } from '@radix-ui/react-scroll-area';
+import ImageGallery from '@/components/landingpage/ImageGallery';
 
 const CampaignOverview = () => {
     const { id } = useParams();
@@ -84,9 +84,8 @@ const CampaignOverview = () => {
             try {
                 const resources = await getAssetsList('campaign_1');
                 const imageUrls = resources.map((resource) => {
-                    return `https://res.cloudinary.com/${import.meta.env.VITE_CLOUD_NAME}/image/${resource.type}/${
-                        resource.public_id
-                    }.${resource.format}`;
+                    return `https://res.cloudinary.com/${import.meta.env.VITE_CLOUD_NAME}/image/${resource.type}/${resource.public_id
+                        }.${resource.format}`;
                 });
                 setImages(imageUrls);
             } catch (error) {
@@ -120,26 +119,10 @@ const CampaignOverview = () => {
             >
                 <div className="relative z-10 flex flex-row items-center space-x-2">
                     <div className="lg:w-1/3">
-                        <img
-                            src={campaign?.thumbnailUrl}
-                            alt={campaign.title}
-                            className="w-full h-[500px] object-cover mb-4 rounded-lg"
+                        <ImageGallery
+                            thumbnailUrl={campaign.thumbnailUrl}
+                            imagesFolderUrl={campaign.imagesFolderUrl}
                         />
-                        <Carousel className="my-6" opts={{ loop: true }}>
-                            <CarouselPrevious />
-                            <CarouselContent>
-                                {images.map((image, index) => (
-                                    <CarouselItem key={index} itemsPerView={5}>
-                                        <img
-                                            src={image}
-                                            alt={`Slide ${index + 1}`}
-                                            className="rounded-lg shadow-md w-[100px] h-[100px] cursor-pointer object-cover"
-                                        />
-                                    </CarouselItem>
-                                ))}
-                            </CarouselContent>
-                            <CarouselNext />
-                        </Carousel>
                     </div>
                     <div className="lg:w-2/3 p-4 relative flex flex-col justify-between">
                         <div className="flex flex-col lg:flex-row justify-between space-x-4">
@@ -279,9 +262,8 @@ const CampaignOverview = () => {
                     {campaign?.disbursementPlans[0]?.stages.map((stage, index) => (
                         <div
                             key={stage.stageNumber}
-                            className={`flex justify-between items-center w-full mb-16 ${
-                                index % 2 === 0 ? 'flex-row' : 'flex-row-reverse'
-                            }`}
+                            className={`flex justify-between items-center w-full mb-16 ${index % 2 === 0 ? 'flex-row' : 'flex-row-reverse'
+                                }`}
                         >
                             <div className="w-5/12">
                                 <div className="bg-white p-6 rounded shadow-lg">

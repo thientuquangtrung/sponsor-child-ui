@@ -77,15 +77,18 @@ const CancelRegistrationDialog = ({
                 bankName: data.bankAccount?.bank ? parseInt(data.bankAccount.bank) : undefined
             });
 
-            if (result?.success) {
+            if (result && (result.status === 2 || result.status === 3)) {
                 toast.success(needsRefund ? 'Đã gửi yêu cầu hoàn tiền' : 'Đã hủy đăng ký thành công');
                 reset();
                 onClose();
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
             } else {
-                throw new Error(result?.message || 'Hủy đăng ký thất bại');
+                throw new Error('Hủy đăng ký thất bại');
             }
         } catch (error) {
-            toast.error(error.message || 'Có lỗi xảy ra. Vui lòng thử lại!');
+            toast.error('Có lỗi xảy ra. Vui lòng thử lại!');
             console.error('Cancel registration error:', error);
         }
     };

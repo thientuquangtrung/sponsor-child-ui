@@ -77,76 +77,75 @@ const CampaignGuaranteeDetail = () => {
     };
     return (
         <div className="min-h-screen flex flex-col space-y-8 px-6">
-            <div className="mx-auto">
-                <Card className="w-full overflow-hidden border-none">
-                    <CardHeader className="bg-teal-50 pb-4 text-center">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
-                            <div className="flex flex-col items-center">
-                                <CardTitle className="text-3xl font-bold text-gray-900 mb-4 text-center">
-                                    {campaignData.title}
-                                </CardTitle>
-                                <div className="space-x-3 text-center">
-                                    <Badge variant="outline" className="px-3 py-1 text-sm font-medium">
-                                        {getGuaranteeTypeLabel(campaignData.guaranteeType)}
-                                    </Badge>
-                                    <Badge variant="secondary" className="px-3 py-1 text-sm font-medium">
-                                        {getStatusLabel(campaignData.status)}
-                                    </Badge>
-                                    <Badge
-                                        className={cn(
-                                            'px-3 py-1 text-sm font-medium',
-                                            campaignData.campaignType === 1
-                                                ? 'bg-red-400 hover:bg-red-500 text-white'
-                                                : 'bg-primary hover:bg-primary/90 text-teal-600-foreground',
-                                        )}
-                                    >
-                                        {getCampaignTypeLabel(campaignData.campaignType)}
-                                    </Badge>
-                                </div>
-                            </div>
-
-                            <ImageGallery
-                                thumbnailUrl={campaignData.thumbnailUrl}
-                                imagesFolderUrl={campaignData.imagesFolderUrl}
-                            />
-                        </div>
-                    </CardHeader>
-
-                    <CardContent className="space-y-8">
-                        <div className="bg-gray-50 p-6 rounded-xl space-y-4">
-                            <div className="flex justify-between text-sm font-medium">
-                                <span className="text-gray-600">Tiến độ gây quỹ</span>
-                                <span className="text-teal-600 font-bold">{progress.toFixed(1)}%</span>
-                            </div>
-                            <Progress value={progress} className="h-3 rounded-full" />
-                            <div className="flex justify-between items-center">
-                                <div className="space-y-1">
-                                    <span className="block text-2xl font-bold text-teal-600">
-                                        {campaignData.raisedAmount.toLocaleString('vi-VN')}đ
-                                    </span>
-                                    <span className="text-sm text-gray-500">Đã quyên góp được</span>
-                                </div>
-                                <div className="text-right space-y-1">
-                                    <span className="block text-2xl font-bold text-gray-700">
-                                        {campaignData.targetAmount.toLocaleString('vi-VN')}đ
-                                    </span>
-                                    <span className="text-sm text-gray-500">Mục tiêu</span>
-                                </div>
-                            </div>
-                            <div className="flex justify-between items-center text-gray-700">
-                                <div className="flex items-center gap-3">
-                                    <Calendar className="h-5 w-5 text-teal-600" />
-                                    <span>Bắt đầu: {new Date(campaignData.startDate).toLocaleDateString('vi-VN')}</span>
-                                </div>
-                                <div className="flex items-center gap-3">
-                                    <Clock className="h-5 w-5 text-teal-600" />
-                                    <span>Kết thúc: {new Date(campaignData.endDate).toLocaleDateString('vi-VN')}</span>
-                                </div>
+            <Card className="border-0">
+                <CardHeader className="bg-teal-50 pb-4 text-center">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                        <div className="flex flex-col items-center">
+                            <CardTitle className="text-3xl font-bold text-gray-900 mb-4 text-center">
+                                {campaignData.title}
+                            </CardTitle>
+                            <div className="space-x-3 text-center">
+                                <Badge variant="outline" className="px-3 py-1 text-sm font-medium">
+                                    {getGuaranteeTypeLabel(campaignData.guaranteeType)}
+                                </Badge>
+                                <Badge variant="secondary" className="px-3 py-1 text-sm font-medium">
+                                    {getStatusLabel(campaignData.status)}
+                                </Badge>
+                                <Badge
+                                    className={cn(
+                                        'px-3 py-1 text-sm font-medium',
+                                        campaignData.campaignType === 1
+                                            ? 'bg-red-400 hover:bg-red-500 text-white'
+                                            : 'bg-primary hover:bg-primary/90 text-teal-600-foreground',
+                                    )}
+                                >
+                                    {getCampaignTypeLabel(campaignData.campaignType)}
+                                </Badge>
                             </div>
                         </div>
-                    </CardContent>
-                </Card>
-            </div>
+
+                        <ImageGallery
+                            thumbnailUrl={campaignData.thumbnailUrl}
+                            imagesFolderUrl={campaignData.imagesFolderUrl}
+                        />
+                    </div>
+                </CardHeader>
+
+                <CardContent className="space-y-8">
+                    <div className="bg-gray-50 p-6 rounded-xl space-y-4">
+                        <div className="flex justify-between text-sm font-medium">
+                            <span className="text-gray-600">Tiến độ gây quỹ</span>
+                            <span className="text-teal-600 font-bold">{progress.toFixed(1)}%</span>
+                        </div>
+                        <Progress value={progress} className="h-3 rounded-full" />
+                        <div className="flex justify-between items-center">
+                            <div className="space-y-1">
+                                <span className="block text-2xl font-bold text-teal-600">
+                                    {campaignData.raisedAmount.toLocaleString('vi-VN')}đ
+                                </span>
+                                <span className="text-sm text-gray-500">Đã quyên góp được</span>
+                            </div>
+                            <div className="text-right space-y-1">
+                                <span className="block text-2xl font-bold text-gray-700">
+                                    {campaignData.targetAmount.toLocaleString('vi-VN')}đ
+                                </span>
+                                <span className="text-sm text-gray-500">Mục tiêu</span>
+                            </div>
+                        </div>
+                        <div className="flex justify-between items-center text-gray-700">
+                            <div className="flex items-center gap-3">
+                                <Calendar className="h-5 w-5 text-teal-600" />
+                                <span>Bắt đầu: {new Date(campaignData.startDate).toLocaleDateString('vi-VN')}</span>
+                            </div>
+                            <div className="flex items-center gap-3">
+                                <Clock className="h-5 w-5 text-teal-600" />
+                                <span>Kết thúc: {new Date(campaignData.endDate).toLocaleDateString('vi-VN')}</span>
+                            </div>
+                        </div>
+                    </div>
+                </CardContent>
+            </Card>
+
 
             <Card className="shadow-lg border-0 mb-6">
                 <CardHeader className="bg-gradient-to-r from-rose-100 to-teal-100">
