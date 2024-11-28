@@ -11,6 +11,9 @@ import { formatDateForServer, setLocalDateWithoutTime } from '@/lib/utils';
 
 const DisbursementInfo = ({ campaignType }) => {
     const { control, watch, setValue, formState: { errors } } = useFormContext();
+    const plannedStartDate = watch('plannedStartDate');
+    const plannedEndDate = watch('plannedEndDate');
+    const disbursementStages = watch('disbursementStages');
     const targetAmount = parseFloat(watch('targetAmount')?.replace(/,/g, '') || '0');
 
     const { fields, append, remove } = useFieldArray({
@@ -45,6 +48,29 @@ const DisbursementInfo = ({ campaignType }) => {
             }
         }
     }, [campaignType, targetAmount, setValue, fields.length]);
+    useEffect(() => {
+        if (plannedStartDate) {
+            setValue('disbursementStages.0.scheduledDate', plannedStartDate);
+            if (campaignType === 1) {
+                setValue('endDate', plannedStartDate);
+                setValue('plannedEndDate', plannedStartDate);
+            }
+        }
+        if (plannedEndDate && campaignType === 0 && disbursementStages?.length > 0) {
+            const lastIndex = disbursementStages.length - 1;
+            setValue('plannedEndDate', disbursementStages[lastIndex].scheduledDate);
+            setValue('endDate', disbursementStages[lastIndex].scheduledDate);
+        }
+    }, [plannedStartDate, plannedEndDate, campaignType, disbursementStages, setValue]);
+
+
+    const isDateDisabled = (field) => {
+        if (campaignType === 1 || campaignType === 0) {
+            return ['endDate', 'plannedEndDate'].includes(field);
+        }
+        return false;
+    };
+
     const formatCurrency = (value) => {
         if (!value) return '';
         return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -52,14 +78,14 @@ const DisbursementInfo = ({ campaignType }) => {
 
     return (
         <div className="space-y-6">
-            <h2 className="text-xl font-semibold">Kế hoạch dự kiến giải ngân</h2>
+            <h2 className="text-xl font-semibold">Kế hoạch  giải ngân dự kiến</h2>
             <div className="flex justify-between">
                 <FormField
                     control={control}
                     name="plannedStartDate"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Ngày Bắt Đầu Dự Kiến Giải Ngân</FormLabel>
+                            <FormLabel>Ngày Bắt Đầu  Giải Ngân Dự Kiến</FormLabel>
                             <FormControl>
                                 <DatePicker
                                     date={setLocalDateWithoutTime(field.value)}
@@ -82,7 +108,7 @@ const DisbursementInfo = ({ campaignType }) => {
                     name="plannedEndDate"
                     render={({ field }) => (
                         <FormItem className="text-right">
-                            <FormLabel>Ngày Kết Thúc Dự Kiến Giải Ngân</FormLabel>
+                            <FormLabel>Ngày Kết Thúc Giải Ngân Dự Kiến </FormLabel>
                             <FormControl>
                                 <DatePicker
                                     date={setLocalDateWithoutTime(field.value)}
@@ -90,6 +116,7 @@ const DisbursementInfo = ({ campaignType }) => {
                                         const formattedDate = formatDateForServer(date);
                                         field.onChange(new Date(formattedDate));
                                     }}
+                                    disabled={isDateDisabled('plannedEndDate')}
                                     variant="outline"
                                     disablePastDates={true}
                                     className={`ml-2 ${errors.plannedEndDate ? 'border-red-500' : ''}`}
@@ -184,6 +211,7 @@ const DisbursementInfo = ({ campaignType }) => {
                                                                 const formattedDate = formatDateForServer(date);
                                                                 dateField.onChange(new Date(formattedDate));
                                                             }}
+                                                            disabled={index === 0 || (campaignType === 1)}
                                                             variant="outline"
                                                             disablePastDates={true}
                                                             className={`w-full ${errors.disbursementStages?.[index]?.scheduledDate
