@@ -64,7 +64,7 @@ const ListDisbursementCampaign = () => {
         },
         {
             accessorKey: 'nextDisbursementStage.scheduledDate',
-            header: ({ column }) => <DataTableColumnHeader column={column} title="Ngày dự kiến giải ngân" />,
+            header: ({ column }) => <DataTableColumnHeader column={column} title="Ngày giải ngân dự kiến " />,
             cell: ({ row }) => <div>{new Date(row.original.nextDisbursementStage?.scheduledDate).toLocaleDateString('vi-VN')}</div>,
         },
         {

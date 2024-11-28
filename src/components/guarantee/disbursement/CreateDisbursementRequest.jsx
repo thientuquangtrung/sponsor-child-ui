@@ -285,7 +285,7 @@ export default function CreateDisbursementRequest() {
                             <div className="flex items-center">
                                 <div className="flex items-center w-1/2">
                                     <Calendar className="mr-2 h-5 w-5 text-teal-500" />
-                                    <p className="text-gray-700 font-medium">Ngày dự kiến giải ngân:</p>
+                                    <p className="text-gray-700 font-medium">Ngày giải ngân dự kiến :</p>
                                 </div>
                                 <span className="ml-2 text-teal-600 font-semibold">
                                     {new Date(disbursementStage?.scheduledDate).toLocaleDateString('vi-VN')}

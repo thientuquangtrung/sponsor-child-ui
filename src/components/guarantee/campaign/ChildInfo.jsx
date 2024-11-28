@@ -143,7 +143,8 @@ const ChildInfo = ({ form, provinces, districts, wards, handleProvinceChange, ha
                     <FormItem>
                         <FormLabel>Thông tin định danh trẻ em</FormLabel>
                         <FormControl>
-                            <CustomDropzone onDrop={onDropChildFile}>
+                            <CustomDropzone onDrop={onDropChildFile} dropzoneType="documentAndImage"
+                            >
                                 {childFile ? (
                                     <div className="flex justify-center items-center w-full py-4">
                                         <div className="relative flex items-center justify-center bg-gray-100 rounded-lg p-4">
