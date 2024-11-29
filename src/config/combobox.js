@@ -162,6 +162,10 @@ export const giftDeliveryMethod = [
     { label: 'Giao tận nơi', value: 0 },
     { label: 'Dịch vụ bưu chính', value: 1 },
 ];
+export const donationType = [
+    { label: 'Đăng ký tặng quà', value: 0 },
+    { label: 'Mua quà hộ', value: 1 },
+];
 export const giftStatus = [
     { label: 'Chờ xử lý', value: 0 },
     { label: 'Đang vận chuyển', value: 1 },
