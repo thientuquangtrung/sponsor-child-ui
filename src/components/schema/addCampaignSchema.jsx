@@ -69,8 +69,6 @@ const addCampaignSchema = z.object({
             path: ["targetAmount"]
         });
     }
-
-    // Validation ngày bắt đầu
     if (data.plannedStartDate <= data.startDate) {
         ctx.addIssue({
             code: z.ZodIssueCode.custom,
