@@ -171,9 +171,11 @@ export const giftStatus = [
     { label: 'Đang vận chuyển', value: 1 },
     { label: 'Đã nhận quà', value: 2 },
     { label: 'Đã hủy', value: 3 },
-    { label: 'Đã trả lại', value: 4 },
-    { label: 'Không giao được', value: 5 },
+    { label: 'Chờ hoàn tiền', value: 4 },
+    { label: 'Góp vào quỹ chung', value: 5 },
+    { label: 'hoàn tiền do chuyến thăm bị hủy ', value: 6 },
 ];
+
 export const giftType = [
     { label: 'Gạo', value: 0 },
     { label: 'Mì ăn liền', value: 1 },

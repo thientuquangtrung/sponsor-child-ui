@@ -62,9 +62,12 @@ const GiftHistoryCard = ({
                                 <div className="p-4 rounded-lg bg-gradient-to-r from-teal-50 to-rose-50 hover:from-teal-100 hover:to-rose-100 transition-colors">
                                     <div className="flex items-start justify-between">
                                         <div className="flex-1">
-                                            <p className="text-gray-700 mb-2">
-                                                Cảm ơn bạn đã quyên góp <span className="font-medium">{gift.amount} {gift.unit}</span> {gift.giftType}{' '}
-                                            </p>
+                                            {gift.giftStatus === 0 && (
+                                                <p className="text-gray-700 mb-2">
+                                                    Cảm ơn bạn đã quyên góp {gift.amount} {gift.unit} {gift.giftType}
+                                                </p>
+                                            )}
+
                                             {gift.giftStatus === 2 && (
                                                 gift.proofOfDonation ? (
                                                     <a
@@ -84,6 +87,30 @@ const GiftHistoryCard = ({
                                                         </span>
                                                     </p>
                                                 )
+                                            )}
+
+                                            {gift.giftStatus === 6 && (
+                                                <div className="text-sm text-gray-600">
+                                                    {gift.transferProofImageUrl ? (
+                                                        <a
+                                                            href={gift.transferProofImageUrl}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="flex items-center hover:text-teal-800"
+                                                        >
+                                                            <span className="font-medium">
+                                                                Bạn đã được <span className="underline">{getStatusText(gift.giftStatus)}</span>
+                                                                ngày: {formatDateTime(gift.updatedAt)} <br />
+                                                                Bạn đã quyên góp vào ngày: {formatDateTime(gift.createdAt)}.
+                                                            </span>
+                                                        </a>
+                                                    ) : (
+                                                        <span className="font-medium">
+                                                            Bạn đã được <span className="underline">{getStatusText(gift.giftStatus)}</span>
+                                                            vào ngày: {formatDateTime(gift.updatedAt)}
+                                                        </span>
+                                                    )}
+                                                </div>
                                             )}
                                         </div>
                                     </div>
