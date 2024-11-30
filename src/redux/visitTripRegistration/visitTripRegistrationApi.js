@@ -42,7 +42,10 @@ export const visitTripRegistrationApi = baseApi.injectEndpoints({
                 `/VisitTripRegistrations/user/${userId}/visit/${visitId}`,
             method: 'GET',
         }),
-
+        calculateRefundVisit: builder.query({
+            query: ({ userId, visitId }) => `/VisitTripRegistrations/calculate-refund/${userId}/${visitId}`,
+            method: 'GET',
+        }),
         updateVisitTripRegistration: builder.mutation({
             query: ({ id, ...data }) => ({
                 url: `/VisitTripRegistrations/${id}`,
@@ -63,4 +66,5 @@ export const {
     useCanRegisterForVisitQuery,
     useUpdateVisitTripRegistrationMutation,
     useGetVisitTripRegistrationsByUserAndVisitQuery,
+    useCalculateRefundVisitQuery,
 } = visitTripRegistrationApi;

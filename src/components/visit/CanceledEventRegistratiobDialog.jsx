@@ -30,9 +30,10 @@ const CanceledEventRegistrationDialog = ({
     onClose,
     registrationData,
     onConfirmCancel,
-    visitCost
+    calculateRefundData
 }) => {
     const [selectedOption, setSelectedOption] = useState(null);
+    console.log(registrationData);
 
     const {
         control,
@@ -49,7 +50,6 @@ const CanceledEventRegistrationDialog = ({
             }
         }
     });
-
     const reloadPage = () => {
         window.location.reload();
     };
@@ -111,8 +111,18 @@ const CanceledEventRegistrationDialog = ({
                 <div className="space-y-4">
                     <div className="bg-blue-100 rounded-lg p-4">
                         <p className="text-gray-700 mb-2">
-                            Bạn được hoàn lại 100% số tiền mà bạn đã thanh toán là: <span className="font-semibold text-teal-500">{visitCost?.toLocaleString('vi-VN')} VNĐ</span>.
+                            Bạn được hoàn lại 100% số tiền mà bạn đã thanh toán là: <span className="font-semibold text-teal-500">    {calculateRefundData?.totalRefundAmount?.toLocaleString('vi-VN')} VNĐ</span>.
                         </p>
+                        {calculateRefundData?.visitTripRegistration?.refundAmount > 0 && (
+                            <p className="text-gray-700">
+                                - Hoàn lại phí đăng ký chuyến thăm: <span className="font-semibold text-teal-500">{calculateRefundData.visitTripRegistration.refundAmount.toLocaleString('vi-VN')} VNĐ</span>
+                            </p>
+                        )}
+                        {calculateRefundData?.physicalDonations?.[0]?.refundAmount > 0 && (
+                            <p className="text-gray-700">
+                                - Hoàn lại phí quà tặng: <span className="font-semibold text-teal-500">{calculateRefundData.physicalDonations[0].refundAmount.toLocaleString('vi-VN')} VNĐ</span>
+                            </p>
+                        )}
                     </div>
 
                     {!selectedOption && (
@@ -147,7 +157,7 @@ const CanceledEventRegistrationDialog = ({
                                 Xác nhận ủng hộ quỹ từ thiện
                             </h3>
                             <p className="text-gray-600 mb-6">
-                                Bạn đang chọn ủng hộ số tiền {visitCost?.toLocaleString('vi-VN')} VNĐ vào quỹ từ thiện.
+                                Bạn đang chọn ủng hộ số tiền {calculateRefundData?.totalRefundAmount?.toLocaleString('vi-VN')} VNĐ vào quỹ từ thiện.
                                 Khoản ủng hộ này sẽ được sử dụng để hỗ trợ các hoạt động cộng đồng.
                             </p>
                             <div className="flex justify-center gap-3">
