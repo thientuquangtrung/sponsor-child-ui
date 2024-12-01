@@ -62,29 +62,55 @@ const GiftHistoryCard = ({
                                 <div className="p-4 rounded-lg bg-gradient-to-r from-teal-50 to-rose-50 hover:from-teal-100 hover:to-rose-100 transition-colors">
                                     <div className="flex items-start justify-between">
                                         <div className="flex-1">
-                                            <p className="text-gray-700 mb-2">
-                                                Cảm ơn bạn đã quyên góp <span className="font-medium">{gift.amount} {gift.unit}</span> {gift.giftType}{' '}
-                                            </p>
-                                            {gift.giftStatus === 2 && (
-                                                gift.proofOfDonation ? (
-                                                    <a
-                                                        href={gift.proofOfDonation}
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        className="flex items-center text-sm text-gray-600 hover:text-teal-800"
-                                                    >
-                                                        <span className="font-medium">
-                                                            <span className="underline">{getStatusText(gift.giftStatus)}</span> vào ngày: {formatDateTime(gift.updatedAt)}
-                                                        </span>
-                                                    </a>
-                                                ) : (
-                                                    <p className="text-sm text-gray-600">
-                                                        <span className="font-medium">
-                                                            {getStatusText(gift.giftStatus)} vào ngày: {formatDateTime(gift.updatedAt)}
-                                                        </span>
+                                            <div className="text-gray-700 mb-2">
+                                                Cảm ơn bạn đã quyên góp {gift.amount} {gift.unit} {gift.giftType}
+                                            </div>
+
+                                            {[2, 5, 6].includes(gift.giftStatus) ? (
+                                                <div className="text-sm text-gray-600">
+                                                    <p className="mb-1">
+                                                        Bạn  đã quyên góp vào ngày: {formatDateTime(gift.createdAt)}
                                                     </p>
-                                                )
-                                            )}
+
+                                                    {gift.giftStatus === 2 && gift.proofOfDonation && (
+                                                        <a
+                                                            href={gift.proofOfDonation}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="flex items-center hover:text-teal-800"
+                                                        >
+                                                            <span className="font-medium">
+                                                                <span className="underline">{getStatusText(gift.giftStatus)}</span> vào ngày: {formatDateTime(gift.updatedAt)}
+                                                            </span>
+                                                        </a>
+                                                    )}
+
+                                                    {gift.giftStatus === 5 && (
+                                                        <p className="font-medium">
+                                                            {getStatusText(gift.giftStatus)} vào ngày: {formatDateTime(gift.updatedAt)}
+                                                        </p>
+                                                    )}
+
+                                                    {gift.giftStatus === 6 && (
+                                                        gift.transferProofImageUrl ? (
+                                                            <a
+                                                                href={gift.transferProofImageUrl}
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                                className="flex items-center hover:text-teal-800"
+                                                            >
+                                                                <span className="font-medium">
+                                                                    <span className="underline">{getStatusText(gift.giftStatus)}</span> vào ngày: {formatDateTime(gift.updatedAt)}
+                                                                </span>
+                                                            </a>
+                                                        ) : (
+                                                            <p className="font-medium">
+                                                                {getStatusText(gift.giftStatus)} vào ngày: {formatDateTime(gift.updatedAt)}
+                                                            </p>
+                                                        )
+                                                    )}
+                                                </div>
+                                            ) : null}
                                         </div>
                                     </div>
                                 </div>

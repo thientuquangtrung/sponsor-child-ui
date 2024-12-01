@@ -14,8 +14,8 @@ const DonationList = ({ donations, currentPage, totalPages, onPageChange }) => {
     const normalizeString = (str) => {
         return str
             .toLowerCase()
-            .normalize("NFD")
-            .replace(/[\u0300-\u036f]/g, "");
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '');
     };
 
     const handleSearch = (e) => {
@@ -28,8 +28,8 @@ const DonationList = ({ donations, currentPage, totalPages, onPageChange }) => {
         }
 
         const normalizedSearchTerm = normalizeString(value);
-        const filtered = donations.filter(donation =>
-            normalizeString(donation.donorName).includes(normalizedSearchTerm)
+        const filtered = donations.filter((donation) =>
+            normalizeString(donation.donorName).includes(normalizedSearchTerm),
         );
         setFilteredDonations(filtered);
     };
@@ -77,8 +77,7 @@ const DonationList = ({ donations, currentPage, totalPages, onPageChange }) => {
 
     return (
         <div className="shadow-md">
-            <div className="w-full bg-zinc-100 pt-1 relative">
-            </div>
+            <div className="w-full bg-zinc-100 pt-1 relative"></div>
             <div className="px-4">
                 <div className="relative my-8">
                     <Input
@@ -109,9 +108,13 @@ const DonationList = ({ donations, currentPage, totalPages, onPageChange }) => {
                                 {filteredDonations.map((donation, index) => (
                                     <tr
                                         key={donation.donationID}
-                                        className={`border-b border-gray-200 ${index % 2 ? 'bg-white' : 'bg-zinc-50'} hover:bg-zinc-100`}
+                                        className={`border-b border-gray-200 ${
+                                            index % 2 ? 'bg-white' : 'bg-zinc-50'
+                                        } hover:bg-zinc-100`}
                                     >
-                                        <td className="py-3 px-4">{donation.donorName}</td>
+                                        <td className="py-3 px-4">
+                                            {donation.isAnonymous ? 'Ủng hộ ẩn danh' : donation.donorName}
+                                        </td>
                                         <td className="py-3 px-4">{donation.amount.toLocaleString()} VND</td>
                                         <td className="py-3 px-4">
                                             {new Date(donation.donationDate).toLocaleString()}
@@ -142,10 +145,11 @@ const DonationList = ({ donations, currentPage, totalPages, onPageChange }) => {
                                     <button
                                         key={page}
                                         onClick={() => handlePageChange(page)}
-                                        className={`px-3 py-1 rounded ${currentPage === page
-                                            ? 'bg-teal-600 text-white'
-                                            : 'bg-white text-gray-700 hover:bg-gray-100'
-                                            }`}
+                                        className={`px-3 py-1 rounded ${
+                                            currentPage === page
+                                                ? 'bg-teal-600 text-white'
+                                                : 'bg-white text-gray-700 hover:bg-gray-100'
+                                        }`}
                                     >
                                         {page}
                                     </button>

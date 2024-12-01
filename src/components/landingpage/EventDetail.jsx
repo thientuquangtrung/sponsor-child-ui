@@ -17,7 +17,7 @@ import { useSelector } from 'react-redux';
 import ParticipantList from '@/components/visit/ParticipantList';
 import GiftRegistration from '@/components/visit/GiftRegistration';
 import HistoryTabs from '@/components/visit/HistoryTabs';
-import { useUpdateVisitTripRegistrationMutation } from '@/redux/visitTripRegistration/visitTripRegistrationApi';
+import { useCalculateRefundVisitQuery, useUpdateVisitTripRegistrationMutation } from '@/redux/visitTripRegistration/visitTripRegistrationApi';
 import CanceledEventRegistrationDialog from '@/components/visit/CanceledEventRegistratiobDialog';
 
 const EventDetail = () => {
@@ -28,13 +28,14 @@ const EventDetail = () => {
     const [showCanceledRegistrationModal, setShowCanceledRegistrationModal] = useState(false);
     const [hasProcessedCancellation, setHasProcessedCancellation] = useState(false);
     const [updateRegistration] = useUpdateVisitTripRegistrationMutation();
-
-
+    const visitId = id;
+    const userId = user?.userID
+    const { data: calculateRefundData } = useCalculateRefundVisitQuery({
+        userId,
+        visitId
+    });
     const hasCanceledRegistration = event?.status === 5 &&
-        event?.visitRegistrations?.some(reg =>
-            reg.userID === user?.userID && (reg.status === 0 || reg.status === 1)
-        );
-
+        calculateRefundData?.isRefundable === true;
     useEffect(() => {
         if (hasCanceledRegistration) {
             setShowCanceledRegistrationModal(true);
@@ -412,13 +413,13 @@ const EventDetail = () => {
             />
             {hasCanceledRegistration && (
                 <CanceledEventRegistrationDialog
+                    calculateRefundData={calculateRefundData}
                     isOpen={showCanceledRegistrationModal}
                     onClose={() => setShowCanceledRegistrationModal(false)}
                     registrationData={event.visitRegistrations.find(
                         reg => reg.userID === user?.userID && reg.status === 1
                     )}
                     onConfirmCancel={handleCancelRegistration}
-                    visitCost={event.visitCost}
                 />
             )}
         </div>

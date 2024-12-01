@@ -9,6 +9,7 @@ import { bankName } from '@/config/combobox';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
+import { useUpdatePhysicalDonationMutation } from '@/redux/physicalDonations/physicalDonationApi';
 
 const refundFormSchema = z.object({
     bankAccount: z.object({
@@ -30,10 +31,11 @@ const CanceledEventRegistrationDialog = ({
     onClose,
     registrationData,
     onConfirmCancel,
-    visitCost
+    calculateRefundData
 }) => {
     const [selectedOption, setSelectedOption] = useState(null);
-
+    console.log(registrationData);
+    const [updatePhysicalDonation] = useUpdatePhysicalDonationMutation();
     const {
         control,
         handleSubmit,
@@ -49,47 +51,69 @@ const CanceledEventRegistrationDialog = ({
             }
         }
     });
-
     const reloadPage = () => {
         window.location.reload();
     };
-
-    const onSubmit = async (data) => {
+    const handleAction = async (actionData) => {
         try {
-            await onConfirmCancel({
-                id: registrationData.id,
-                status: 2,
-                cancellationReason: 'Hoàn tiền do chuyến thăm bị hủy',
-                bankAccountName: data.bankAccount.name,
-                bankAccountNumber: data.bankAccount.number,
-                bankName: parseInt(data.bankAccount.bank)
-            });
-            toast.success('Yêu cầu hoàn tiền đã được gửi');
+            if (calculateRefundData?.visitTripRegistration) {
+                await onConfirmCancel(actionData);
+            } else if (calculateRefundData?.physicalDonations?.length > 0) {
+                const physicalDonationId = calculateRefundData.physicalDonations[0].id;
+                const { status, cancellationReason, ...dataForPhysicalDonation } = actionData;
+                await updatePhysicalDonation({
+                    id: physicalDonationId,
+                    giftStatus: status,
+                    ...dataForPhysicalDonation
+                }).unwrap();
+            }
+
+            toast.success(
+                actionData.status === 2
+                    ? 'Yêu cầu hoàn tiền đã được gửi'
+                    : 'Cảm ơn sự ủng hộ của bạn!'
+            );
             reset();
             setSelectedOption(null);
             onClose();
             setTimeout(reloadPage, 1000);
         } catch (error) {
             toast.error('Có lỗi xảy ra. Vui lòng thử lại!');
+            console.error('Action error:', error);
         }
     };
 
-    const handleDonation = async () => {
-        try {
-            await onConfirmCancel({
-                id: registrationData.id,
-                status: 4,
-                cancellationReason: 'Ủng hộ quỹ từ thiện'
-            });
-            toast.success('Cảm ơn sự ủng hộ của bạn!');
-            setSelectedOption(null);
-            onClose();
-            setTimeout(reloadPage, 1000);
-        } catch (error) {
-            toast.error('Có lỗi xảy ra. Vui lòng thử lại!');
-            console.error('Donation error:', error);
+    const onSubmit = async (data) => {
+        const actionData = {
+            status: calculateRefundData?.visitTripRegistration ? 2 : 4,
+            cancellationReason: calculateRefundData?.visitTripRegistration
+                ? 'Hoàn tiền do chuyến thăm bị hủy'
+                : undefined,
+            bankAccountName: data.bankAccount.name,
+            bankAccountNumber: data.bankAccount.number,
+            bankName: parseInt(data.bankAccount.bank)
+        };
+        if (calculateRefundData?.visitTripRegistration) {
+            actionData.id = registrationData.id;
         }
+        await handleAction(actionData);
     };
+
+    const handleDonation = async () => {
+        const actionData = {
+            status: calculateRefundData?.visitTripRegistration ? 4 : 5,
+            cancellationReason: calculateRefundData?.visitTripRegistration
+                ? 'Ủng hộ quỹ từ thiện'
+                : undefined
+        };
+
+        if (calculateRefundData?.visitTripRegistration) {
+            actionData.id = registrationData.id;
+        }
+
+        await handleAction(actionData);
+    };
+
 
     const handleClose = () => {
         reset();
@@ -111,8 +135,21 @@ const CanceledEventRegistrationDialog = ({
                 <div className="space-y-4">
                     <div className="bg-blue-100 rounded-lg p-4">
                         <p className="text-gray-700 mb-2">
-                            Bạn được hoàn lại 100% số tiền mà bạn đã thanh toán là: <span className="font-semibold text-teal-500">{visitCost?.toLocaleString('vi-VN')} VNĐ</span>.
+                            Bạn được hoàn lại 100% số tiền mà bạn đã thanh toán là: <span className="font-semibold text-teal-500">    {calculateRefundData?.totalRefundAmount?.toLocaleString('vi-VN')} VNĐ</span>.
                         </p>
+                        {calculateRefundData?.visitTripRegistration?.refundAmount > 0 && (
+                            <p className="text-gray-700">
+                                - Hoàn lại phí đăng ký chuyến thăm: <span className="font-semibold text-teal-500">{calculateRefundData.visitTripRegistration.refundAmount.toLocaleString('vi-VN')} VNĐ</span>
+                            </p>
+                        )}
+                        {calculateRefundData?.physicalDonations?.length > 0 && (
+                            <p className="text-gray-700">
+                                - Hoàn lại phí quà tặng: <span className="font-semibold text-teal-500">
+                                    {calculateRefundData.physicalDonations.reduce((sum, donation) =>
+                                        sum + donation.refundAmount, 0).toLocaleString('vi-VN')} VNĐ
+                                </span>
+                            </p>
+                        )}
                     </div>
 
                     {!selectedOption && (
@@ -147,7 +184,7 @@ const CanceledEventRegistrationDialog = ({
                                 Xác nhận ủng hộ quỹ từ thiện
                             </h3>
                             <p className="text-gray-600 mb-6">
-                                Bạn đang chọn ủng hộ số tiền {visitCost?.toLocaleString('vi-VN')} VNĐ vào quỹ từ thiện.
+                                Bạn đang chọn ủng hộ số tiền {calculateRefundData?.totalRefundAmount?.toLocaleString('vi-VN')} VNĐ vào quỹ từ thiện.
                                 Khoản ủng hộ này sẽ được sử dụng để hỗ trợ các hoạt động cộng đồng.
                             </p>
                             <div className="flex justify-center gap-3">

@@ -23,7 +23,6 @@ import {
 } from '@/redux/donation/donationApi';
 import LoadingScreen from '@/components/common/LoadingScreen';
 
-
 const DonationInformation = () => {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -46,18 +45,18 @@ const DonationInformation = () => {
                     return numericAmount >= 5000 && numericAmount <= remainingTarget;
                 },
                 (val) => {
-                    const numericAmount = parseInt(val.replace(/\D/g, ""), 10);
+                    const numericAmount = parseInt(val.replace(/\D/g, ''), 10);
                     const remainingTarget = campaign?.targetAmount - campaign?.raisedAmount;
 
                     if (numericAmount < 5000) {
                         return {
-                            message: "Số tiền ủng hộ tối thiểu là 5,000 VND"
+                            message: 'Số tiền ủng hộ tối thiểu là 5,000 VND',
                         };
                     }
                     return {
-                        message: `Số tiền ủng hộ không được vượt quá ${remainingTarget?.toLocaleString("vi-VN")} VND`
+                        message: `Số tiền ủng hộ không được vượt quá ${remainingTarget?.toLocaleString('vi-VN')} VND`,
                     };
-                }
+                },
             ),
             message: z.string().optional(),
             name: z.string().min(1, 'Vui lòng nhập họ và tên'),
@@ -164,7 +163,6 @@ const DonationInformation = () => {
         };
         try {
             const response = await createDonation(donationData).unwrap();
-
             setPayOSConfig((oldConfig) => ({
                 ...oldConfig,
                 CHECKOUT_URL: response.data.paymentLink.checkoutUrl,
@@ -177,9 +175,10 @@ const DonationInformation = () => {
         }
     };
 
-
     if (isLoading) {
-        <div><LoadingScreen /></div>;
+        <div>
+            <LoadingScreen />
+        </div>;
     }
 
     if (error) {
@@ -216,8 +215,8 @@ const DonationInformation = () => {
                         <p className="absolute top-[10px] left-[10px] text-sm text-gray-700 bg-white px-2 py-1 rounded-full">
                             {Math.ceil((new Date(campaign?.endDate) - new Date()) / (1000 * 60 * 60 * 24)) > 0
                                 ? `Còn ${Math.ceil(
-                                    (new Date(campaign?.endDate) - new Date()) / (1000 * 60 * 60 * 24),
-                                )} ngày`
+                                      (new Date(campaign?.endDate) - new Date()) / (1000 * 60 * 60 * 24),
+                                  )} ngày`
                                 : 'Hết hạn '}
                         </p>
                         <img
@@ -376,7 +375,11 @@ const DonationInformation = () => {
                                     <FormItem>
                                         <div className="flex items-center my-4">
                                             <FormControl>
-                                                <Checkbox {...field} className="border-2" />
+                                                <Checkbox
+                                                    checked={field.value}
+                                                    onCheckedChange={field.onChange}
+                                                    className="border-2"
+                                                />
                                             </FormControl>
                                             <FormLabel className="ml-2 font-normal text-md">Ủng hộ ẩn danh</FormLabel>
                                         </div>

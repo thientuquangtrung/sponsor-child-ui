@@ -27,15 +27,15 @@ import DisbursementProgress from '@/components/guarantee/campaign/DisbursementPr
 
 const getStatusVariant = (statusValue) => {
     switch (statusValue) {
-        case 0: return 'secondary';
+        case 0: return 'info';
         case 1: return 'warning';
         case 2: return 'success';
         case 3: return 'destructive';
         case 4: return 'default';
-        case 5: return 'outline';
+        case 5: return 'muted';
         case 6: return 'destructive';
         case 7: return 'destructive';
-        case 8: return 'info';
+        case 8: return 'secondary';
         case 9: return 'outline';
         default: return 'secondary';
     }
