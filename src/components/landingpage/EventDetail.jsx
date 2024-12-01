@@ -36,7 +36,6 @@ const EventDetail = () => {
     });
     const hasCanceledRegistration = event?.status === 5 &&
         calculateRefundData?.isRefundable === true;
-
     useEffect(() => {
         if (hasCanceledRegistration) {
             setShowCanceledRegistrationModal(true);
