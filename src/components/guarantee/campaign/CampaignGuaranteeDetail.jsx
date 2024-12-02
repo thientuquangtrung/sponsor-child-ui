@@ -2,7 +2,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Calendar, Clock, FileText, MapPin, Receipt, User2, UserRoundSearch } from 'lucide-react';
+import { Calendar, Clock, FileText, MapPin, User2, UserRoundSearch, FileSearch } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { useGetCampaignByIdQuery } from '@/redux/campaign/campaignApi';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -174,20 +174,30 @@ const CampaignGuaranteeDetail = () => {
                             {`${campaignData.childLocation}, ${campaignData.childWard}, ${campaignData.childDistrict}, ${campaignData.childProvince}`}
                         </span>
                     </div>
-                    <div className="flex items-center gap-3 text-gray-700">
-                        <FileText className="h-5 w-5 text-teal-600" />
-                        <span>
-                            Ảnh hay giấy tờ liên quan đến trẻ:
-                            <a
-                                href={campaignData.childIdentificationInformationFile}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-blue-500 underline"
-                            >
-                                Xem
-                            </a>
-                        </span>
+                    <div className="grid grid-cols-2 gap-6 text-gray-700">
+                        <div className="flex items-center gap-3">
+                            <FileSearch className="h-5 w-5 text-teal-600" />
+                            <span>
+                                Mã định danh trẻ:{' '}
+                                {`${campaignData?.childIdentificationCode}`}
+                            </span>
+                        </div>
+                        <div className="flex items-center gap-3">
+                            <FileText className="h-5 w-5 text-teal-600" />
+                            <span>
+                                Ảnh hay giấy tờ liên quan đến trẻ:
+                                <a
+                                    href={campaignData.childIdentificationInformationFile}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-blue-500 underline"
+                                >
+                                    Xem
+                                </a>
+                            </span>
+                        </div>
                     </div>
+
                 </CardContent>
             </Card>
             <Card className="shadow-lg border-0 mb-6">

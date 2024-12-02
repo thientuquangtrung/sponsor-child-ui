@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { UserPlus, ScrollText, Loader2, CreditCard, CheckCircle, Calendar, CircleAlert } from 'lucide-react';
+import { UserPlus, Loader2, CheckCircle, Calendar, CircleAlert } from 'lucide-react';
 import { toast } from 'sonner';
 import { useCanRegisterForVisitQuery, useCreateVisitTripRegistrationMutation, useCancelVisitRegistrationTransactionMutation, useGetVisitTripRegistrationsByUserAndVisitQuery, useUpdateVisitTripRegistrationMutation } from '@/redux/visitTripRegistration/visitTripRegistrationApi';
 import { usePayOS } from 'payos-checkout';
@@ -21,26 +21,23 @@ const ParticipantRegistration = ({
         visitId
     });
     const [updateRegistration] = useUpdateVisitTripRegistrationMutation();
-
     const activeRegistration = registrationData?.find(reg => reg.status === 0 || reg.status === 1);
     const isPendingRefund = registrationData?.some(reg => reg.status === 2);
     const isRegistered = !canRegister;
-
     const [createRegistration, { isLoading }] = useCreateVisitTripRegistrationMutation();
-    const [cancelRegistration, { isLoading: isCanceling }] = useCancelVisitRegistrationTransactionMutation();
+    const [cancelRegistration] = useCancelVisitRegistrationTransactionMutation();
     const [showTermsDialog, setShowTermsDialog] = useState(false);
-    const [showPaymentDialog, setShowPaymentDialog] = useState(false);
+    const orderCodeRef = useRef(null);
     const [showCancelDialog, setShowCancelDialog] = useState(false);
-    const [paymentDetails, setPaymentDetails] = useState(null);
+    const [isPaymentClosed, setIsPaymentClosed] = useState(false);
+    const [hasOpenedPayment, setHasOpenedPayment] = useState(false);
 
     const [payOSConfig, setPayOSConfig] = useState({
         RETURN_URL: window.location.origin,
         ELEMENT_ID: 'payment-container',
         CHECKOUT_URL: null,
-        onSuccess: (event) => {
+        onSuccess: () => {
             toast.success('Thanh toán thành công');
-            setShowPaymentDialog(false);
-            setPaymentDetails(null);
             window.location.reload();
         },
         onCancel: async (event) => {
@@ -54,15 +51,20 @@ const ParticipantRegistration = ({
                 window.location.reload();
             }
         },
-        onExit: async (event) => {
+        onExit: async () => {
             try {
-                const orderCode = event.orderCode;
-                await cancelRegistration(orderCode).unwrap();
-                toast.error('Thanh toán thất bại');
+                if (orderCodeRef.current) {
+                    await cancelRegistration(orderCodeRef.current).unwrap();
+                    toast.error('Thanh toán thất bại');
+                    setIsPaymentClosed(true);
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1000);
+                }
             } catch (error) {
-                console.error('Error canceling registration:', error);
+                console.error('Lỗi khi hủy thanh toán:', error);
             }
-        },
+        }
     });
 
     const { open, exit } = usePayOS(payOSConfig);
@@ -83,14 +85,14 @@ const ParticipantRegistration = ({
                 cancelUrl: window.location.origin,
                 returnUrl: window.location.origin
             };
-
+            setHasOpenedPayment(false);
             const response = await createRegistration(registrationData).unwrap();
+            orderCodeRef.current = response.paymentDetails.orderCode;
             setPayOSConfig((oldConfig) => ({
                 ...oldConfig,
                 CHECKOUT_URL: response.paymentDetails.checkoutUrl,
             }));
             setShowTermsDialog(false);
-            setShowPaymentDialog(true);
         } catch (error) {
             toast.error('Có lỗi xảy ra khi đăng ký. Vui lòng thử lại!');
             console.error('Registration error:', error);
@@ -115,10 +117,11 @@ const ParticipantRegistration = ({
         }
     };
     useEffect(() => {
-        if (payOSConfig.CHECKOUT_URL != null) {
+        if (payOSConfig.CHECKOUT_URL != null && !isPaymentClosed && !hasOpenedPayment) {
             open();
+            setHasOpenedPayment(true);
         }
-    }, [payOSConfig, open]);
+    }, [payOSConfig, open, isPaymentClosed, hasOpenedPayment]);
 
     const renderButtonContent = () => {
         if (isPendingRefund) {
