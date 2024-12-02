@@ -18,19 +18,19 @@ const physicalDonationSchema = z.object({
     ),
     giftWeight: z.preprocess(
         (val) => (val === '' ? undefined : Number(val)),
-        z.number({ required_error: 'Vui lòng nhập Tổng khối lượng' }).min(0, 'Tổng khối lượng phải lớn hơn 0')
+        z.number({ required_error: 'Vui lòng nhập Tổng khối lượng' }).min(1, 'Tổng khối lượng phải lớn hơn 0')
     ),
     length: z.preprocess(
         (val) => (val === '' ? undefined : Number(val)),
-        z.number({ required_error: 'Vui lòng nhập Tổng chiều dài' }).min(0, 'Tổng chiều dài phải lớn hơn 0')
+        z.number({ required_error: 'Vui lòng nhập Tổng chiều dài' }).min(1, 'Tổng chiều dài phải lớn hơn 0')
     ),
     width: z.preprocess(
         (val) => (val === '' ? undefined : Number(val)),
-        z.number({ required_error: 'Vui lòng nhập Tổng chiều rộng' }).min(0, 'Tổng chiều rộng phải lớn hơn 0')
+        z.number({ required_error: 'Vui lòng nhập Tổng chiều rộng' }).min(1, 'Tổng chiều rộng phải lớn hơn 0')
     ),
     height: z.preprocess(
         (val) => (val === '' ? undefined : Number(val)),
-        z.number({ required_error: 'Vui lòng nhập Tổng chiều cao' }).min(0, 'Tổng chiều cao phải lớn hơn 0')
+        z.number({ required_error: 'Vui lòng nhập Tổng chiều cao' }).min(1, 'Tổng chiều cao phải lớn hơn 0')
     ),
     giftDeliveryMethod: z.number({ required_error: 'Vui lòng chọn phương thức vận chuyển' }).min(0, 'Vui lòng chọn phương thức vận chuyển'),
 });
@@ -250,47 +250,52 @@ const PhysicalDonationForm = ({
                             </FormItem>
                         )}
                     />
-
-                    <FormField
-                        control={form.control}
-                        name="giftDeliveryMethod"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Phương thức giao quà</FormLabel>
-                                <Select
-                                    onValueChange={(value) => field.onChange(Number(value))}
-                                    defaultValue={field.value.toString()}
-                                    disabled={isLoading}
-                                >
-                                    <FormControl>
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="Chọn phương thức giao quà" />
-                                        </SelectTrigger>
-                                    </FormControl>
-                                    <SelectContent>
-                                        {giftDeliveryMethod.map((method) => (
-                                            <SelectItem key={method.value} value={method.value.toString()}>
-                                                {method.label}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-
-                    <FormItem>
-                        <FormLabel>Địa chỉ mang đến</FormLabel>
-                        <FormControl>
-                            <Input
-                                value="Lô E2a-7, Đường D1, Đ. D1, Long Thạnh Mỹ, Thành Phố Thủ Đức"
-                                className="bg-gray-100"
-                                disabled
-                            />
-                        </FormControl>
-                    </FormItem>
                 </div>
+                <div className="grid grid-cols-12 gap-4">
+                    <div className="col-span-4">
+                        <FormField
+                            control={form.control}
+                            name="giftDeliveryMethod"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Phương thức giao quà</FormLabel>
+                                    <Select
+                                        onValueChange={(value) => field.onChange(Number(value))}
+                                        defaultValue={field.value.toString()}
+                                        disabled={isLoading}
+                                    >
+                                        <FormControl>
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="Chọn phương thức giao quà" />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                            {giftDeliveryMethod.map((method) => (
+                                                <SelectItem key={method.value} value={method.value.toString()}>
+                                                    {method.label}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                    </div>
+                    <div className="col-span-8">
+                        <FormItem>
+                            <FormLabel>Địa chỉ mang đến</FormLabel>
+                            <FormControl>
+                                <Input
+                                    value="Lô E2a-7, Đường D1, Đ. D1, Long Thạnh Mỹ, Thành Phố Thủ Đức"
+                                    className="bg-gray-100 w-full"
+                                    disabled
+                                />
+                            </FormControl>
+                        </FormItem>
+                    </div>
+                </div>
+
 
                 <div className="flex justify-end gap-4">
                     <Button

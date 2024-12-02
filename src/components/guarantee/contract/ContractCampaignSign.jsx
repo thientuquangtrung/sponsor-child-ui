@@ -85,7 +85,7 @@ const ContractCampaignSign = ({ onSign, onContractSent, campaignId, contractId }
                     const signatureData = await uploadFile({
                         file: signatureBlob,
                         folder: UPLOAD_FOLDER.getCampaignDocumentFolder(campaignId),
-                        customFilename: UPLOAD_NAME.SIGNATURE_GUARANTEE,
+                        customFilename: `${contractDetails.contractID}_${UPLOAD_NAME.SIGNATURE_GUARANTEE}`,
                         resourceType: 'raw',
                     });
                     const signatureUrl = signatureData.secure_url;
@@ -96,7 +96,7 @@ const ContractCampaignSign = ({ onSign, onContractSent, campaignId, contractId }
                     const pdfData = await uploadFile({
                         file: pdfBlob,
                         folder: UPLOAD_FOLDER.getCampaignDocumentFolder(campaignId),
-                        customFilename: UPLOAD_NAME.CAMPAIGN_CONTRACT_SOFT,
+                        customFilename: `${contractDetails.contractID}_${UPLOAD_NAME.CAMPAIGN_CONTRACT_SOFT}`,
                         resourceType: 'raw',
                     });
                     const pdfUrl = pdfData.secure_url;

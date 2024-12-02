@@ -99,6 +99,11 @@ const RegistrationPage = () => {
                                     alt="Đăng ký tài khoản tổ chức"
                                     className="rounded-lg shadow-xl w-full h-auto"
                                 />
+                                <Alert className="mt-2 bg-green-50 border border-green-200 rounded-md">
+                                    <AlertDescription className="text-green-600">
+                                        Được bảo lãnh đồng thời nhiều chiến dịch, không lo bị gián đoạn hay hạn chế về số lượng chiến dịch đang diễn ra.
+                                    </AlertDescription>
+                                </Alert>
                             </div>
 
                             {/* Personal Account Registration */}
@@ -111,6 +116,11 @@ const RegistrationPage = () => {
                                     alt="Đăng ký tài khoản cá nhân"
                                     className="rounded-lg shadow-xl w-full h-auto"
                                 />
+                                <Alert className="mt-2 bg-blue-50 border border-blue-200 rounded-md">
+                                    <AlertDescription className="text-blue-600">
+                                        Được bảo lãnh tối đa 2 chiến dịch. Chỉ được tạo chiến dịch mới khi chiến dịch hiện tại đã hoàn thành hoặc bị từ chối.
+                                    </AlertDescription>
+                                </Alert>
                             </div>
                         </div>
                     </div>

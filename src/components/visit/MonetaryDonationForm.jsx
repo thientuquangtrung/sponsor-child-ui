@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
@@ -9,6 +9,7 @@ import { toast } from 'sonner';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2 } from 'lucide-react';
 import { usePayOS } from 'payos-checkout';
+import { useCancelPhysicalDonationTransactionMutation } from '@/redux/physicalDonations/physicalDonationApi';
 
 const monetaryDonationSchema = z.object({
     giftTypeIndex: z.number({ required_error: 'Vui lòng chọn loại quà' }).min(0, 'Vui lòng chọn loại quà'),
@@ -27,6 +28,8 @@ const MonetaryDonationForm = ({
     createPhysicalDonation
 }) => {
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [cancelPhysicalDonation, { isLoading: isCanceling }] = useCancelPhysicalDonationTransactionMutation();
+    const orderCodeRef = useRef(null);
     const [payOSConfig, setPayOSConfig] = useState({
         RETURN_URL: window.location.origin,
         ELEMENT_ID: 'payment-container',
@@ -37,12 +40,31 @@ const MonetaryDonationForm = ({
                 window.location.reload();
             }, 1000);
         },
-        onCancel: () => {
-            toast.error('Thanh toán thất bại');
-            setTimeout(() => {
-                window.location.reload();
-            }, 1000);
 
+        onCancel: async (event) => {
+            try {
+                const orderCode = event.orderCode;
+                await cancelPhysicalDonation(orderCode).unwrap();
+                toast.error('Thanh toán thất bại');
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
+            } catch (error) {
+                console.error('Lỗi khi hủy thanh toán:', error);
+            }
+        },
+        onExit: async () => {
+            try {
+                if (orderCodeRef.current) {
+                    await cancelPhysicalDonation(orderCodeRef.current).unwrap();
+                    toast.error('Thanh toán thất bại');
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1000);
+                }
+            } catch (error) {
+                console.error('Lỗi khi hủy thanh toán:', error);
+            }
         }
     });
 
@@ -108,7 +130,7 @@ const MonetaryDonationForm = ({
             };
 
             const response = await createPhysicalDonation(payload).unwrap();
-
+            orderCodeRef.current = response.paymentDetails.orderCode;
             if (response.paymentDetails && response.paymentDetails.checkoutUrl) {
                 setPayOSConfig(prevConfig => ({
                     ...prevConfig,

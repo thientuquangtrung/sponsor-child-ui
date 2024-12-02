@@ -45,6 +45,7 @@ const CampaignInfo = () => {
             childBirthYear: new Date().getFullYear() - 1,
             childGender: 0,
             childLocation: '',
+            childIdentificationCode: '',
             childIdentificationInformationFile: null,
             provinceId: '',
             districtId: '',
@@ -338,6 +339,7 @@ const CampaignInfo = () => {
                 guaranteeID: user.userID,
                 childName: data.childName,
                 childBirthYear: parseInt(data.childBirthYear),
+                childIdentificationCode: data.childIdentificationCode || null,
                 childGender: data.childGender,
                 childLocation: data.childLocation,
                 childIdentificationInformationFile: childDocResponse.secure_url,
@@ -362,15 +364,46 @@ const CampaignInfo = () => {
                 })),
             };
 
-            const response = await createCampaign(finalData).unwrap();
-            form.reset();
-            setThumbnail(null);
-            setImagesFolderUrl([]);
+            try {
+                const response = await createCampaign(finalData).unwrap();
+                form.reset();
+                setThumbnail(null);
+                setImagesFolderUrl([]);
 
-            toast.success('Chiến dịch được tạo thành công!');
-            navigate('/guarantee/campaigns');
+                toast.success('Chiến dịch được tạo thành công!');
+                navigate('/guarantee/campaigns');
+            } catch (error) {
+                if (error.status === 400) {
+                    let errorMessage = 'Đã xảy ra lỗi khi tạo chiến dịch.';
+
+                    if (error.data?.message) {
+                        switch (error.data.message) {
+                            case "Campaign with this child identification already exists and is not in 'Completed', 'Reject', or 'Cancelled' status.":
+                                errorMessage = 'Đã tồn tại chiến dịch cho trẻ em này và đang ở trạng thái chưa hoàn thành.';
+                                break;
+                            case "Guarantee has already created 2 campaigns with status different from 'Completed', 'Reject', or 'Cancelled'.":
+                                errorMessage = 'Bạn đã tạo 2 chiến dịch đang ở trạng thái chưa hoàn thành. Vui lòng hoàn thành các chiến dịch trước khi tạo mới.';
+                                break;
+                            default:
+                                errorMessage = error.data.message;
+                        }
+                    }
+
+                    toast.error(errorMessage);
+
+                    if (errorMessage.includes('chiến dịch cho trẻ em')) {
+                        form.setError('childIdentificationCode', {
+                            type: 'manual',
+                            message: errorMessage
+                        });
+                    }
+                } else {
+                    console.error('Failed to create campaign:', error);
+                    toast.error('Đã xảy ra lỗi! Vui lòng thử lại.');
+                }
+            }
         } catch (error) {
-            console.error('Failed to create campaign:', error);
+            console.error('Submission error:', error);
             toast.error('Đã xảy ra lỗi! Vui lòng thử lại.');
         } finally {
             setIsUploading(false);

@@ -68,6 +68,12 @@ export const physicalDonationApi = baseApi.injectEndpoints({
                 `/PhysicalDonations/user/${userId}/visit/${visitId}`,
             method: 'GET',
         }),
+        cancelPhysicalDonationTransaction: builder.mutation({
+            query: (orderCode) => ({
+                url: `/PhysicalDonations/cancel-physical-donation-transaction/${orderCode}`,
+                method: 'POST',
+            }),
+        }),
     }),
 });
 
@@ -79,4 +85,5 @@ export const {
     useCreatePhysicalDonationMutation,
     useUpdatePhysicalDonationMutation,
     useGetPhysicalDonationsByUserAndVisitQuery,
+    useCancelPhysicalDonationTransactionMutation,
 } = physicalDonationApi;
