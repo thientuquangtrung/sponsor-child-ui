@@ -173,7 +173,6 @@ const OrganizationRegistrationForm = ({ onSubmit }) => {
                     </div>
                 ))}
             </div>
-            <div>HIIHIH</div>
 
             <img src={banner} alt="Banner" className="mx-auto mb-4 rounded-sm" />
 
