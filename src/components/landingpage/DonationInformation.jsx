@@ -168,8 +168,34 @@ const DonationInformation = () => {
                 CHECKOUT_URL: response.data.paymentLink.checkoutUrl,
             }));
         } catch (error) {
-            console.error('Error creating donation:', error);
-            console.log('Sending donation data:', donationData);
+            if (error.status === 400) {
+                let errorMessage = 'Đã xảy ra lỗi khi tạo thanh toán.';
+
+                if (error.data?.message) {
+                    switch (error.data.message) {
+                        case "The remaining amount is less than 10,000 and the donation is insufficient to cover this amount.":
+                            errorMessage = 'Vui lòng để lại ít nhất 10.000 VND cho lần quyên góp cuối cùng. Hãy điều chỉnh số tiền quyên góp của bạn để tiếp tục';
+                            break;
+                        case "The total donations, including pending transactions, have exceed the campaign's target amount.":
+                            errorMessage = 'Hiện đang có giao dịch đang chờ xử lý, đã đạt được số tiền mục tiêu của chiến dịch.';
+                            break;
+                        default:
+                            errorMessage = error.data.message;
+                    }
+                }
+                toast.error(errorMessage);
+
+                if (errorMessage.includes('chiến dịch cho trẻ em')) {
+                    form.setError('childIdentificationCode', {
+                        type: 'manual',
+                        message: errorMessage
+                    });
+                }
+            } else {
+                console.error('Error creating donation:', error);
+                console.log('Sending donation data:', donationData);
+
+            };
         } finally {
             setIsSubmitting(false);
         }
@@ -215,8 +241,8 @@ const DonationInformation = () => {
                         <p className="absolute top-[10px] left-[10px] text-sm text-gray-700 bg-white px-2 py-1 rounded-full">
                             {Math.ceil((new Date(campaign?.endDate) - new Date()) / (1000 * 60 * 60 * 24)) > 0
                                 ? `Còn ${Math.ceil(
-                                      (new Date(campaign?.endDate) - new Date()) / (1000 * 60 * 60 * 24),
-                                  )} ngày`
+                                    (new Date(campaign?.endDate) - new Date()) / (1000 * 60 * 60 * 24),
+                                )} ngày`
                                 : 'Hết hạn '}
                         </p>
                         <img

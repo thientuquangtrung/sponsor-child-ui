@@ -170,7 +170,7 @@ export const giftStatus = [
     { label: 'Chờ xử lý', value: 0 },
     { label: 'Đang vận chuyển', value: 1 },
     { label: 'Đã nhận quà', value: 2 },
-    { label: 'Đã hủy', value: 3 },
+    { label: 'đã hủy', value: 3 },
     { label: 'Chờ hoàn tiền', value: 4 },
     { label: 'Góp vào quỹ chung', value: 5 },
     { label: 'hoàn tiền do chuyến thăm bị hủy ', value: 6 },

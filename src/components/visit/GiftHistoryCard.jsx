@@ -62,10 +62,14 @@ const GiftHistoryCard = ({
                                 <div className="p-4 rounded-lg bg-gradient-to-r from-teal-50 to-rose-50 hover:from-teal-100 hover:to-rose-100 transition-colors">
                                     <div className="flex items-start justify-between">
                                         <div className="flex-1">
-                                            <div className="text-gray-700 mb-2">
-                                                Cảm ơn bạn đã quyên góp {gift.amount} {gift.unit} {gift.giftType}
-                                            </div>
-
+                                            {gift.giftStatus !== 3 && (
+                                                <p>Cảm ơn bạn đã quyên góp {gift.amount} {gift.unit} {gift.giftType}</p>
+                                            )}
+                                            {gift.giftStatus === 3 && (
+                                                <p className="text-sm text-gray-600">
+                                                    Bạn {getStatusText(gift.giftStatus)} quyên góp {gift.amount} {gift.unit} {gift.giftType}
+                                                </p>
+                                            )}
                                             {[2, 5, 6].includes(gift.giftStatus) ? (
                                                 <div className="text-sm text-gray-600">
                                                     <p className="mb-1">
