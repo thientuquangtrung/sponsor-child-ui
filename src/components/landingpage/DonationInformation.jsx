@@ -177,7 +177,7 @@ const DonationInformation = () => {
                             errorMessage = 'Vui lòng để lại ít nhất 10.000 VND cho lần quyên góp cuối cùng. Hãy điều chỉnh số tiền quyên góp của bạn để tiếp tục';
                             break;
                         case "The total donations, including pending transactions, have exceed the campaign's target amount.":
-                            errorMessage = 'Hiện đang có giao dịch đang chờ xử lý, đã đạt được số tiền mục tiêu của chiến dịch.';
+                            errorMessage = 'Hiện đang có giao dịch đang chờ xử lý đã đạt được số tiền mục tiêu của chiến dịch.';
                             break;
                         default:
                             errorMessage = error.data.message;
@@ -346,7 +346,7 @@ const DonationInformation = () => {
                                 ))}
                             </div>
 
-                            <FormField
+                            {/* <FormField
                                 control={form.control}
                                 name="message"
                                 render={({ field }) => (
@@ -362,7 +362,7 @@ const DonationInformation = () => {
                                         <FormMessage />
                                     </FormItem>
                                 )}
-                            />
+                            /> */}
 
                             <FormField
                                 control={form.control}

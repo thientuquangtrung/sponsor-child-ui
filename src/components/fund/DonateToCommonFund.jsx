@@ -120,7 +120,7 @@ const DonateToCommonFund = () => {
         const donationData = {
             amountAdded: amountValue,
             description: data.message,
-            isAnonymous: data.anonymous, 
+            isAnonymous: data.anonymous,
             cancelUrl: window.location.origin,
             returnUrl: window.location.origin,
         };
@@ -212,7 +212,7 @@ const DonateToCommonFund = () => {
                                 ))}
                             </div>
 
-                            <FormField
+                            {/* <FormField
                                 control={form.control}
                                 name="message"
                                 render={({ field }) => (
@@ -228,7 +228,7 @@ const DonateToCommonFund = () => {
                                         <FormMessage />
                                     </FormItem>
                                 )}
-                            />
+                            /> */}
 
                             <FormField
                                 control={form.control}
