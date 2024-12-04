@@ -117,7 +117,7 @@ const RegistrationPage = () => {
                                     className="rounded-lg shadow-xl w-full h-auto"
                                 />
                                 <Alert className="mt-2 bg-blue-50 border border-blue-200 rounded-md">
-                                    <AlertDescription className="text-blue-600">
+                                    <AlertDescription className="text-green-600">
                                         Được bảo lãnh tối đa 2 chiến dịch. Chỉ được tạo chiến dịch mới khi chiến dịch hiện tại đã hoàn thành hoặc bị từ chối.
                                     </AlertDescription>
                                 </Alert>
