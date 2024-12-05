@@ -17,9 +17,7 @@ import { useState } from 'react';
 const CampaignGuaranteeDetail = () => {
     const { id } = useParams();
     const navigate = useNavigate();
-
     const { data: campaignData, isLoading, error } = useGetCampaignByIdQuery(id);
-    console.log(campaignData);
     const [activities, setActivities] = useState([]);
 
     const handleAddActivity = (newActivity) => {
@@ -34,9 +32,6 @@ const CampaignGuaranteeDetail = () => {
         return guaranteeType.find((t) => t.value === type)?.label || 'Không xác định';
     };
 
-    const getContractStatusLabel = (status) => {
-        return contractStatus.find((s) => s.value === status)?.label || 'Không xác định';
-    };
 
     const getContractTypeLabel = (type) => {
         return contractType.find((t) => t.value === type)?.label || 'Không xác định';
@@ -67,6 +62,9 @@ const CampaignGuaranteeDetail = () => {
     const { disbursementPlans } = campaignData;
 
     const progress = (campaignData.raisedAmount / campaignData.targetAmount) * 100;
+    const getContractStatusLabel = (status) => {
+        return contractStatus.find((s) => s.value === status)?.label || 'Không xác định';
+    };
 
     const handleContractSign = () => {
         if (campaignData.contracts && campaignData.contracts.length > 0) {
@@ -85,7 +83,7 @@ const CampaignGuaranteeDetail = () => {
                                 {campaignData.title}
                             </CardTitle>
                             <div className="space-x-3 text-center">
-                                <Badge variant="outline" className="px-3 py-1 text-sm font-medium">
+                                <Badge variant="info" className="px-3 py-1 text-sm font-medium">
                                     {getGuaranteeTypeLabel(campaignData.guaranteeType)}
                                 </Badge>
                                 <Badge variant="secondary" className="px-3 py-1 text-sm font-medium">
@@ -234,42 +232,56 @@ const CampaignGuaranteeDetail = () => {
                 </CardHeader>
                 <CardContent className="space-y-4 pt-6">
                     {campaignData.contracts && campaignData.contracts.length > 0 ? (
-                        campaignData.contracts.map((contract, index) => (
-                            <div key={index} className="p-4 bg-gray-50 rounded-xl space-y-4">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                                    <div>
-                                        <span className="font-medium text-gray-700">Loại hợp đồng:</span>{' '}
-                                        <Badge variant="outline">{getContractTypeLabel(contract.contractType)}</Badge>
-                                    </div>
-                                    <div>
-                                        <span className="font-medium text-gray-700">Ngày bắt đầu:</span>{' '}
-                                        <span className="text-gray-600">
-                                            {new Date(contract.startDate).toLocaleDateString('vi-VN')}
-                                        </span>
-                                    </div>
-                                    <div>
-                                        <span className="font-medium text-gray-700">Ngày kết thúc:</span>{' '}
-                                        <span className="text-gray-600">
-                                            {new Date(contract.endDate).toLocaleDateString('vi-VN')}
-                                        </span>
-                                    </div>
-                                    <div>
-                                        <span className="font-medium text-gray-700">Trạng thái:</span>{' '}
-                                        <Badge
-                                            variant={
-                                                contract.status === 2
-                                                    ? 'success'
-                                                    : contract.status === 0 || contract.status === 1
-                                                        ? 'secondary'
-                                                        : 'outline'
-                                            }
-                                        >
-                                            {getContractStatusLabel(contract.status)}
-                                        </Badge>
+                        campaignData.contracts
+                            .filter(contract => contract.partyBID === campaignData.guaranteeID)
+                            .map((contract, index) => (
+                                <div key={index} className="p-4 bg-gray-50 rounded-xl space-y-4">
+                                    <div className="grid grid-cols-3 gap-4 text-sm">
+                                        <div className="space-y-2">
+                                            <div>
+                                                <span className="font-medium text-gray-700">Loại hợp đồng:</span>{' '}
+                                                <Badge variant="outline">{getContractTypeLabel(contract.contractType)}</Badge>
+                                            </div>
+                                            <div>
+                                                <span className="font-medium text-gray-700">Trạng thái:</span>{' '}
+                                                <Badge
+                                                    variant={
+                                                        contract.status === 2
+                                                            ? 'success'
+                                                            : contract.status === 0 || contract.status === 1
+                                                                ? 'secondary'
+                                                                : 'warning'
+                                                    }
+                                                >
+                                                    {getContractStatusLabel(contract.status)}
+                                                </Badge>
+                                            </div>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <div>
+                                                <span className="font-medium text-gray-700">Ngày bắt đầu:</span>{' '}
+                                                <span className="text-gray-600">
+                                                    {new Date(contract.startDate).toLocaleDateString('vi-VN')}
+                                                </span>
+                                            </div>
+                                            <div>
+                                                <span className="font-medium text-gray-700">Ngày kết thúc:</span>{' '}
+                                                <span className="text-gray-600">
+                                                    {new Date(contract.endDate).toLocaleDateString('vi-VN')}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center justify-center">
+                                            <Button
+                                                className="bg-teal-500 hover:bg-teal-600 text-white"
+                                                onClick={() => navigate(`/guarantee/contract/${contract.contractID}`)}
+                                            >
+                                                Xem chi tiết hợp đồng
+                                            </Button>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        ))
+                            ))
                     ) : (
                         <div className="text-gray-600 text-center">Chưa có hợp đồng</div>
                     )}
@@ -289,7 +301,7 @@ const CampaignGuaranteeDetail = () => {
                 <Activity onAddActivity={handleAddActivity} />
             ) : (
                 <Card className="border border-gray-100 shadow-md">
-                    <CardHeader className="bg-rose-200 border-b border-gray-100">
+                    <CardHeader className="bg-gradient-to-r from-rose-100 to-teal-100">
                         <CardTitle className="text-lg text-gray-800">Hoạt động chiến dịch</CardTitle>
                     </CardHeader>
                     <CardContent className="py-8">
@@ -299,7 +311,6 @@ const CampaignGuaranteeDetail = () => {
                     </CardContent>
                 </Card>
             )}
-            {/* Danh sách hoạt động */}
             {activities.length > 0 && (
                 <Card className="border border-gray-100 shadow-md hover:shadow-lg transition-shadow duration-300">
                     <CardHeader className="bg-rose-200 border-b border-gray-100">
