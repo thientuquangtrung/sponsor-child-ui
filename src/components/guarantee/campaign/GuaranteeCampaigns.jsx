@@ -8,7 +8,13 @@ import {
 } from '@tanstack/react-table';
 import { BadgePlus, Eye, MoreHorizontal } from 'lucide-react';
 import { campaignStatus } from '@/config/combobox';
-
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import {
     DropdownMenu,
@@ -20,7 +26,7 @@ import {
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { DataTableColumnHeader } from '@/components/datatable/DataTableColumnHeader';
-import { useGetCampaignByGuaranteeIdQuery } from '@/redux/campaign/campaignApi';
+import { useCheckGuaranteeEligibilityQuery, useGetCampaignByGuaranteeIdQuery } from '@/redux/campaign/campaignApi';
 import LoadingScreen from '@/components/common/LoadingScreen';
 import { useNavigate } from 'react-router-dom';
 import DisbursementProgress from '@/components/guarantee/campaign/DisbursementProgress';
@@ -75,7 +81,18 @@ export function GuaranteeCampaigns() {
     const [sorting, setSorting] = React.useState([
         { id: 'startDate', desc: true }
     ]);
-
+    const [isEligibilityDialogOpen, setIsEligibilityDialogOpen] = React.useState(false);
+    const {
+        data: eligibilityData,
+        error: eligibilityError
+    } = useCheckGuaranteeEligibilityQuery(user.userID);
+    const handleCreateCampaign = () => {
+        if (eligibilityData === true) {
+            navigate('/guarantee/create-campaign');
+        } else {
+            setIsEligibilityDialogOpen(true);
+        }
+    };
     const columns = [
         {
             accessorKey: 'thumbnailUrl',
@@ -193,12 +210,28 @@ export function GuaranteeCampaigns() {
             <div className="flex justify-end items-center mb-6">
                 <Button
                     className="bg-gradient-to-l from-secondary to-primary text-white"
-                    onClick={() => navigate('/guarantee/create-campaign')}
+                    onClick={handleCreateCampaign}
                 >
                     <BadgePlus className="w-4 h-4 mr-2" />
                     Tạo Chiến dịch
                 </Button>
             </div>
+            <Dialog
+                open={isEligibilityDialogOpen}
+                onOpenChange={setIsEligibilityDialogOpen}
+            >
+                <DialogContent className="rounded-lg shadow-lg p-6">
+                    <DialogHeader className="mb-4">
+                        <DialogTitle className="text-2xl font-semibold text-center text-teal-500">
+                            Thông báo
+                        </DialogTitle>
+                        <DialogDescription className="text-base text-gray-600 mt-2 text-center">
+                            Bạn đã tạo 2 chiến dịch đang ở trạng thái chưa hoàn thành.
+                            Vui lòng hoàn thành các chiến dịch trước khi tạo mới.
+                        </DialogDescription>
+                    </DialogHeader>
+                </DialogContent>
+            </Dialog>
 
             <div className="overflow-x-auto">
                 <div className="border rounded-md min-w-full inline-block">

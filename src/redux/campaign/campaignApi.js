@@ -2,6 +2,12 @@ import baseApi from '@/redux/baseApi';
 
 export const campaignApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
+        checkGuaranteeEligibility: builder.query({
+            query: (guaranteeID) => ({
+                url: '/campaign/check-guarantee-eligibility',
+                params: { GuaranteeID: guaranteeID },
+            }),
+        }),
         getAllCampaigns: builder.query({
             query: ({ searchParams, hasGuarantee = true }) => {
                 // if (!searchParams) return '/campaign';
@@ -11,7 +17,6 @@ export const campaignApi = baseApi.injectEndpoints({
                 };
             },
         }),
-
         getCampaignById: builder.query({
             query: (id) => `/campaign/${id}`,
         }),
@@ -60,6 +65,7 @@ export const campaignApi = baseApi.injectEndpoints({
 });
 
 export const {
+    useCheckGuaranteeEligibilityQuery,
     useGetAllCampaignsQuery,
     useGetCampaignByIdQuery,
     useGetCampaignDetailsByIdQuery,
