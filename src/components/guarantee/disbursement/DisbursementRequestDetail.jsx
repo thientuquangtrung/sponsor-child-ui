@@ -126,7 +126,7 @@ export default function DisbursementRequestDetail() {
                                                     : stage.status === 1
                                                         ? 'text-blue-500'
                                                         : stage.status === 2
-                                                            ? 'text-green-600'
+                                                            ? 'text-green-500'
                                                             : stage.status === 3
                                                                 ? 'text-red-500'
                                                                 : stage.status === 4
@@ -239,18 +239,16 @@ export default function DisbursementRequestDetail() {
                                 </div>
                                 <div className="grid grid-cols-2 gap-6 rounded-b-lg">
                                     <div className="space-y-4">
-                                        <div className="flex flex-col items-end">
+                                        <div className="flex flex-col items-end relative">
                                             <div className="flex items-center justify-between w-full">
-                                                <p className="text-gray-700 font-medium">ST chưa được giải ngân:</p>
+                                                <p className="text-gray-700 font-medium">ST chưa giải ngân:</p>
                                                 <span className="text-teal-600 font-semibold">
                                                     {disbursementRequests?.disbursementStage?.totalUndisbursedAmount?.toLocaleString('vi-VN')} VNĐ
                                                 </span>
                                             </div>
-                                            <div className="flex justify-center w-full">
-                                                <span className="text-gray-800 font-semibold text-xl">+</span>
-                                            </div>
-                                            <div className="flex items-center justify-between w-full mb-3">
-                                                <p className="text-gray-700 font-medium">ST giải ngân đợt {disbursementRequests?.disbursementStage?.stageNumber}:</p>
+                                            <span className="text-teal-600 font-semibold text-xl absolute right-36 top-2 py-1">+</span>
+                                            <div className="flex items-center justify-between w-full">
+                                                <p className="text-gray-700 font-medium py-3">ST giải ngân đợt {disbursementRequests?.disbursementStage?.stageNumber}:</p>
                                                 <div className="flex flex-col items-end">
                                                     <span className="text-teal-600 font-semibold border-b border-gray-400">
                                                         {disbursementRequests?.disbursementStage?.disbursementAmount?.toLocaleString('vi-VN')} VNĐ
@@ -267,17 +265,15 @@ export default function DisbursementRequestDetail() {
                                         </div>
                                     </div>
                                     <div className="space-y-4">
-                                        <div className="flex flex-col items-end">
+                                        <div className="flex flex-col items-end relative">
                                             <div className="flex items-center justify-between w-full">
-                                                <p className="text-gray-700 font-medium">ST gây quỹ được:</p>
+                                                <p className="text-gray-700 font-medium">ST đã gây quỹ :</p>
                                                 <span className="text-teal-600 font-semibold">
                                                     {disbursementRequests?.disbursementStage?.presentRaisedAmount?.toLocaleString('vi-VN')} VNĐ
                                                 </span>
                                             </div>
-                                            <div className="flex justify-center w-full">
-                                                <span className="text-gray-800 font-black text-xl">-</span>
-                                            </div>
-                                            <div className="flex items-center justify-between w-full mb-3">
+                                            <span className="text-teal-600 font-semibold text-xl absolute right-36 top-2 py-1">-</span>
+                                            <div className="flex items-center justify-between w-full py-3">
                                                 <p className="text-gray-700 font-medium">ST đã giải ngân đợt trước:</p>
                                                 <div className="flex flex-col items-end">
                                                     <span className="text-teal-600 font-semibold border-b border-gray-400">
@@ -330,7 +326,7 @@ export default function DisbursementRequestDetail() {
                         </h3>
                         <div className="flex items-center gap-4 px-4">
                             <p className="text-gray-700 font-medium w-1/2">Nhà Bảo Lãnh:</p>
-                            <span className="text-teal-600 font-semibold">{disbursementRequests?.disbursementStage?.guarantee?.fullname}</span>
+                            <span className="text-teal-600 font-semibold">{disbursementRequests?.guarantee?.fullname}</span>
                         </div>
                         <div className="p-4 space-y-6">
                             <div className="grid grid-cols-2 gap-4 items-center">
@@ -377,11 +373,11 @@ export default function DisbursementRequestDetail() {
 
                             {disbursementRequests?.disbursementStage?.stageActivity ? (
                                 <div className="space-y-4">
-                                    <div className="flex items-center gap-4 px-4">
+                                    <div className="flex items-center gap-4">
                                         <p className="text-gray-700 font-medium w-1/2">Mục đích sử dụng:</p>
                                         <p className="text-teal-500 font-medium w-1/2">{disbursementRequests?.disbursementStage?.stageActivity.description}</p>
                                     </div>
-                                    <div className="flex items-center gap-4 px-4">
+                                    <div className="flex items-center gap-4">
                                         <p className="text-gray-700 font-medium w-1/2">Trạng thái:</p>
                                         <p
                                             className={`w-1/2 ${getStatusColorClass(
