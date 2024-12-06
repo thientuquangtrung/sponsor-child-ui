@@ -206,7 +206,7 @@ const Activity = () => {
                                     </div>
                                 </TableCell>
                                 <TableCell className="py-4 px-4 text-center">
-                                    {activity.cost.toLocaleString('vi-VN')} ₫
+                                    {activity?.cost?.toLocaleString('vi-VN')} ₫
                                 </TableCell>
                                 <TableCell className="py-4 px-4 text-center">
                                     <div className="flex space-x-2 items-center justify-center">
