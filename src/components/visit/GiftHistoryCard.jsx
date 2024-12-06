@@ -4,13 +4,17 @@ import { Separator } from '@/components/ui/separator';
 import { Gift } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useGetPhysicalDonationsByUserAndVisitQuery } from '@/redux/physicalDonations/physicalDonationApi';
-import { giftStatus } from '@/config/combobox';
+import { giftStatus, donationType } from '@/config/combobox';
 
 const getStatusText = (status) => {
     const statusItem = giftStatus.find(item => item.value === status);
-    return statusItem?.label || 'Không xác định';
+    return statusItem?.label || '';
 };
 
+const getDonationTypeText = (type) => {
+    const typeItem = donationType.find(item => item.value === type);
+    return typeItem ? typeItem.label : '';
+};
 const formatDateTime = (dateString) => {
     const date = new Date(dateString);
     const day = date.getDate().toString().padStart(2, '0');
@@ -63,11 +67,15 @@ const GiftHistoryCard = ({
                                     <div className="flex items-start justify-between">
                                         <div className="flex-1">
                                             {gift.giftStatus !== 3 && (
-                                                <p>Cảm ơn bạn đã quyên góp {gift.amount} {gift.unit} {gift.giftType}</p>
+                                                <p>
+                                                    Cảm ơn bạn đã quyên góp {gift.amount} {gift.unit} {gift.giftType}
+                                                    <span className="text-sm text-gray-600 ml-2">({getDonationTypeText(gift.donationType)})</span>
+                                                </p>
                                             )}
                                             {gift.giftStatus === 3 && (
                                                 <p className="text-sm text-gray-600">
-                                                    Bạn {getStatusText(gift.giftStatus)} quyên góp {gift.amount} {gift.unit} {gift.giftType}
+                                                    Bạn {getStatusText(gift.giftStatus)} quyên góp {gift.amount} {gift.unit} {gift.giftType}
+                                                    <span className="ml-2">({getDonationTypeText(gift.donationType)})</span>
                                                 </p>
                                             )}
                                             {[2, 5, 6].includes(gift.giftStatus) ? (

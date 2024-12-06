@@ -42,13 +42,36 @@ export default function RegisterForm() {
         register(values)
             .unwrap()
             .then((res) => {
-                console.log(res);
                 // dispatch(UpdateAuthentication(res.data));
-                toast.success(res.message);
+                toast.success(
+                    'Đăng ký thành công! Email xác minh đã được gửi đến địa chỉ email của bạn.');
             })
             .catch((err) => {
-                console.log(err);
-                toast.error(err?.message || err?.data?.message || 'Try again later!');
+                if (err.status === 400) {
+                    let errorMessage = 'Đã xảy ra lỗi khi tạo tài khoản.';
+
+                    if (err.data?.message) {
+                        switch (err.data.message) {
+                            case "User with this email already exists.":
+                                errorMessage = 'Email này đã có người dùng đăng ký!';
+                                break;
+                            default:
+                                errorMessage = err.data.message;
+                        }
+                    }
+
+                    toast.error(errorMessage);
+
+                    if (errorMessage.includes('chiến dịch cho trẻ em')) {
+                        form.setError('childIdentificationCode', {
+                            type: 'manual',
+                            message: errorMessage
+                        });
+                    }
+                } else {
+                    console.error('Failed to create campaign:', error);
+                    toast.error('Đã xảy ra lỗi! Vui lòng thử lại.');
+                }
             });
     }
 

@@ -9,6 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import LoadingScreen from '@/components/common/LoadingScreen';
 import { useGetDisbursementRequestByIdSimplifiedQuery } from '@/redux/guarantee/disbursementRequestApi';
 import { useUpdateDisbursementReportMutation } from '@/redux/guarantee/disbursementReportApi';
+import { uploadFile, UPLOAD_FOLDER, UPLOAD_NAME } from '@/lib/cloudinary';
 
 export default function UploadDisbursementReport() {
     const { id } = useParams();
@@ -39,53 +40,14 @@ export default function UploadDisbursementReport() {
         setModalImage(null);
     };
 
-    const removeImage = (detailId) => {
-        setReportDetails((prev) => ({
-            ...prev,
-            [detailId]: {
-                ...prev[detailId],
-                receiptUrl: '',
-            },
-        }));
-    };
+
 
     if (isLoading) return <LoadingScreen />;
     if (error) return <div className="text-center py-4 text-red-500">Đã có lỗi khi tải dữ liệu</div>;
     if (!disbursementRequests)
         return <div className="text-center py-4 text-gray-500">Không có dữ liệu nào để hiển thị</div>;
 
-    const uploadToCloudinary = async (file, folder = 'default-folder') => {
-        if (!file) {
-            throw new Error('No file selected for upload');
-        }
-
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('upload_preset', 'sponsor_child_uploads');
-        formData.append('folder', folder);
-
-        try {
-            const response = await fetch(
-                `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUD_NAME}/image/upload`,
-                {
-                    method: 'POST',
-                    body: formData,
-                },
-            );
-
-            const result = await response.json();
-            if (!response.ok) {
-                throw new Error(result.error?.message || 'Failed to upload image');
-            }
-
-            return result.secure_url;
-        } catch (error) {
-            console.error('Error uploading file to Cloudinary:', error);
-            throw error;
-        }
-    };
-
-    const handleFileChange = async (event, detailId) => {
+    const handleFileChange = (event, detailId) => {
         const file = event.target.files[0];
         if (!file) return;
 
@@ -94,22 +56,18 @@ export default function UploadDisbursementReport() {
             return;
         }
 
-        try {
-            setLoadingRows((prev) => [...prev, detailId]);
-            const receiptUrl = await uploadToCloudinary(file);
-
+        const reader = new FileReader();
+        reader.onloadend = () => {
             setReportDetails((prev) => ({
                 ...prev,
                 [detailId]: {
                     ...prev[detailId],
-                    receiptUrl,
+                    filePreview: reader.result,
+                    file: file,
                 },
             }));
-        } catch (error) {
-            toast.error('Không thể tải lên file. Vui lòng thử lại.');
-        } finally {
-            setLoadingRows((prev) => prev.filter((id) => id !== detailId));
-        }
+        };
+        reader.readAsDataURL(file);
     };
 
     const validateAmount = (value) => {
@@ -136,6 +94,7 @@ export default function UploadDisbursementReport() {
 
     const updateSingleDisbursementDetail = async (detailId) => {
         const detail = reportDetails[detailId];
+
         if (!detail?.comments) {
             toast.error('Vui lòng nhập ghi chú');
             return;
@@ -146,7 +105,7 @@ export default function UploadDisbursementReport() {
             return;
         }
 
-        if (!detail?.receiptUrl) {
+        if (!detail?.receiptUrl && !detail?.file) {
             toast.error('Vui lòng tải lên hóa đơn');
             return;
         }
@@ -157,16 +116,45 @@ export default function UploadDisbursementReport() {
             return;
         }
 
+        let receiptUrl = detail.receiptUrl;
+
+        if (detail.file) {
+            try {
+                setLoadingRows((prev) => [...prev, detailId]);
+
+                const uploadResult = await uploadFile({
+                    file: detail.file,
+                    folder: UPLOAD_FOLDER.getDisbursementFolder(disbursementRequests.campaigns.id),
+                    customFilename: `${UPLOAD_NAME.DISBURSEMENT_REPORT}_${disbursementRequests.disbursementStage.stageNumber}_${detailId}`,
+                });
+
+                if (!uploadResult) {
+                    throw new Error('Không nhận được link tải lên');
+                }
+
+                receiptUrl = uploadResult.secure_url;
+            } catch (error) {
+                console.error('Upload failed:', error);
+                toast.error('Không thể tải lên file. Vui lòng thử lại.');
+                return;
+            } finally {
+                setLoadingRows((prev) => prev.filter((id) => id !== detailId));
+            }
+        }
+
         const payload = {
             actualAmountSpent: numericAmount,
-            receiptUrl: detail.receiptUrl,
+            receiptUrl: receiptUrl,
             comments: detail.comments,
         };
 
-        setLoadingRows((prev) => [...prev, detailId]);
-
         try {
-            await updateDisbursementReport({ reportDetailId: detailId, data: payload }).unwrap();
+            setLoadingRows((prev) => [...prev, detailId]);
+            await updateDisbursementReport({
+                reportDetailId: detailId,
+                data: payload
+            }).unwrap();
+
             toast.success(`Cập nhật chi tiết báo cáo thành công!`);
             await refetch();
         } catch (error) {
@@ -270,19 +258,28 @@ export default function UploadDisbursementReport() {
                                                 </TableCell>
                                                 <TableCell className="p-3 border border-slate-300">
                                                     <div className="border-dashed border-2 border-gray-400 p-2 rounded-lg flex flex-col items-center justify-center relative">
-                                                        {receiptUrl ? (
+                                                        {(receiptUrl || reportDetails[detail.id]?.filePreview) ? (
                                                             <div className="relative group">
                                                                 <img
-                                                                    src={receiptUrl}
+                                                                    src={receiptUrl || reportDetails[detail.id].filePreview}
                                                                     alt="Uploaded receipt"
                                                                     className="max-w-full max-h-32 cursor-pointer"
-                                                                    onClick={() => openModal(receiptUrl)}
+                                                                    onClick={() => openModal(receiptUrl || reportDetails[detail.id].filePreview)}
                                                                 />
                                                                 {!isUpdated && (
                                                                     <button
                                                                         type="button"
-                                                                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full  hover:bg-red-600 transition-colors z-20"
-                                                                        onClick={() => removeImage(detail.id)}
+                                                                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors z-20"
+                                                                        onClick={() => {
+                                                                            setReportDetails((prev) => ({
+                                                                                ...prev,
+                                                                                [detail.id]: {
+                                                                                    ...prev[detail.id],
+                                                                                    filePreview: null,
+                                                                                    file: null
+                                                                                }
+                                                                            }));
+                                                                        }}
                                                                     >
                                                                         <X size={20} />
                                                                     </button>
