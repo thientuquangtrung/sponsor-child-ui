@@ -36,12 +36,12 @@ const Login = () => {
                     .unwrap()
                     .then((res) => {
                         dispatch(UpdateAuthentication(res));
-                        
-                        toast.success('Logged in successfully!');
+
+                        toast.success('Đăng nhập thành công!');
                     })
                     .catch((err) => {
                         console.log(err);
-                        toast.error(err?.message || err?.data?.message || 'Try again later!');
+                        toast.error(err?.message || err?.data?.message || 'Bạn vui lòng thử lại!');
                     });
             })
             .catch((error) => {

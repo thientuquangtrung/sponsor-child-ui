@@ -7,7 +7,7 @@ export default function ButtonLoading({ isLoading, ...props }) {
     return (
         <Button disabled {...props}>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            Please wait
+            Đang xử lý
         </Button>
     );
 }
