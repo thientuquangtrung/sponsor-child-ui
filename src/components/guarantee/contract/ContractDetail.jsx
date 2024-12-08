@@ -22,7 +22,7 @@ import 'react-pdf/dist/esm/Page/TextLayer.css';
 import { contractStatus, contractPartyType, contractType } from '@/config/combobox';
 import { useGetContractByIdQuery, useUpdateContractMutation } from '@/redux/contract/contractApi';
 import LoadingScreen from '@/components/common/LoadingScreen';
-
+import { CheckCircle, FileText } from 'lucide-react';
 pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js`;
 
 const ContractDetail = () => {
@@ -82,6 +82,14 @@ const ContractDetail = () => {
         setNumPages(numPages);
     };
 
+    const handleViewHardContract = () => {
+        if (contract.hardContractUrl) {
+            window.open(contract.hardContractUrl, '_blank');
+        } else {
+            toast.error('Không tìm thấy file hợp đồng cứng');
+        }
+    };
+
     if (isLoading) return <LoadingScreen />;
     if (error) return <div className="flex justify-center items-center h-screen">Lỗi: {error.message}</div>;
     if (!contract) return <div className="flex justify-center items-center h-screen">Không tìm thấy hợp đồng</div>;
@@ -137,59 +145,84 @@ const ContractDetail = () => {
                 </Card>
 
                 {contract.status === 0 ? (
-                    <>
-
-                        <div className="flex justify-end gap-4 mt-4">
-                            <Button
-                                onClick={() => navigate(`/guarantee/contract/contract-campaign/${contract.contractID}/${contract.campaignID}`)}
-                                className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg"
-                            >
-                                Xem và ký hợp đồng
-                            </Button>
-                            <Button
-                                onClick={() => setShowConfirmDialog(true)}
-                                className="bg-red-400 hover:bg-red-500 text-white py-2 px-4 rounded-lg"
-                                disabled={isRejecting}
-                            >
-                                {isRejecting ? (
-                                    <>
-                                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                                        Đang xử lý...
-                                    </>
-                                ) : (
-                                    'Từ chối hợp đồng'
-                                )}
-                            </Button>
-                        </div>
-
-
-                    </>
+                    <div className="flex justify-end gap-4 mt-4">
+                        <Button
+                            onClick={() => navigate(`/guarantee/contract/contract-campaign/${contract.contractID}/${contract.campaignID}`)}
+                            className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg"
+                        >
+                            Xem và ký hợp đồng
+                        </Button>
+                        <Button
+                            onClick={() => setShowConfirmDialog(true)}
+                            className="bg-red-400 hover:bg-red-500 text-white py-2 px-4 rounded-lg"
+                            disabled={isRejecting}
+                        >
+                            {isRejecting ? (
+                                <>
+                                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                    Đang xử lý...
+                                </>
+                            ) : (
+                                'Từ chối hợp đồng'
+                            )}
+                        </Button>
+                    </div>
                 ) : (
-                    <Card className="w-2/3">
-                        <CardHeader className="bg-teal-600 text-white">
-                            <CardTitle className="text-2xl">File ảnh hợp đồng</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <ScrollArea className="h-[800px] w-full rounded-md border p-4 bg-white">
-                                <Document
-                                    file={contract.softContractUrl}
-                                    onLoadSuccess={onDocumentLoadSuccess}
-                                    loading={<div>Đang tải PDF...</div>}
-                                    error={<div>Lỗi khi tải PDF. Vui lòng thử lại.</div>}
-                                >
-                                    {Array.from(new Array(numPages), (el, index) => (
-                                        <Page
-                                            key={`page_${index + 1}`}
-                                            pageNumber={index + 1}
-                                            width={740}
-                                            renderAnnotationLayer={false}
-                                            renderTextLayer={false}
-                                        />
-                                    ))}
-                                </Document>
-                            </ScrollArea>
-                        </CardContent>
-                    </Card>
+                    <div className="flex space-x-4">
+                        <Card className="w-2/3">
+                            <CardHeader className="bg-teal-600 text-white">
+                                <CardTitle className="text-2xl">File ảnh hợp đồng</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <ScrollArea className="h-[800px] w-full rounded-md border p-4 bg-white">
+                                    <Document
+                                        file={contract.softContractUrl}
+                                        onLoadSuccess={onDocumentLoadSuccess}
+                                        loading={<div>Đang tải PDF...</div>}
+                                        error={<div>Lỗi khi tải PDF. Vui lòng thử lại.</div>}
+                                    >
+                                        {Array.from(new Array(numPages), (el, index) => (
+                                            <Page
+                                                key={`page_${index + 1}`}
+                                                pageNumber={index + 1}
+                                                width={740}
+                                                renderAnnotationLayer={false}
+                                                renderTextLayer={false}
+                                            />
+                                        ))}
+                                    </Document>
+                                </ScrollArea>
+                            </CardContent>
+                        </Card>
+
+                        {contract.status === 2 && (
+                            <Card className="w-1/3">
+                                <CardHeader className="bg-teal-600 text-white">
+                                    <CardTitle className="text-2xl">Trạng thái hợp đồng</CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    <div className="space-y-6 py-4">
+                                        <div className="flex items-center justify-center space-x-2 text-green-600 my-10">
+                                            <CheckCircle className="h-8 w-8" />
+                                            <span className="text-lg font-medium">
+                                                Hợp đồng đã được ký kết thành công
+                                            </span>
+                                        </div>
+
+                                        <div className="flex flex-col items-center space-y-4 my-6">
+                                            <Button
+                                                onClick={handleViewHardContract}
+                                                className="bg-yellow-400 hover:bg-yellow-500"
+                                            >
+                                                <FileText className="h-4 w-4 mr-2" />
+                                                Xem bản cứng hợp đồng
+                                            </Button>
+                                        </div>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        )}
+                    </div>
                 )}
             </div>
 

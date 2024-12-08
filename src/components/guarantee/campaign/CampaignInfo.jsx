@@ -53,12 +53,12 @@ const CampaignInfo = () => {
             title: '',
             story: '',
             targetAmount: '',
-            startDate: new Date(),
+            startDate: new Date(new Date().setDate(new Date().getDate() + 1)),
             endDate: null,
             thumbnailUrl: null,
             imagesFolderUrl: [],
             campaignType: 0,
-            plannedStartDate: new Date(),
+            plannedStartDate: new Date(new Date().setDate(new Date().getDate() + 1)),
             plannedEndDate: new Date(new Date().setMonth(new Date().getMonth() + 1)),
             disbursementStages: [
                 {
@@ -398,12 +398,10 @@ const CampaignInfo = () => {
                         });
                     }
                 } else {
-                    console.error('Failed to create campaign:', error);
                     toast.error('Đã xảy ra lỗi! Vui lòng thử lại.');
                 }
             }
         } catch (error) {
-            console.error('Submission error:', error);
             toast.error('Đã xảy ra lỗi! Vui lòng thử lại.');
         } finally {
             setIsUploading(false);
