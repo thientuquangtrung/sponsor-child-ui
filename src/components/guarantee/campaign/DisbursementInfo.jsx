@@ -183,6 +183,7 @@ const DisbursementInfo = ({ campaignType }) => {
                                                             type="text"
                                                             placeholder="Nhập số tiền"
                                                             value={formatCurrency(inputField.value)}
+                                                            disabled={campaignType === 1}
                                                             onChange={(e) => {
                                                                 const value = e.target.value.replace(/[^\d]/g, '');
                                                                 const numericValue = parseFloat(value) || 0;
