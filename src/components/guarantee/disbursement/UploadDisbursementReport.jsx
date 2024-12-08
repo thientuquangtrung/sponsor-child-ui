@@ -154,12 +154,10 @@ export default function UploadDisbursementReport() {
                 reportDetailId: detailId,
                 data: payload
             }).unwrap();
-
-            toast.success(`Cập nhật chi tiết báo cáo thành công!`);
             await refetch();
+            toast.success(`Cập nhật chi tiết báo cáo thành công!`);
         } catch (error) {
-            console.error(`Không cập nhật được ID ${detailId}:`, error);
-            toast.error(`Không cập nhật được: ${error.message}`);
+            toast.error(`Không cập nhật được`);
         } finally {
             setLoadingRows((prev) => prev.filter((id) => id !== detailId));
         }

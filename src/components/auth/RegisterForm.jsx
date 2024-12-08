@@ -13,9 +13,18 @@ import ButtonLoading from '@/components/ui/loading-button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 
 const formSchema = z.object({
-    fullname: z.string().min(2).max(50),
-    email: z.string().email(),
-    password: z.string().min(2).max(50),
+    fullname: z.string()
+        .min(2, "Họ tên hoặc biệt danh phải có ít nhất 2 ký tự")
+        .max(50, "Họ tên hoặc biệt danh không được vượt quá 50 ký tự"),
+    email: z.string()
+        .min(1, "Vui lòng nhập email.")
+        .email({ message: "Email không hợp lệ" }),
+    password: z.string()
+        .min(6, { message: "Mật khẩu phải dài từ 6-32 ký tự" })
+        .max(32, { message: "Mật khẩu phải dài từ 6-32 ký tự" })
+        .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?])/,
+            { message: "Mật khẩu phải chứa ít nhất 1 chữ thường, 1 chữ hoa, 1 chữ số và 1 ký tự đặc biệt" }),
+
     gender: z.number(),
 });
 
