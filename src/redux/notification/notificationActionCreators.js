@@ -8,28 +8,39 @@ export const NewNotification = (newNotification) => {
     };
 };
 
+export const SetNotifications = (notifications) => {
+    return (dispatch, getState) => {
+        const formattedNotifications = notifications.map(formatNotification);
+        dispatch(slice.actions.setNotifications(formattedNotifications));
+    };
+};
+
+export const MarkAsRead = (id) => {
+    return (dispatch, getState) => {
+        dispatch(slice.actions.markAsRead(id));
+    };
+};
+
+export const MarkAllAsRead = () => {
+    return (dispatch, getState) => {
+        dispatch(slice.actions.markAllAsRead());
+    };
+};
+
 //============== format notification functions ==============
 const formatNotification = (notification) => {
     return {
         id: notification.id,
-        name: notification.user?.fullName || 'Unknown User',
-        action: getNotificationAction(notification.type, notification.campaign?.name),
         message: notification.message,
-        time: formatTime(notification.createdAt),
-        profileImage: notification.user?.avatarUrl || 'https://via.placeholder.com/400x300',
-        isRead: notification.isRead
+        time: formatTime(
+            new Date(new Date(notification.createdAt).getTime() + 7 * 60 * 60 * 1000).toLocaleString('en-US'),
+        ),
+        isRead: notification.isRead,
+        type: notification.type,
+        targetType: notification.targetType,
+        targetID: notification.targetID,
+        userID: notification.userID,
     };
-};
-
-const getNotificationAction = (type, campaignName) => {
-    const actions = {
-        0: 'đã bình luận về hoạt động của bạn',
-        1: `đã quyên góp cho chiến dịch "${campaignName}"`,
-        2: 'đã xác nhận giải ngân',
-        3: 'đã thích hoạt động mới',
-        // Add more types as needed
-    };
-    return actions[type] || 'đã thực hiện một hành động';
 };
 
 const formatTime = (createdAt) => {
@@ -37,6 +48,7 @@ const formatTime = (createdAt) => {
     const now = new Date();
     const diffMinutes = Math.floor((now - date) / (1000 * 60));
 
+    if (diffMinutes < 1) return 'Vừa xong';
     if (diffMinutes < 60) return `${diffMinutes} phút trước`;
     if (diffMinutes < 1440) return `${Math.floor(diffMinutes / 60)} giờ trước`;
     return `${Math.floor(diffMinutes / 1440)} ngày trước`;

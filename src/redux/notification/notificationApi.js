@@ -3,69 +3,22 @@ import baseApi from '../baseApi';
 
 export const authApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
-        register: builder.mutation({
-            query: (data) => ({
-                url: '/auth/register',
-                method: 'POST',
-                body: data,
+        getNotificationsByUserId: builder.query({
+            query: (userID) => `/notification/user/${userID}`,
+        }),
+        markAsRead: builder.mutation({
+            query: (notificationID) => ({
+                url: `/notification/markAsRead/${notificationID}`,
+                method: 'PUT',
             }),
         }),
-        login: builder.mutation({
-            query: (data) => ({
-                url: '/auth/login',
-                method: 'POST',
-                body: data,
+        markAllAsRead: builder.mutation({
+            query: (userID) => ({
+                url: `/notification/markAllAsRead/${userID}`,
+                method: 'PUT',
             }),
-        }),
-        authWithProvider: builder.mutation({
-            query: (data) => ({
-                url: '/auth/firebase-login',
-                method: 'POST',
-                body: data,
-            }),
-        }),
-        logout: builder.mutation({
-            query: (data) => ({
-                url: '/auth/logout',
-                method: 'POST',
-                body: data,
-            }),
-        }),
-        resetPassword: builder.mutation({
-            query: (data) => ({
-                url: '/auth/forgot-password',
-                method: 'POST',
-                body: data,
-            }),
-        }),
-        NewPassword: builder.mutation({
-            query: (data) => ({
-                url: '/auth/reset-password',
-                method: 'POST',
-                body: data,
-            }),
-        }),
-        confirmMail: builder.query({
-            query: (oobCode) => ({
-                url: '/auth/verify-email',
-                params: {
-                    oobCode,
-                },
-            }),
-        }),
-        checkAuth: builder.query({
-            query: () => '/auth/checkauth',
         }),
     }),
 });
 
-export const {
-    useRegisterMutation,
-    useLoginMutation,
-    useCheckAuthQuery,
-    useLogoutMutation,
-    useResetPasswordMutation,
-    useNewPasswordMutation,
-    useAuthWithProviderMutation,
-    useConfirmMailQuery,
-} = authApi;
+export const { useGetNotificationsByUserIdQuery, useMarkAsReadMutation, useMarkAllAsReadMutation } = authApi;
