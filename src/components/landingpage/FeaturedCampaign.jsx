@@ -6,11 +6,13 @@ import { campaignStatus, guaranteeType } from '@/config/combobox';
 
 const FeaturedCampaign = () => {
     const { data: campaigns = [], isLoading, error } = useGetAllCampaignsQuery({ hasGuarantee: true });
+    const campaignsWithGuaranteeType = guaranteeType
+        .map((item) => ({
+            ...item,
+            campaigns: campaigns.filter((campaign) => campaign.guaranteeType === item.value),
+        }))
+        .filter((item) => item.campaigns.length > 0);
 
-    const campaignsWithGuaranteeType = guaranteeType.map((item) => ({
-        ...item,
-        campaigns: campaigns.filter((campaign) => campaign.guaranteeType === item.value),
-    }));
     const getStatusColor = (status) => {
         switch (status) {
             case 0:
@@ -37,6 +39,7 @@ const FeaturedCampaign = () => {
                 return 'text-gray-500';
         }
     };
+
     return (
         <div className="container space-y-8 py-8 bg-gradient-to-b from-teal-100 to-rose-100 font-sans">
             <div className="flex items-center justify-center">
@@ -44,7 +47,7 @@ const FeaturedCampaign = () => {
                 <h1 className="text-2xl font-semibold mx-4">Chiến dịch gây quỹ nổi bật</h1>
                 <div className="border-t-2 border-teal-500 w-20"></div>
             </div>
-            {isLoading && <p className="text-center text-2xl font-semibold">Loading...</p>}
+            {isLoading && <p className="text-center text-xl font-semibold">Đang tải...</p>}
             {campaignsWithGuaranteeType.map((item) => (
                 <div key={item.value}>
                     <div className="flex justify-between items-center mb-4">
@@ -75,7 +78,7 @@ const FeaturedCampaign = () => {
                                                 ? `Còn ${Math.ceil(
                                                     (new Date(campaign?.endDate) - new Date()) / (1000 * 60 * 60 * 24),
                                                 )} ngày`
-                                                : 'Hết hạn gây quỹ'}
+                                                : 'Hết hạn gây quỹ'}
                                         </span>
 
                                         <span
@@ -128,6 +131,9 @@ const FeaturedCampaign = () => {
                     </Carousel>
                 </div>
             ))}
+            {campaignsWithGuaranteeType.length === 0 && (
+                <p className="text-center text-gray-600">Hiện chưa có chiến dịch nào được bảo lãnh.</p>
+            )}
         </div>
     );
 };

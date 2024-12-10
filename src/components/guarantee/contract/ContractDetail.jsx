@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Document, Page, pdfjs } from 'react-pdf';
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Loader2 } from 'lucide-react';
+import { Home, Loader2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableRow } from '@/components/ui/table';
 import { Toaster, toast } from 'sonner';
@@ -23,7 +23,9 @@ import { contractStatus, contractPartyType, contractType } from '@/config/combob
 import { useGetContractByIdQuery, useUpdateContractMutation } from '@/redux/contract/contractApi';
 import LoadingScreen from '@/components/common/LoadingScreen';
 import { CheckCircle, FileText } from 'lucide-react';
+import { useSelector } from 'react-redux';
 pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js`;
+import icon from '@/assets/images/no-access.png';
 
 const ContractDetail = () => {
     const navigate = useNavigate();
@@ -33,7 +35,10 @@ const ContractDetail = () => {
     const [updateContract] = useUpdateContractMutation();
     const [isRejecting, setIsRejecting] = useState(false);
     const [showConfirmDialog, setShowConfirmDialog] = useState(false);
-
+    const { user } = useSelector((state) => state.auth);
+    const redirectToHome = () => {
+        navigate('/');
+    };
     const getContractTypeString = (type) => {
         return contractType.find(t => t.value === type)?.label || 'Không xác định';
     };
@@ -93,7 +98,21 @@ const ContractDetail = () => {
     if (isLoading) return <LoadingScreen />;
     if (error) return <div className="flex justify-center items-center h-screen">Lỗi: {error.message}</div>;
     if (!contract) return <div className="flex justify-center items-center h-screen">Không tìm thấy hợp đồng</div>;
-
+    if (contract?.partyBID !== user?.userID) {
+        return (
+            <div className="text-center my-auto text-[36px] text-gray-500 flex flex-col items-center space-y-4">
+                <img src={icon} className="w-[500px] h-[300px]" alt="No Access" />
+                <p>Bạn không có quyền truy cập vào trang này.</p>
+                <Button
+                    onClick={redirectToHome}
+                    className="bg-teal-500 text-white px-4 py-2 rounded-md hover:bg-teal-600 flex items-center space-x-2"
+                >
+                    <Home className="w-5 h-5" />
+                    <span className="text-md">Quay về Trang Chủ</span>
+                </Button>
+            </div>
+        );
+    }
     return (
         <div className="bg-gray-100 min-h-screen relative pb-20">
             <Toaster richColors />
