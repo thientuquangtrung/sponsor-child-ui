@@ -2,7 +2,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Calendar, Clock, FileText, MapPin, User2, UserRoundSearch, FileSearch } from 'lucide-react';
+import { Calendar, Clock, FileText, MapPin, User2, UserRoundSearch, FileSearch, Home } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { useGetCampaignByIdQuery } from '@/redux/campaign/campaignApi';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -13,12 +13,19 @@ import DisbursementPlan from './DisbursementPlan';
 import ImageGallery from '@/components/landingpage/ImageGallery';
 import Activity from './Activity';
 import { useState } from 'react';
+import { useSelector } from 'react-redux';
+import icon from '@/assets/images/no-access.png';
+
 
 const CampaignGuaranteeDetail = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const { data: campaignData, isLoading, error } = useGetCampaignByIdQuery(id);
     const [activities, setActivities] = useState([]);
+    const { user } = useSelector((state) => state.auth);
+    const redirectToHome = () => {
+        navigate('/');
+    };
 
     const handleAddActivity = (newActivity) => {
         setActivities((prev) => [...prev, newActivity]);
@@ -56,6 +63,22 @@ const CampaignGuaranteeDetail = () => {
         return (
             <div className="flex justify-center items-center min-h-screen bg-gradient-to-b from-rose-50 to-primary/10">
                 <div className="text-center py-4 text-gray-600 font-medium">Không tìm thấy thông tin chiến dịch</div>
+            </div>
+        );
+    }
+
+    if (campaignData.guaranteeID !== user.userID) {
+        return (
+            <div className="text-center my-auto text-[36px] text-gray-500 flex flex-col items-center space-y-4">
+                <img src={icon} className="w-[500px] h-[300px]" alt="No Access" />
+                <p>Bạn không có quyền truy cập vào trang này.</p>
+                <Button
+                    onClick={redirectToHome}
+                    className="bg-teal-500 text-white px-4 py-2 rounded-md hover:bg-teal-600 flex items-center space-x-2"
+                >
+                    <Home className="w-5 h-5" />
+                    <span className="text-md">Quay về Trang Chủ</span>
+                </Button>
             </div>
         );
     }
