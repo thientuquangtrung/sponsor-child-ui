@@ -15,6 +15,7 @@ import { useGetFundSourceQuery } from '@/redux/fund/fundApi';
 import ToolbarForDonationHistory from '../datatable/ToolbarForDonationHistory';
 import { fundType } from '@/config/combobox';
 import DateRangePicker from '../ui/calendar-range';
+import { format } from 'date-fns';
 
 const columns = [
     {
@@ -33,20 +34,21 @@ const columns = [
     {
         accessorKey: 'dateAdded',
         header: ({ column }) => <DataTableColumnHeader column={column} title="Ngày" />,
-        cell: ({ row }) => <div>{new Date(row.getValue('dateAdded')).toLocaleDateString('vi-VN')}</div>,
+        cell: ({ row }) => {
+            const date = new Date(row.getValue('dateAdded'));
+            return <div className="whitespace-nowrap w-32 text-center">{format(date, 'dd/MM/yyyy HH:mm')}</div>;
+        },
     },
     {
         accessorKey: 'amountAdded',
-        header: ({ column }) => <DataTableColumnHeader column={column} title="Số tiền" />,
-        cell: ({ row }) => <div className="font-medium">{row.getValue('amountAdded').toLocaleString('vi-VN')} ₫</div>,
+        header: ({ column }) => <DataTableColumnHeader column={column} title="Số tiền" className="justify-end" />,
+        cell: ({ row }) => <div className="text-right font-medium">{row.getValue('amountAdded').toLocaleString('vi-VN')} ₫</div>,
     },
-    // {
-    //     accessorKey: 'commonFundTotal',
-    //     header: ({ column }) => <DataTableColumnHeader column={column} title="Tổng quỹ chung" />,
-    //     cell: ({ row }) => (
-    //         <div className="font-medium">{row.getValue('commonFundTotal').toLocaleString('vi-VN')} ₫</div>
-    //     ),
-    // },
+    {
+        accessorKey: 'commonFundTotal',
+        header: ({ column }) => <DataTableColumnHeader column={column} title="ST Quỹ chung" className="justify-end" />,
+        cell: ({ row }) => <div className="text-right font-medium">{row.getValue('commonFundTotal').toLocaleString('vi-VN')} ₫</div>,
+    },
     {
         accessorKey: 'fundSourceType',
         header: ({ column }) => <DataTableColumnHeader column={column} title="Phân loại" />,
