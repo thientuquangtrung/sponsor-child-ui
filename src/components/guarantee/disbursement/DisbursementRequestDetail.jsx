@@ -293,7 +293,7 @@ export default function DisbursementRequestDetail() {
                                             </div>
                                             <span className="text-teal-600 font-semibold text-xl absolute right-32 top-2 py-1">-</span>
                                             <div className="flex items-center justify-between w-full py-3">
-                                                <p className="text-gray-700 font-medium">ST đã giải ngân đợt trước:</p>
+                                                <p className="text-gray-700 font-medium">Tổng ST đã giải ngân đợt trước:</p>
                                                 <div className="flex flex-col items-end">
                                                     <span className="text-teal-600 font-semibold">
                                                         {disbursementRequests?.disbursementStage?.totalActualDisbursementAmount?.toLocaleString('vi-VN')} ₫

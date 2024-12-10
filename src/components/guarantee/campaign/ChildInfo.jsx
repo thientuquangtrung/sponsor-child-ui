@@ -188,13 +188,12 @@ const ChildInfo = ({ form, provinces, districts, wards, handleProvinceChange, ha
                         <FormLabel>Mã Định Danh Trẻ Em (Không bắt buộc)</FormLabel>
                         <FormControl>
                             <Input
-                                placeholder="Nhập mã định danh nếu có"
+                                placeholder="Nhập mã định danh của trẻ hoặc mã khai sinh"
                                 {...field}
                                 value={field.value || ''}
                             />
                         </FormControl>
                         <FormDescription>
-                            Nhập mã định danh của trẻ (ví dụ: mã khai sinh) nếu có.
                         </FormDescription>
                         <FormMessage />
                     </FormItem>
