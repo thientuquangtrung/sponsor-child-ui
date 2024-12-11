@@ -239,11 +239,11 @@ const ParticipantRegistration = ({
                             <ul className="space-y-2 text-gray-700">
                                 <li className="flex items-center gap-2">
                                     <Calendar className="w-5 h-5 shrink-0 text-teal-500" />
-                                    <span>Hủy trước ngày kết thúc đăng ký chuyến thăm: Hoàn lại 85% phí tham gia</span>
+                                    <span>Hủy trước ngày kết thúc mở đăng ký chuyến thăm: Hoàn lại 85% phí tham gia</span>
                                 </li>
                                 <li className="flex items-center gap-2">
                                     <Calendar className="w-5 h-5 shrink-0 text-teal-500" />
-                                    <span>Hủy sau ngày kết thúc đăng ký chuyến thăm: Hoàn lại 65% phí tham gia</span>
+                                    <span>Hủy sau ngày kết thúc mở đăng ký chuyến thăm: Hoàn lại 65% phí tham gia</span>
                                 </li>
                                 <li className="flex items-center gap-2">
                                     <CircleAlert className="w-5 h-5 shrink-0 text-teal-500" />
@@ -251,7 +251,7 @@ const ParticipantRegistration = ({
                                 </li>
                                 <li className="flex items-center gap-2">
                                     <CircleAlert className="w-5 h-5 shrink-0 text-teal-500" />
-                                    <span>Trong trường hợp chuyến thăm bị hủy, bạn được quyền hoàn tiền hoặc góp số tiền đó vào quỹ chung.</span>
+                                    <span>Nếu chuyến thăm bị hủy, bạn được quyền hoàn đủ tiền hoặc góp số tiền đó vào quỹ chung.</span>
                                 </li>
                             </ul>
                         </div>
