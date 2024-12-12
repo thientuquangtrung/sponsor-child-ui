@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, ExternalLink, Calendar, MapPin, Users, CheckCircle, Clock, CalendarX, UserX, UserPlus, ClipboardList, XCircle } from 'lucide-react';
+import { X, ExternalLink, Calendar, MapPin, Users, CheckCircle, Clock, CalendarX, UserX, UserPlus, ClipboardList, XCircle, AlertCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import {
     Select,

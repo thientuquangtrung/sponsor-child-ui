@@ -170,7 +170,7 @@ const PersonalRegistrationForm = ({ onSubmit }) => {
             const response = await fetch('https://api.fpt.ai/vision/idr/vnm', {
                 method: 'POST',
                 headers: {
-                    'api-key': 'CXOOmOxGb7Y8jLIbVFhACpvWoi4tOfEI',
+                    'api-key': 'd9zW4VfTTnrHScSQApHfjHKltQev7n4y',
                 },
                 body: formData,
             });
