@@ -19,8 +19,11 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { useCancelReserveFundSourceTransactionByOrderCodeMutation, useCreateIndividualFundSourceMutation } from '@/redux/fund/fundApi';
 
 const formSchema = z.object({
-    amount: z.string().refine((val) => parseInt(val.replace(/\./g, ''), 10) >= 1, {
-        message: 'Số tiền ủng hộ tối thiểu là 1 VND',
+    amount: z.string().refine((val) => {
+        const numericValue = parseInt(val.replace(/[.,]/g, ''), 10);
+        return numericValue >= 10000;
+    }, {
+        message: 'Số tiền ủng hộ tối thiểu là 10,000 VND',
     }),
     message: z.string().optional(),
     anonymous: z.boolean().optional(),
