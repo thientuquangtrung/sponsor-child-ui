@@ -86,7 +86,7 @@ const RegistrationPage = () => {
                 {!showForm && (
                     <div className="flex flex-col bg-[#c3e2da] py-8 rounded-lg shadow-md">
                         <h1 className="text-2xl font-semibold mb-6 text-center">
-                            Đăng ký mở Tài khoản trở thành Người Bảo Lãnh
+                            Đăng ký trở thành Người Bảo Lãnh
                         </h1>
                         <div className="flex flex-col md:flex-row justify-center space-x-0 md:space-x-4 px-6">
                             {/* Organization Account Registration */}

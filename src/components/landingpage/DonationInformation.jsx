@@ -42,15 +42,15 @@ const DonationInformation = () => {
                     if (!campaign) return true;
 
                     const remainingTarget = campaign.targetAmount - campaign.raisedAmount;
-                    return numericAmount >= 5000 && numericAmount <= remainingTarget;
+                    return numericAmount >= 10000 && numericAmount <= remainingTarget;
                 },
                 (val) => {
                     const numericAmount = parseInt(val.replace(/\D/g, ''), 10);
                     const remainingTarget = campaign?.targetAmount - campaign?.raisedAmount;
 
-                    if (numericAmount < 5000) {
+                    if (numericAmount < 10000) {
                         return {
-                            message: 'Số tiền ủng hộ tối thiểu là 5,000 VND',
+                            message: 'Số tiền ủng hộ tối thiểu là 10,000 VND',
                         };
                     }
                     return {
@@ -89,7 +89,7 @@ const DonationInformation = () => {
         const formattedValue = formatNumber(value);
         form.setValue('amount', formattedValue);
         setAmount(formattedValue);
-        if (parseInt(value, 10) >= 5000) {
+        if (parseInt(value, 10) >= 10000) {
             await form.trigger('amount');
         }
     };
