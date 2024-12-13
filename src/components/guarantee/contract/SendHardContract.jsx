@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Download } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { format, parseISO } from 'date-fns';
-import { generatePDF } from '@/lib/utils';
+import { generatePDF2 } from '@/lib/utils';
 
 const ContractContent = ({ guaranteeProfile }) => {
     const today = new Date();
@@ -311,7 +311,7 @@ const SendHardContract = ({ signedContract, guaranteeProfile }) => {
     const handleDownloadPDF = async () => {
         setIsGenerating(true);
         try {
-            const pdf = await generatePDF(contractRef.current);
+            const pdf = await generatePDF2(contractRef.current);
             pdf.save('contract_unsigned.pdf');
         } catch (error) {
             console.error('PDF generation failed:', error);
