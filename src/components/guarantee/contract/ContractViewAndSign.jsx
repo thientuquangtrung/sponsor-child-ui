@@ -11,7 +11,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import 'react-datepicker/dist/react-datepicker.css';
 import { useGetContractsByTypeAndPartyBQuery, useUpdateContractMutation } from '@/redux/contract/contractApi';
 import { UPLOAD_FOLDER, UPLOAD_NAME, uploadFile } from '@/lib/cloudinary';
-import { generatePDF } from '@/lib/utils';
+import { generatePDF2 } from '@/lib/utils';
 
 const formatDate = (dateString) => {
     if (!dateString) return '.....................';
@@ -384,7 +384,7 @@ const ContractViewAndSign = ({ onSign, onContractSent, guaranteeProfile, onNextS
         toast.promise(
             async () => {
                 try {
-                    const pdf = await generatePDF(contractRef.current);
+                    const pdf = await generatePDF2(contractRef.current);
                     const pdfBlob = pdf.output('blob');
                     const partyBID = user.userID;
 

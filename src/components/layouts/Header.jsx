@@ -108,7 +108,7 @@ export function Header() {
                             ),
                         )}
                     </div>
-                    <div className="flex items-center space-x-4 ml-24 ">
+                    {/* <div className="flex items-center space-x-4 ml-24 ">
                         <Input
                             placeholder="Tìm kiếm tên chiến dịch ..."
                             value={searchQuery}
@@ -116,7 +116,7 @@ export function Header() {
                             className="max-w-sm"
                             endIcon={<SearchIcon />}
                         />
-                    </div>
+                    </div> */}
                 </div>
 
                 {/* mobile */}

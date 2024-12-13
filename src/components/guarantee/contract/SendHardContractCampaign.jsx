@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux';
 import { format, parseISO } from 'date-fns';
 import ContractCampaignContent from '@/components/guarantee/contract/ContractCampaignContent';
 import { useGetCampaignByIdQuery } from '@/redux/campaign/campaignApi';
-import { generatePDF } from '@/lib/utils';
+import { generatePDF2 } from '@/lib/utils';
 
 const formatDate = (dateString) => {
     if (!dateString) return null;
@@ -33,7 +33,7 @@ const SendHardContractCampaign = ({ campaignId }) => {
     const handleDownloadPDF = async () => {
         setIsGenerating(true);
         try {
-            const pdf = await generatePDF(contractRef.current);
+            const pdf = await generatePDF2(contractRef.current);
             pdf.save('contract_campaign.pdf');
         } catch (error) {
             console.error('PDF generation failed:', error);
