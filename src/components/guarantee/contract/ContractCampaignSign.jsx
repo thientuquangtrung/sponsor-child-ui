@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useGetCampaignByIdQuery } from '@/redux/campaign/campaignApi';
 import ContractCampaignContent from '@/components/guarantee/contract/ContractCampaignContent';
-import { generatePDF } from '@/lib/utils';
+import { generatePDF2 } from '@/lib/utils';
 import { UPLOAD_FOLDER, UPLOAD_NAME, uploadFile } from '@/lib/cloudinary';
 
 const signDate = formatInTimeZone(new Date(), 'Asia/Ho_Chi_Minh', "yyyy-MM-dd'T'HH:mm:ss.SSSxxx");
@@ -91,7 +91,7 @@ const ContractCampaignSign = ({ onSign, onContractSent, campaignId, contractId }
                     const signatureUrl = signatureData.secure_url;
 
                     // Generate and upload PDF
-                    const pdf = await generatePDF(contractRef.current);
+                    const pdf = await generatePDF2(contractRef.current);
                     const pdfBlob = pdf.output('blob');
                     const pdfData = await uploadFile({
                         file: pdfBlob,
