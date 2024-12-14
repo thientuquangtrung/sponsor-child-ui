@@ -13,12 +13,13 @@ import solution3 from '@/assets/images/solution3.png';
 import solution4 from '@/assets/images/solution4.png';
 import { Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import AnimatedCounter from '@/components/landingpage/AnimatedCounter';
 
 const PageIntroduction = () => {
     const navigate = useNavigate();
 
     const navigateToRegister = () => {
-        navigate('/register'); //dẫn đến RegistrationPage
+        navigate('/register');
     };
 
     return (
@@ -122,6 +123,7 @@ const PageIntroduction = () => {
                     </div>
                 </div>
 
+
                 <div className="flex flex-col md:flex-row justify-between space-y-4 md:space-y-0 md:space-x-8 mx-4">
                     <img className="w-full md:w-[40%] h-auto object-contain" src={logo} alt="Logo" />
                     <div className="flex-1 relative">
@@ -130,34 +132,33 @@ const PageIntroduction = () => {
 
                         <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
                             <div className="text-center">
-                                <h3 className="text-3xl font-semibold">0</h3>
+                                <AnimatedCounter end={10} incrementStep={1} />
                                 <p className="text-sm">Tổ chức thiện nguyện</p>
                             </div>
                             <div className="text-center">
-                                <h3 className="text-3xl font-semibold">0</h3>
+                                <AnimatedCounter end={30} incrementStep={1} />
                                 <p className="text-sm">Cá nhân thiện nguyện</p>
                             </div>
                             <div className="text-center">
-                                <h3 className="text-3xl font-semibold">0</h3>
+                                <AnimatedCounter end={100} incrementStep={2} />
                                 <p className="text-sm">Thành viên tham gia</p>
                             </div>
                             <div className="text-center">
-                                <h3 className="text-3xl font-semibold">0</h3>
+                                <AnimatedCounter end={40} incrementStep={1} />
                                 <p className="text-sm">Chiến dịch thiện nguyện</p>
                             </div>
                             <div className="text-center">
-                                <h3 className="text-3xl font-semibold">0,00</h3>
+                                <AnimatedCounter end={0.5} incrementStep={0.1} isDecimal={true} />
                                 <p className="text-sm">Số tiền ủng hộ (tỷ đồng)</p>
                             </div>
                             <div className="text-center">
-                                <h3 className="text-3xl font-semibold">0</h3>
+                                <AnimatedCounter end={300} incrementStep={5} />
                                 <p className="text-sm">Lượt đã ủng hộ</p>
                             </div>
                         </div>
                     </div>
                 </div>
             </section>
-
             <section className="bg-white py-16">
                 <div className="container mx-auto px-4">
                     <h2 className="text-3xl font-bold mb-4 text-center">Giải pháp thúc đẩy tính minh bạch</h2>

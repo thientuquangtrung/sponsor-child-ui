@@ -3,60 +3,58 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Clock, MapPin, Check, Target } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { Carousel, CarouselPrevious, CarouselNext, CarouselContent, CarouselItem } from '@/components/ui/carousel';
 import CampaignList from './CampaignList';
 import logo from '@/assets/images/logo-short.png';
 import DonationList from './DonationList';
 import { useGetCampaignByIdQuery } from '@/redux/campaign/campaignApi';
 import { useGetDonationsByCampaignIdQuery, useGetTotalDonationsByCampaignIdQuery } from '@/redux/donation/donationApi';
 import { Dialog, DialogClose, DialogContent } from '@/components/ui/dialog';
-import { getAssetsList } from '@/lib/cloudinary';
 import Activity from '@/components/landingpage/Activity';
 import Comment from './Comment';
 import { toast } from 'sonner';
 import LoadingScreen from '@/components/common/LoadingScreen';
 import CampaignActivities from '@/components/landingpage/CampaignActivities';
-import { campaignStatus } from '@/config/combobox';
+import { campaignStatus, guaranteeType } from '@/config/combobox';
 import ImageGallery from '@/components/landingpage/ImageGallery';
 
-const partners = [
-    {
-        name: 'Nguyễn Văn Ngọc',
-        raised: '1.000.000 VND',
-        startDate: '24/08/2024',
-        avatar: 'https://via.placeholder.com/50',
-    },
-    {
-        name: 'phunghiep17042000',
-        raised: '2.000 VND',
-        startDate: '09/08/2024',
-        avatar: 'https://via.placeholder.com/50',
-    },
-    {
-        name: 'Ông chủ Kim 2k',
-        raised: '0 VND',
-        startDate: '10/08/2024',
-        avatar: 'https://via.placeholder.com/50',
-    },
-    {
-        name: 'ZENOR BENEVOLENT SOCIAL ENTERPRISE JSC',
-        raised: '0 VND',
-        startDate: '12/08/2024',
-        avatar: 'https://via.placeholder.com/50',
-    },
-    {
-        name: 'Luce',
-        raised: '0 VND',
-        startDate: '17/08/2024',
-        avatar: 'https://via.placeholder.com/50',
-    },
-    {
-        name: 'Tuan Tranvan',
-        raised: '0 VND',
-        startDate: '17/08/2024',
-        avatar: 'https://via.placeholder.com/50',
-    },
-];
+// const partners = [
+//     {
+//         name: 'Nguyễn Văn Ngọc',
+//         raised: '1.000.000 VND',
+//         startDate: '24/08/2024',
+//         avatar: 'https://via.placeholder.com/50',
+//     },
+//     {
+//         name: 'phunghiep17042000',
+//         raised: '2.000 VND',
+//         startDate: '09/08/2024',
+//         avatar: 'https://via.placeholder.com/50',
+//     },
+//     {
+//         name: 'Ông chủ Kim 2k',
+//         raised: '0 VND',
+//         startDate: '10/08/2024',
+//         avatar: 'https://via.placeholder.com/50',
+//     },
+//     {
+//         name: 'ZENOR BENEVOLENT SOCIAL ENTERPRISE JSC',
+//         raised: '0 VND',
+//         startDate: '12/08/2024',
+//         avatar: 'https://via.placeholder.com/50',
+//     },
+//     {
+//         name: 'Luce',
+//         raised: '0 VND',
+//         startDate: '17/08/2024',
+//         avatar: 'https://via.placeholder.com/50',
+//     },
+//     {
+//         name: 'Tuan Tranvan',
+//         raised: '0 VND',
+//         startDate: '17/08/2024',
+//         avatar: 'https://via.placeholder.com/50',
+//     },
+// ];
 
 const CampaignDetail = () => {
     const { id } = useParams();
@@ -65,14 +63,7 @@ const CampaignDetail = () => {
     const navigate = useNavigate();
     const [currentPage, setCurrentPage] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(10);
-    const [selectedImage, setSelectedImage] = useState(null);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const [images, setImages] = useState([]);
-
-    const handleImageClick = (imageSrc) => {
-        setSelectedImage(imageSrc);
-        setIsDialogOpen(true);
-    };
 
     const { data: campaign, isLoading, error } = useGetCampaignByIdQuery(id);
     const {
@@ -90,28 +81,6 @@ const CampaignDetail = () => {
     useEffect(() => {
         setCurrentPage(1);
     }, [id]);
-
-    // get resource from cloudinary by tag
-
-    useEffect(() => {
-        // Fetch images by tag from Cloudinary
-        const fetchImages = async () => {
-            try {
-                const resources = await getAssetsList('campaign_1');
-
-                //gen urls
-                const imageUrls = resources.map((resource) => {
-                    return `https://res.cloudinary.com/${import.meta.env.VITE_CLOUD_NAME}/image/${resource.type}/${resource.public_id
-                        }.${resource.format}`;
-                });
-                setImages(imageUrls);
-            } catch (error) {
-                console.error('Error fetching images:', error);
-            }
-        };
-
-        fetchImages();
-    }, []);
 
     const navigateToInfoDonate = () => {
         navigate(`/donate-target/info-donate/${campaign?.campaignID}`);
@@ -145,19 +114,36 @@ const CampaignDetail = () => {
     };
     const handleShare = async () => {
         try {
-            if (navigator.share) {
-                await navigator.share({
-                    title: campaign.title,
-                    text: campaign.description,
-                    url: window.location.href,
-                });
-            } else {
-                const url = window.location.href;
-                await navigator.clipboard.writeText(url);
-                toast.success('Đã sao chép liên kết vào clipboard!');
+            let titleMeta = document.querySelector('meta[property="og:title"]');
+            let imageMeta = document.querySelector('meta[property="og:image"]');
+            let urlMeta = document.querySelector('meta[property="og:url"]');
+            if (!titleMeta) {
+                titleMeta = document.createElement('meta');
+                titleMeta.setAttribute('property', 'og:title');
+                document.head.appendChild(titleMeta);
             }
+            if (!imageMeta) {
+                imageMeta = document.createElement('meta');
+                imageMeta.setAttribute('property', 'og:image');
+                document.head.appendChild(imageMeta);
+            }
+
+            if (!urlMeta) {
+                urlMeta = document.createElement('meta');
+                urlMeta.setAttribute('property', 'og:url');
+                document.head.appendChild(urlMeta);
+            }
+
+            titleMeta.setAttribute('content', campaign.title);
+            imageMeta.setAttribute('content', campaign.thumbnailUrl);
+            urlMeta.setAttribute('content', window.location.href);
+
+            const fbShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`;
+            window.open(fbShareUrl, '_blank', 'width=600,height=400');
+
         } catch (error) {
-            console.error('Error sharing:', error);
+            console.error('Error:', error);
+            toast.error('Not share campaign');
         }
     };
     return (
@@ -165,40 +151,6 @@ const CampaignDetail = () => {
             <div className="flex flex-col md:flex-row md:space-x-8">
                 <div className="w-full md:w-3/5 bg-white">
                     <h1 className="text-2xl font-semibold">{campaign?.title}</h1>
-                    {/* <div className="campaign-image-container relative mb-6">
-                        <img
-                            src={campaign?.thumbnailUrl || 'https://via.placeholder.com/400x300'}
-                            alt={campaign?.title}
-                            className="w-full h-auto rounded-lg shadow-xl mt-6"
-                        />
-                        <img src={logo} alt="Logo" className="absolute top-0 right-0 m-2 w-20 h-20" />
-                    </div>
-
-                    <Carousel className="my-6" opts={{ loop: true }}>
-                        <CarouselPrevious />
-                        <CarouselContent>
-                            {images.map((image, index) => (
-                                <CarouselItem key={index} itemsPerView={6}>
-                                    <img
-                                        src={image}
-                                        alt={`Slide ${index + 1}`}
-                                        className="rounded-lg shadow-md w-[100px] h-[100px] cursor-pointer object-cover"
-                                        onClick={() => handleImageClick(image)}
-                                    />
-                                </CarouselItem>
-                            ))}
-                        </CarouselContent>
-                        <CarouselNext />
-                    </Carousel>
-
-                    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                        <DialogContent className="w-full h-auto max-w-4xl p-0">
-                            <div className="relative">
-                                <img src={selectedImage} alt="Selected" className="w-full h-auto rounded-lg" />
-                                <DialogClose asChild></DialogClose>
-                            </div>
-                        </DialogContent>
-                    </Dialog> */}
                     <ImageGallery
                         thumbnailUrl={campaign?.thumbnailUrl}
                         imagesFolderUrl={campaign?.imagesFolderUrl}
@@ -433,8 +385,13 @@ const CampaignDetail = () => {
                                         <Check className="text-white" size={10} />
                                     </div>
                                 </div>
-                                <span className="text-xs bg-teal-50 text-teal-600 px-2 py-1 rounded-full inline-block mt-1">
-                                    Tổ chức
+                                <span
+                                    className={`text-xs px-2 py-1 rounded-full inline-block mt-1 ${campaign?.guaranteeType === 0
+                                        ? 'bg-blue-50 text-blue-500'
+                                        : 'bg-orange-50 text-orange-500'
+                                        }`}
+                                >
+                                    {guaranteeType.find(type => type.value === campaign?.guaranteeType)?.label}
                                 </span>
                             </div>
                         </div>
@@ -448,7 +405,7 @@ const CampaignDetail = () => {
                                 href="https://mail.google.com/mail/u/0/#inbox?compose=new"
                                 className="text-sm text-gray-700"
                             >
-                                quydacamtrunguong@gmail.com
+                                {campaign?.guaranteeEmail || 'sponsorchildvn@gmail.com'}
                             </a>
                         </div>
                     </div>
