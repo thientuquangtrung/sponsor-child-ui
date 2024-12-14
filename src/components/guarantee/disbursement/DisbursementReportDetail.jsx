@@ -55,10 +55,10 @@ export default function DisbursementReportDetail({ disbursementRequest }) {
                                             {detail.itemDescription || 'Không có mô tả'}
                                         </TableCell>
                                         <TableCell className="p-3 border border-slate-300 text-teal-500 font-semibold">
-                                            {detail.amountSpent?.toLocaleString('vi-VN') + ' VNĐ'}
+                                            {detail.amountSpent?.toLocaleString('vi-VN') + ' ₫'}
                                         </TableCell>
                                         <TableCell className="p-3 border border-slate-300 text-teal-500 font-semibold">
-                                            {detail.actualAmountSpent?.toLocaleString('vi-VN') + ' VNĐ'}
+                                            {detail.actualAmountSpent?.toLocaleString('vi-VN') + ' ₫'}
                                         </TableCell>
                                         <TableCell className="p-3 border border-slate-300">
                                             {detail.receiptUrl ? (

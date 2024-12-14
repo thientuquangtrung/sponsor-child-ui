@@ -50,7 +50,7 @@ const ListDisbursementCampaign = () => {
         {
             accessorKey: 'targetAmount',
             header: ({ column }) => <DataTableColumnHeader column={column} title="Số tiền mục tiêu" />,
-            cell: ({ row }) => <div>{row.getValue('targetAmount').toLocaleString()} VND</div>,
+            cell: ({ row }) => <div>{row.getValue('targetAmount').toLocaleString()} ₫</div>,
         },
         {
             accessorKey: 'nextDisbursementStage.stageNumber',
@@ -58,9 +58,14 @@ const ListDisbursementCampaign = () => {
             cell: ({ row }) => <div>{row.original.nextDisbursementStage?.stageNumber}</div>,
         },
         {
+            accessorKey: 'raisedAmount',
+            header: ({ column }) => <DataTableColumnHeader column={column} title="Số tiền đã gây quỹ" />,
+            cell: ({ row }) => <div>{row.getValue('raisedAmount').toLocaleString()} ₫</div>,
+        },
+        {
             accessorKey: 'nextDisbursementStage.disbursementAmount',
             header: ({ column }) => <DataTableColumnHeader column={column} title="Số tiền cần giải ngân" />,
-            cell: ({ row }) => <div>{row.original.nextDisbursementStage?.disbursementAmount?.toLocaleString()} VND</div>,
+            cell: ({ row }) => <div>{row.original.nextDisbursementStage?.disbursementAmount?.toLocaleString()} ₫</div>,
         },
         {
             accessorKey: 'nextDisbursementStage.scheduledDate',
@@ -77,16 +82,16 @@ const ListDisbursementCampaign = () => {
                 );
             },
         },
-        {
-            accessorKey: 'disbursementPlans[0].plannedStartDate',
-            header: ({ column }) => <DataTableColumnHeader column={column} title="Ngày bắt đầu kế hoạch" />,
-            cell: ({ row }) => <div>{new Date(row.original.disbursementPlans[0].plannedStartDate).toLocaleDateString('vi-VN')}</div>,
-        },
-        {
-            accessorKey: 'disbursementPlans[0].plannedEndDate',
-            header: ({ column }) => <DataTableColumnHeader column={column} title="Ngày kết thúc kế hoạch" />,
-            cell: ({ row }) => <div>{new Date(row.original.disbursementPlans[0].plannedEndDate).toLocaleDateString('vi-VN')}</div>,
-        },
+        // {
+        //     accessorKey: 'disbursementPlans[0].plannedStartDate',
+        //     header: ({ column }) => <DataTableColumnHeader column={column} title="Ngày bắt đầu kế hoạch" />,
+        //     cell: ({ row }) => <div>{new Date(row.original.disbursementPlans[0].plannedStartDate).toLocaleDateString('vi-VN')}</div>,
+        // },
+        // {
+        //     accessorKey: 'disbursementPlans[0].plannedEndDate',
+        //     header: ({ column }) => <DataTableColumnHeader column={column} title="Ngày kết thúc kế hoạch" />,
+        //     cell: ({ row }) => <div>{new Date(row.original.disbursementPlans[0].plannedEndDate).toLocaleDateString('vi-VN')}</div>,
+        // },
         {
             id: 'actions',
             cell: ({ row }) => <ActionMenu row={row} />,
