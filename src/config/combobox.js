@@ -25,8 +25,8 @@ export const campaignStatusUser = [
 ];
 
 export const campaignTypes = [
-    { label: 'Nuôi trẻ', value: 0 },
-    { label: 'Khẩn cấp', value: 1 },
+    { label: 'Nuôi trẻ', value: 1 },
+    { label: 'Khẩn cấp', value: 0 },
 ];
 
 export const organizationTypes = [
