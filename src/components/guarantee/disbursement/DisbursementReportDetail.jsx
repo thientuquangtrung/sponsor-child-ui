@@ -21,7 +21,7 @@ export default function DisbursementReportDetail({ disbursementRequest }) {
             <h3 className="text-xl text-center font-semibold mb-6 text-teal-500">
                 Chi tiết sử dụng nguồn tiền đã giải ngân
             </h3>
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto  px-8">
                 <Table className="border-collapse border-solid-2 border-slate-500 w-full bg-white shadow-lg rounded-lg overflow-hidden">
                     <TableHeader className="bg-gradient-to-l from-rose-100 to-teal-100 border-b border-slate-500">
                         <TableRow>
