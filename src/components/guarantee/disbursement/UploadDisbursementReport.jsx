@@ -23,7 +23,7 @@ export default function UploadDisbursementReport() {
 
     const formatCurrency = (value) => {
         if (!value && value !== 0) return '';
-        return value.toLocaleString('vi-VN') + ' VNĐ';
+        return value.toLocaleString('vi-VN') + ' ₫';
     };
 
     const isRowUpdated = (detail) => {
@@ -236,22 +236,27 @@ export default function UploadDisbursementReport() {
                                                             {formatCurrency(detail.actualAmountSpent)}
                                                         </div>
                                                     ) : (
-                                                        <Input
-                                                            type="text"
-                                                            value={actualAmountSpent}
-                                                            placeholder="Số tiền"
-                                                            onChange={(e) => {
-                                                                const formattedAmount = e.target.value
-                                                                    .replace(/\D/g, '')
-                                                                    .replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-                                                                handleChange(
-                                                                    detail.id,
-                                                                    'actualAmountSpent',
-                                                                    formattedAmount,
-                                                                );
-                                                            }}
-                                                            disabled={isUpdated}
-                                                        />
+                                                        <div className="relative">
+
+                                                            <Input
+                                                                type="text"
+                                                                value={actualAmountSpent}
+                                                                placeholder="Số tiền"
+                                                                onChange={(e) => {
+                                                                    const formattedAmount = e.target.value
+                                                                        .replace(/\D/g, '')
+                                                                        .replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+                                                                    handleChange(
+                                                                        detail.id,
+                                                                        'actualAmountSpent',
+                                                                        formattedAmount,
+                                                                    );
+                                                                }}
+                                                                disabled={isUpdated}
+                                                            />
+                                                            <span className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500">₫</span>
+
+                                                        </div>
                                                     )}
                                                 </TableCell>
                                                 <TableCell className="p-3 border border-slate-300">

@@ -366,7 +366,7 @@ export default function CreateDisbursementRequest() {
                                             {disbursementStage?.presentRaisedAmount?.toLocaleString('vi-VN')} ₫
                                         </span>
                                     </div>
-                                    <span className="text-teal-600 font-semibold text-xl absolute right-32 top-2 py-1">-</span>
+                                    {/* <span className="text-teal-600 font-semibold text-xl absolute right-32 top-2 py-1">-</span> */}
                                     <div className="flex items-center justify-between w-full py-3">
                                         <p className="text-gray-700 font-medium">Tổng ST đã giải ngân đợt trước:</p>
                                         <div className="flex flex-col items-end">
@@ -375,15 +375,21 @@ export default function CreateDisbursementRequest() {
                                             </span>
                                         </div>
                                     </div>
-                                    <div className="flex justify-end -mt-2 mb-2">
+                                    {/* <div className="flex justify-end -mt-2 mb-2">
                                         <div className="border-t border-gray-500 w-1/4"></div>
-                                    </div>
+                                    </div> */}
                                     <div className="flex items-center justify-between w-full">
+                                        <p className="text-blue-500 font-medium">ST giải ngân mong đợi đợt này:</p>
+                                        <span className="text-blue-500 font-semibold">
+                                            {disbursementStage?.expectedDisbursementAmount?.toLocaleString('vi-VN')} ₫
+                                        </span>
+                                    </div>
+                                    {/* <div className="flex items-center justify-between w-full">
                                         <p className="text-gray-700 font-medium">ST còn lại của chiến dịch:</p>
                                         <span className="text-teal-600 font-semibold">
                                             {disbursementStage?.remainingAmount?.toLocaleString('vi-VN')} ₫
                                         </span>
-                                    </div>
+                                    </div> */}
                                 </div>
 
                             </div>
@@ -502,16 +508,20 @@ export default function CreateDisbursementRequest() {
                                         />
                                     </TableCell>
                                     <TableCell className="p-3 border border-slate-300">
-                                        <Input
-                                            type="text"
-                                            value={detail.amountSpent}
-                                            onChange={(e) => {
-                                                const rawValue = e.target.value.replace(/\D/g, '');
-                                                const formattedValue = formatAmount(rawValue);
-                                                handleReportDetailChange(index, 'amountSpent', formattedValue);
-                                            }}
-                                            placeholder="Nhập số tiền"
-                                        />
+                                        <div className="relative">
+                                            <Input
+                                                type="text"
+                                                value={detail.amountSpent}
+                                                onChange={(e) => {
+                                                    const rawValue = e.target.value.replace(/\D/g, '');
+                                                    const formattedValue = formatAmount(rawValue);
+                                                    handleReportDetailChange(index, 'amountSpent', formattedValue);
+                                                }}
+                                                placeholder="Nhập số tiền"
+                                                className="pr-6"
+                                            />
+                                            <span className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500">₫</span>
+                                        </div>
                                     </TableCell>
                                     <TableCell className="p-3 border border-slate-300">
                                         {guaranteeInfo.reportDetails.length > 1 && (
@@ -531,7 +541,7 @@ export default function CreateDisbursementRequest() {
                                     Tổng số tiền:
                                 </TableCell>
                                 <TableCell className="p-3 border border-slate-300 font-semibold text-teal-600">
-                                    {guaranteeInfo.totalAmountUsed.toLocaleString('vi-VN')} VND
+                                    {guaranteeInfo.totalAmountUsed.toLocaleString('vi-VN')} ₫
                                 </TableCell>
                             </TableRow>
                             {error && (

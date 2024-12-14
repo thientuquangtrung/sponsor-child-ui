@@ -187,7 +187,7 @@ export default function UpdateDisbursementRequest({ disbursementRequest }) {
                                 Tổng số tiền:
                             </TableCell>
                             <TableCell className="p-3 border border-slate-300 font-semibold text-teal-600">
-                                {formData.totalAmountUsed.toLocaleString('vi-VN')} VND
+                                {formData.totalAmountUsed.toLocaleString('vi-VN')} ₫
                             </TableCell>
                         </TableRow>
                         {error && (
