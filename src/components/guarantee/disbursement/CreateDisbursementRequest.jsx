@@ -480,7 +480,7 @@ export default function CreateDisbursementRequest() {
                                 {disbursementStage?.guarantee?.fullname}
                             </span>
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-6">
+                        {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-6">
                             <Label className="text-base">Tên ngân hàng:</Label>
                             <Select value={guaranteeInfo.bankName} onValueChange={handleBankSelect}>
                                 <SelectTrigger>
@@ -508,19 +508,67 @@ export default function CreateDisbursementRequest() {
                                 value={guaranteeInfo.fullname}
                                 onChange={handleInputChange}
                             />
+                        </div> */}
+                        <div className="px-6 py-2 space-y-2">
+                            <div className="grid grid-cols-3">
+                                <Label className="text-gray-700 font-medium text-md col-span-1">Tên ngân hàng:</Label>
+                                <Select
+                                    value={guaranteeInfo.bankName}
+                                    onValueChange={handleBankSelect}
+                                    className="col-span-2"
+                                >
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Chọn ngân hàng" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {bankNames.map((bank) => (
+                                            <SelectItem key={bank.value} value={bank.value}>
+                                                {bank.label}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+
+                            <div className="grid grid-cols-3">
+                                <Label className="text-gray-700 font-medium text-md col-span-1">
+                                    Số tài khoản ngân hàng:
+                                </Label>
+                                <Input
+                                    type="text"
+                                    name="bankAccountNumber"
+                                    value={guaranteeInfo.bankAccountNumber}
+                                    onChange={handleInputChange}
+                                    className="p-2 border rounded-md bg-white text-gray-700 col-span-2 w-1/2"
+                                />
+                            </div>
+
+                            <div className="grid grid-cols-3">
+                                <Label className="text-gray-700 font-medium text-md col-span-1">
+                                    Tên tài khoản ngân hàng:
+                                </Label>
+                                <Input
+                                    type="text"
+                                    name="fullname"
+                                    value={guaranteeInfo.fullname}
+                                    onChange={handleInputChange}
+                                    className="p-2 border rounded-md bg-white text-gray-700 col-span-2 w-1/2"
+                                />
+                            </div>
                         </div>
+
                         {disbursementStage?.stageActivity ? (
                             <div className="space-y-4">
                                 <div className="grid grid-cols-3 gap-4 px-6 items-center">
                                     <p className="text-gray-700 font-medium col-span-1">Mục đích sử dụng:</p>
-                                    <p className="text-teal-500 font-medium col-span-2">
+                                    <p className="text-teal-500 font-semibold col-span-2">
                                         {disbursementStage?.stageActivity.description}
                                     </p>
                                 </div>
                                 <div className="grid grid-cols-3 gap-4 px-6 items-center pb-2">
                                     <p className="text-gray-700 font-medium col-span-1">Trạng thái:</p>
                                     <p
-                                        className={`col-span-2 ${getStatusColorClass(
+                                        className={`col-span-2 font-semibold ${getStatusColorClass(
                                             disbursementStage?.stageActivity.status,
                                             'activity',
                                         )}`}
