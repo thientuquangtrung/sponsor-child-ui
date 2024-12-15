@@ -60,8 +60,10 @@ const columns = [
                         row.getValue('fundSourceType') === 0
                             ? 'bg-teal-50 text-teal-500'
                             : row.getValue('fundSourceType') === 1
-                            ? 'bg-rose-50 text-rose-400'
-                            : 'bg-yellow-50 text-yellow-500'
+                                ? 'bg-rose-50 text-rose-400'
+                                : row.getValue('fundSourceType') === 2
+                                    ? 'bg-blue-50 text-blue-400'
+                                    : 'bg-yellow-50 text-yellow-500'
                     }
                 >
                     {fundTypeLabel?.label || 'Không xác định'}
@@ -176,9 +178,8 @@ export function GeneralFundTable() {
                                     {row.getVisibleCells().map((cell) => (
                                         <TableCell
                                             key={cell.id}
-                                            className={`px-4 py-3 text-gray-800 ${
-                                                cell.column.id === 'sourceName' ? 'w-1/3' : 'w-1/6'
-                                            }`}
+                                            className={`px-4 py-3 text-gray-800 ${cell.column.id === 'sourceName' ? 'w-1/3' : 'w-1/6'
+                                                }`}
                                         >
                                             {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                         </TableCell>
