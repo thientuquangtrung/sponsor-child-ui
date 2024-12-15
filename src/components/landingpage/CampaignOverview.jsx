@@ -3,7 +3,7 @@ import { Calendar, Clock, DollarSign, Ellipsis } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import bg from '@/assets/images/c.jpg';
 import { toast } from 'sonner';
-import { useGetCampaignByIdQuery, useUpdateCampaignMutation } from '@/redux/campaign/campaignApi';
+import { useCheckGuaranteeEligibilityQuery, useGetCampaignByIdQuery, useUpdateCampaignMutation } from '@/redux/campaign/campaignApi';
 import { getAssetsList } from '@/lib/cloudinary';
 import { Button } from '@/components/ui/button';
 import {
@@ -27,16 +27,26 @@ const CampaignOverview = () => {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const { data: campaign, isLoading, error } = useGetCampaignByIdQuery(id);
     const [updateCampaign, { isLoading: isUpdating }] = useUpdateCampaignMutation();
-
+    const {
+        data: eligibilityData,
+        error: eligibilityError
+    } = useCheckGuaranteeEligibilityQuery(user?.userID, {
+        skip: !user?.userID
+    });
     // const handleSendRequest = () => {
     //     console.log(`Yêu cầu bảo lãnh cho chiến dịch: ${id}`);
     //     toast.success('Đã gửi yêu cầu bảo lãnh thành công!');
     //     setIsDialogOpen(false);
     // };
-    console.log(campaign);
 
     const handleSendRequest = async () => {
         try {
+            if (!eligibilityData) {
+                toast.warning('Bạn đã tạo 2 chiến dịch đang ở trạng thái chưa hoàn thành. Vui lòng hoàn thành các chiến dịch trước khi tiếp tục.');
+                return;
+            }
+
+
             const dataToUpdate = {
                 guaranteeID: user?.userID || '',
                 status: 1,
@@ -48,7 +58,6 @@ const CampaignOverview = () => {
                 userID: user?.userID || '',
             };
 
-            console.log('Data to send to backend:', JSON.stringify(dataToUpdate, null, 2));
 
             await updateCampaign({ id, ...dataToUpdate }).unwrap();
             toast.success('Đã gửi yêu cầu bảo lãnh thành công!');
