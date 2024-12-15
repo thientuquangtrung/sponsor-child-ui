@@ -40,9 +40,9 @@ export default function MyProfile() {
             dateOfBirth: user?.dateOfBirth || '',
             address: user?.address || '',
             bio: user?.bio || '',
+            phoneNumber: user?.phoneNumber || '',
         },
     });
-
 
     async function onSubmit(values) {
         try {
@@ -52,6 +52,7 @@ export default function MyProfile() {
                 dateOfBirth: values.dateOfBirth,
                 address: values.address,
                 bio: values.bio,
+                phoneNumber: values.phoneNumber,
             };
 
             console.log('Update User Profile Payload:', updateUserProfile);
