@@ -8,9 +8,22 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { useCanCreateDisbursementRequestQuery, useCreateDisbursementRequestMutation } from '@/redux/guarantee/disbursementRequestApi';
+import {
+    useCanCreateDisbursementRequestQuery,
+    useCreateDisbursementRequestMutation,
+} from '@/redux/guarantee/disbursementRequestApi';
 import { useGetDisbursementStageByStageIdQuery } from '@/redux/guarantee/disbursementStageApi';
-import { AlertCircle, Calendar, CircleDollarSign, LoaderCircle, PieChart, Pill, Plus, Trash2, User } from 'lucide-react';
+import {
+    AlertCircle,
+    Calendar,
+    CircleDollarSign,
+    LoaderCircle,
+    PieChart,
+    Pill,
+    Plus,
+    Trash2,
+    User,
+} from 'lucide-react';
 import {
     Dialog,
     DialogContent,
@@ -30,12 +43,9 @@ export default function CreateDisbursementRequest() {
     const [showConfirmDialog, setShowConfirmDialog] = useState(false);
     const { data: disbursementStage } = useGetDisbursementStageByStageIdQuery(stageID);
     const [createDisbursementRequest] = useCreateDisbursementRequestMutation();
-    const { data: canCreateData } = useCanCreateDisbursementRequestQuery(
-        disbursementStage?.stageID,
-        {
-            skip: !disbursementStage?.stageID,
-        }
-    );
+    const { data: canCreateData } = useCanCreateDisbursementRequestQuery(disbursementStage?.stageID, {
+        skip: !disbursementStage?.stageID,
+    });
     const [guaranteeInfo, setGuaranteeInfo] = useState({
         fullname: '',
         bankAccountNumber: '',
@@ -178,7 +188,7 @@ export default function CreateDisbursementRequest() {
         await submitRequest();
     };
     const getStatusLabel = (status, options) => {
-        const option = options.find(o => o.value === status);
+        const option = options.find((o) => o.value === status);
         return option ? option.label : 'Không xác định';
     };
 
@@ -186,31 +196,50 @@ export default function CreateDisbursementRequest() {
         switch (type) {
             case 'stage':
                 switch (status) {
-                    case 0: return 'text-yellow-600';
-                    case 1: return 'text-blue-600';
-                    case 2: return 'text-green-600';
-                    case 3: return 'text-red-600';
-                    case 4: return 'text-gray-600';
-                    case 5: return 'text-purple-600';
-                    default: return 'text-gray-600';
+                    case 0:
+                        return 'text-yellow-600';
+                    case 1:
+                        return 'text-blue-600';
+                    case 2:
+                        return 'text-green-600';
+                    case 3:
+                        return 'text-red-600';
+                    case 4:
+                        return 'text-gray-600';
+                    case 5:
+                        return 'text-purple-600';
+                    default:
+                        return 'text-gray-600';
                 }
             case 'request':
                 switch (status) {
-                    case 0: return 'text-yellow-600';
-                    case 1: return 'text-green-600';
-                    case 2: return 'text-red-600';
-                    case 3: return 'text-orange-600';
-                    case 4: return 'text-blue-600';
-                    case 5: return 'text-teal-600';
-                    default: return 'text-gray-600';
+                    case 0:
+                        return 'text-yellow-600';
+                    case 1:
+                        return 'text-green-600';
+                    case 2:
+                        return 'text-red-600';
+                    case 3:
+                        return 'text-orange-600';
+                    case 4:
+                        return 'text-blue-600';
+                    case 5:
+                        return 'text-teal-600';
+                    default:
+                        return 'text-gray-600';
                 }
             case 'activity':
                 switch (status) {
-                    case 0: return 'text-yellow-600';
-                    case 1: return 'text-blue-600';
-                    case 2: return 'text-green-600';
-                    case 3: return 'text-red-600';
-                    default: return 'text-gray-600';
+                    case 0:
+                        return 'text-yellow-600';
+                    case 1:
+                        return 'text-blue-600';
+                    case 2:
+                        return 'text-green-600';
+                    case 3:
+                        return 'text-red-600';
+                    default:
+                        return 'text-gray-600';
                 }
             default:
                 return 'text-gray-600';
@@ -270,12 +299,24 @@ export default function CreateDisbursementRequest() {
                                 <table className="min-w-full bg-white rounded-lg">
                                     <thead className="bg-gray-50">
                                         <tr>
-                                            <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">Đợt</th>
-                                            <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">ST giải ngân dự kiến</th>
-                                            <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">Ngày dự kiến</th>
-                                            <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">ST giải ngân thực tế</th>
-                                            <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">ST chưa giải ngân</th>
-                                            <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">Trạng thái</th>
+                                            <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">
+                                                Đợt
+                                            </th>
+                                            <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">
+                                                ST giải ngân dự kiến
+                                            </th>
+                                            <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">
+                                                Ngày dự kiến giải ngân
+                                            </th>
+                                            <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">
+                                                ST giải ngân thực tế
+                                            </th>
+                                            <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">
+                                                Ngày giải ngân thực tế
+                                            </th>
+                                            <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">
+                                                Trạng thái
+                                            </th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-gray-200">
@@ -301,16 +342,34 @@ export default function CreateDisbursementRequest() {
                                                     </td>
                                                     <td className="px-4 py-3 text-sm text-gray-700">
                                                         {stage.actualDisbursementAmount
-                                                            ? `${stage.actualDisbursementAmount.toLocaleString('vi-VN')} ₫`
-                                                            : '0 ₫'}
+                                                            ? `${stage.actualDisbursementAmount.toLocaleString(
+                                                                  'vi-VN',
+                                                              )} ₫`
+                                                            : '--'}
                                                     </td>
 
-                                                    <td className="px-4 py-3 text-sm font-medium text-teal-600">
+                                                    {/* <td className="px-4 py-3 text-sm font-medium text-teal-600">
                                                         {stage.totalUndisbursedAmount?.toLocaleString('vi-VN')} ₫
+                                                    </td> */}
+
+                                                    <td className="px-4 py-3 text-sm text-gray-700">
+                                                        <div className="flex items-center">
+                                                            <Calendar className="mr-2 h-4 w-4 text-teal-400" />
+                                                            {stage.actualDisbursementDate
+                                                                ? new Date(
+                                                                      stage.actualDisbursementDate,
+                                                                  ).toLocaleDateString('vi-VN')
+                                                                : '--'}
+                                                        </div>
                                                     </td>
 
                                                     <td className="px-4 py-3">
-                                                        <span className={`text-sm font-medium ${getStatusColorClass(stage.status, 'stage')}`}>
+                                                        <span
+                                                            className={`text-sm font-medium ${getStatusColorClass(
+                                                                stage.status,
+                                                                'stage',
+                                                            )}`}
+                                                        >
                                                             {getStatusLabel(stage.status, disbursementStageStatus)}
                                                         </span>
                                                     </td>
@@ -371,7 +430,10 @@ export default function CreateDisbursementRequest() {
                                         <p className="text-gray-700 font-medium">Tổng ST đã giải ngân đợt trước:</p>
                                         <div className="flex flex-col items-end">
                                             <span className="text-teal-600 font-semibold">
-                                                {disbursementStage?.totalActualDisbursementAmount?.toLocaleString('vi-VN')} ₫
+                                                {disbursementStage?.totalActualDisbursementAmount?.toLocaleString(
+                                                    'vi-VN',
+                                                )}{' '}
+                                                ₫
                                             </span>
                                         </div>
                                     </div>
@@ -412,11 +474,9 @@ export default function CreateDisbursementRequest() {
                         <h2 className="text-xl text-center font-semibold mb-4 bg-gradient-to-l from-gray-200 to-rose-100 px-3 py-2 rounded-tl-lg rounded-tr-lg">
                             Thông tin nhận giải ngân
                         </h2>
-                        <div className="flex gap-4 px-6 items-center">
-                            <div className="flex items-center w-1/2">
-                                <p className="text-gray-700 font-medium">Nhà Bảo Lãnh:</p>
-                            </div>
-                            <span className="ml-2 text-teal-600 font-semibold">
+                        <div className="grid grid-cols-3 gap-4 px-6">
+                            <p className="text-gray-700 font-medium col-span-1">Nhà Bảo Lãnh:</p>
+                            <span className="ml-2 text-teal-600 font-semibold w-1/2 col-span-2">
                                 {disbursementStage?.guarantee?.fullname}
                             </span>
                         </div>
@@ -448,23 +508,23 @@ export default function CreateDisbursementRequest() {
                                 value={guaranteeInfo.fullname}
                                 onChange={handleInputChange}
                             />
-
                         </div>
                         {disbursementStage?.stageActivity ? (
                             <div className="space-y-4">
                                 <div className="grid grid-cols-3 gap-4 px-6 items-center">
-                                    <p className="text-gray-700 font-medium col-span-1">
-                                        Mục đích sử dụng:
-                                    </p>
+                                    <p className="text-gray-700 font-medium col-span-1">Mục đích sử dụng:</p>
                                     <p className="text-teal-500 font-medium col-span-2">
                                         {disbursementStage?.stageActivity.description}
                                     </p>
                                 </div>
                                 <div className="grid grid-cols-3 gap-4 px-6 items-center pb-2">
-                                    <p className="text-gray-700 font-medium col-span-1">
-                                        Trạng thái:
-                                    </p>
-                                    <p className={`col-span-2 ${getStatusColorClass(disbursementStage?.stageActivity.status, 'activity')}`}>
+                                    <p className="text-gray-700 font-medium col-span-1">Trạng thái:</p>
+                                    <p
+                                        className={`col-span-2 ${getStatusColorClass(
+                                            disbursementStage?.stageActivity.status,
+                                            'activity',
+                                        )}`}
+                                    >
                                         {getStatusLabel(disbursementStage?.stageActivity.status, activityStatus)}
                                     </p>
                                 </div>
@@ -475,8 +535,6 @@ export default function CreateDisbursementRequest() {
                             </div>
                         )}
                     </div>
-
-
                 </div>
 
                 <div className="p-6 border rounded-lg shadow-md bg-white">
@@ -518,7 +576,9 @@ export default function CreateDisbursementRequest() {
                                                 placeholder="Nhập số tiền"
                                                 className="pr-6"
                                             />
-                                            <span className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500">₫</span>
+                                            <span className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500">
+                                                ₫
+                                            </span>
                                         </div>
                                     </TableCell>
                                     <TableCell className="p-3 border border-slate-300">
