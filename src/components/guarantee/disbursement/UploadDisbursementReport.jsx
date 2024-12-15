@@ -255,7 +255,6 @@ export default function UploadDisbursementReport() {
                                                                 disabled={isUpdated}
                                                             />
                                                             <span className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500">₫</span>
-
                                                         </div>
                                                     )}
                                                 </TableCell>

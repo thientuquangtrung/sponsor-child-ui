@@ -34,7 +34,6 @@ const CanceledEventRegistrationDialog = ({
     calculateRefundData
 }) => {
     const [selectedOption, setSelectedOption] = useState(null);
-    console.log(registrationData);
     const [updatePhysicalDonation] = useUpdatePhysicalDonationMutation();
     const {
         control,
@@ -51,6 +50,8 @@ const CanceledEventRegistrationDialog = ({
             }
         }
     });
+    const adminConfig = JSON.parse(localStorage.getItem('adminConfigs'))
+    const refundPercentCancelled = adminConfig['Visit_RefundPercentage_Cancelled'] || 100;
     const reloadPage = () => {
         window.location.reload();
     };
@@ -135,11 +136,12 @@ const CanceledEventRegistrationDialog = ({
                 <div className="space-y-4">
                     <div className="bg-blue-100 rounded-lg p-4">
                         <p className="text-gray-700 mb-2">
-                            Bạn được hoàn lại 100% số tiền mà bạn đã thanh toán là: <span className="font-semibold text-teal-500">    {calculateRefundData?.totalRefundAmount?.toLocaleString('vi-VN')} VNĐ</span>.
+                            Bạn được hoàn lại số tiền mà bạn đã thanh toán là: <span className="font-semibold text-teal-500">    {calculateRefundData?.totalRefundAmount?.toLocaleString('vi-VN')} VNĐ</span>.
                         </p>
                         {calculateRefundData?.visitTripRegistration?.refundAmount > 0 && (
                             <p className="text-gray-700">
-                                - Hoàn lại phí đăng ký chuyến thăm: <span className="font-semibold text-teal-500">{calculateRefundData.visitTripRegistration.refundAmount.toLocaleString('vi-VN')} VNĐ</span>
+                                {`- Hoàn lại ${refundPercentCancelled}% phí đăng ký chuyến thăm:`}
+                                <span className="font-semibold text-teal-500">{calculateRefundData.visitTripRegistration.refundAmount.toLocaleString('vi-VN')} VNĐ</span>
                             </p>
                         )}
                         {calculateRefundData?.physicalDonations?.length > 0 && (

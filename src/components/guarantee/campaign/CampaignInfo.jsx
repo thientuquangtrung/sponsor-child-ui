@@ -14,7 +14,7 @@ import useLocationVN from '@/hooks/useLocationVN';
 import ChildInfo from '@/components/guarantee/campaign/ChildInfo';
 import DisbursementInfo from '@/components/guarantee/campaign/DisbursementInfo';
 import CampaignDetailInfo from '@/components/guarantee/campaign/CampaignDetailInfo';
-import addCampaignSchema from '@/components/schema/addCampaignSchema';
+import getAddCampaignSchema from '@/components/schema/addCampaignSchema';
 import { formatNumber } from '@/lib/utils';
 import { UPLOAD_FOLDER, UPLOAD_NAME, uploadFile, uploadMultipleFiles } from '@/lib/cloudinary';
 
@@ -39,7 +39,7 @@ const CampaignInfo = () => {
     } = useLocationVN();
 
     const form = useForm({
-        resolver: zodResolver(addCampaignSchema),
+        resolver: zodResolver(getAddCampaignSchema()),
         defaultValues: {
             childName: '',
             childBirthYear: new Date().getFullYear() - 1,
