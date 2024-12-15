@@ -34,36 +34,44 @@ const DonationInformation = () => {
     const [cancelDonation, { isLoading: isCancellingDonation }] = useCancelDonationByOrderCodeMutation();
     const [isTermsDialogOpen, setIsTermsDialogOpen] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const createFormSchema = () => {
+    const adminConfig = JSON.parse(localStorage.getItem('adminConfigs'));
+    const minimumDonationAmount = adminConfig['Donation_MinimumAmount'] || 10000;
+    const maximumDonationAmount = adminConfig['Donation_MaximumAmount'] || 500000000;
+
+    const createFormSchema = (campaign) => {
         return z.object({
-            amount: z.string().refine(
-                (val) => {
+            amount: z.string()
+                .refine((val) => {
+                    const numericAmount = parseInt(val.replace(/\D/g, ''), 10);
+                    return numericAmount >= minimumDonationAmount;
+                }, {
+                    message: `Số tiền ủng hộ tối thiểu là ${minimumDonationAmount.toLocaleString('vi-VN')} VND.`,
+                })
+                .refine((val) => {
+                    const numericAmount = parseInt(val.replace(/\D/g, ''), 10);
+                    return numericAmount <= maximumDonationAmount;
+                }, {
+                    message: `Số tiền ủng hộ không được vượt quá ${maximumDonationAmount.toLocaleString('vi-VN')} VND.`,
+                })
+                .refine((val) => {
                     const numericAmount = parseInt(val.replace(/\D/g, ''), 10);
                     if (!campaign) return true;
 
                     const remainingTarget = campaign.targetAmount - campaign.raisedAmount;
-                    return numericAmount >= 10000 && numericAmount <= remainingTarget;
-                },
-                (val) => {
-                    const numericAmount = parseInt(val.replace(/\D/g, ''), 10);
-                    const remainingTarget = campaign?.targetAmount - campaign?.raisedAmount;
-
-                    if (numericAmount < 10000) {
-                        return {
-                            message: 'Số tiền ủng hộ tối thiểu là 10,000 VND',
-                        };
-                    }
-                    return {
-                        message: `Số tiền ủng hộ không được vượt quá ${remainingTarget?.toLocaleString('vi-VN')} VND`,
-                    };
-                },
-            ),
+                    return numericAmount <= remainingTarget;
+                }, {
+                    message: (val) => {
+                        const remainingTarget = campaign?.targetAmount - campaign?.raisedAmount;
+                        return `Số tiền ủng hộ không được vượt quá số tiền còn thiếu (${remainingTarget?.toLocaleString('vi-VN')} VND) của chiến dịch.`;
+                    },
+                }),
             message: z.string().optional(),
             name: z.string().min(1, 'Vui lòng nhập họ và tên'),
             email: z.string().email('Email không hợp lệ'),
             anonymous: z.boolean().optional(),
         });
     };
+
     const formSchema = createFormSchema();
     const form = useForm({
         resolver: zodResolver(formSchema),
@@ -148,7 +156,7 @@ const DonationInformation = () => {
         if (campaign) {
             const remainingTarget = campaign.targetAmount - campaign.raisedAmount;
             if (amountValue > remainingTarget) {
-                toast.error(`Số tiền ủng hộ không được vượt quá ${remainingTarget.toLocaleString('vi-VN')} VND`);
+                toast.error(`Số tiền ủng hộ không được vượt quá số tiền còn thiếu (${remainingTarget?.toLocaleString('vi-VN')} VND) của chiến dịch.`);
                 return;
             }
         }

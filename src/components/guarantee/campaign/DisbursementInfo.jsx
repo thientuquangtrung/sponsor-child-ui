@@ -9,7 +9,7 @@ import { DatePicker } from "@/components/ui/date-picker";
 import { Plus, Trash2 } from 'lucide-react';
 import { formatDateForServer, setLocalDateWithoutTime } from '@/lib/utils';
 
-const DisbursementInfo = ({ campaignType }) => {
+const DisbursementInfo = ({ campaignType, adminConfig }) => {
     const { control, watch, setValue, formState: { errors } } = useFormContext();
     const plannedStartDate = watch('plannedStartDate');
     const plannedEndDate = watch('plannedEndDate');

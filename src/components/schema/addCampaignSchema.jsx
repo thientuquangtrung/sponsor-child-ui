@@ -1,14 +1,14 @@
 import * as z from 'zod';
 
-const getAddCampaignSchema = (adminConfig) => {
-
+const getAddCampaignSchema = () => {
+    const adminConfig = JSON.parse(localStorage.getItem('adminConfigs'))
     const addCampaignSchema = z.object({
         childName: z.string().min(1, "Vui lòng nhập tên trẻ."),
         childBirthYear: z.number({
             required_error: "Vui lòng nhập năm sinh",
             invalid_type_error: "Năm sinh không hợp lệ"
         })
-            .min(new Date().getFullYear() - 16, "Trẻ phải dưới 17 tuổi")
+            .min(new Date().getFullYear() - adminConfig.Campaign_ChildAgeLimit, `Trẻ phải dưới ${adminConfig.Campaign_ChildAgeLimit} tuổi`)
             .max(new Date().getFullYear(), "Năm sinh không hợp lệ"),
         childGender: z.number().min(0).max(1),
         childLocation: z.string().min(1, "Vui lòng nhập địa chỉ trẻ."),
@@ -101,6 +101,36 @@ const getAddCampaignSchema = (adminConfig) => {
             });
         }
         const stages = data.disbursementStages;
+
+        if (data.campaignType === 0) {
+            const targetAmount = parseFloat(data.targetAmount.replace(/,/g, ''));
+            stages.forEach((stage, index) => {
+                const stagePercentage = (stage.disbursementAmount / targetAmount) * 100;
+                if (stagePercentage > adminConfig.Disbursement_MaxStagePercentage) {
+                    ctx.addIssue({
+                        code: z.ZodIssueCode.custom,
+                        message: `Giai đoạn ${index + 1} không được vượt quá ${adminConfig.Disbursement_MaxStagePercentage}% tổng số tiền`,
+                        path: ["disbursementStages", index, "disbursementAmount"],
+                    });
+                }
+            });
+        }
+
+        if (data.campaignType === 1 && stages.length !== adminConfig.Disbursement_EmergencyStageCount) {
+            ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: `Chiến dịch khẩn cấp phải có ${adminConfig.Disbursement_EmergencyStageCount} giai đoạn giải ngân`,
+                path: ["disbursementStages"],
+            });
+        }
+        if (data.campaignType === 0 && stages.length < adminConfig.Disbursement_MinStages) {
+            ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: `Chiến dịch nuôi trẻ phải có ít nhất ${adminConfig.Disbursement_MinStages} giai đoạn giải ngân`,
+                path: ["disbursementStages"],
+            });
+        }
+
         for (let i = 1; i < stages.length; i++) {
             const daysDifference = (stages[i].scheduledDate.getTime() - stages[i - 1].scheduledDate.getTime()) / (1000 * 3600 * 24);
             if (daysDifference < adminConfig.Disbursement_StageMinGapDays) {

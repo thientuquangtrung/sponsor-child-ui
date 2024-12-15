@@ -39,7 +39,7 @@ const CampaignInfo = () => {
     } = useLocationVN();
 
     const form = useForm({
-        resolver: zodResolver(getAddCampaignSchema(JSON.parse(localStorage.getItem('AdminConfigs')))),
+        resolver: zodResolver(getAddCampaignSchema()),
         defaultValues: {
             childName: '',
             childBirthYear: new Date().getFullYear() - 1,

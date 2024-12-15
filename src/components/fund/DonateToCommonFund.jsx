@@ -18,16 +18,31 @@ import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/compone
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useCancelReserveFundSourceTransactionByOrderCodeMutation, useCreateIndividualFundSourceMutation } from '@/redux/fund/fundApi';
 
+const adminConfig = JSON.parse(localStorage.getItem('adminConfigs'));
+const minimumDonationAmount = adminConfig['Donation_MinimumAmount'] || 10000;
+const maximumDonationAmount = adminConfig['Donation_MaximumAmount'] || 500000000;
+
 const formSchema = z.object({
-    amount: z.string().refine((val) => {
-        const numericValue = parseInt(val.replace(/[.,]/g, ''), 10);
-        return numericValue >= 10000;
-    }, {
-        message: 'Số tiền ủng hộ tối thiểu là 10,000 VND',
-    }),
+    amount: z.string()
+        .refine((val) => {
+            const numericValue = parseInt(val.replace(/[.,]/g, ''), 10);
+            return numericValue >= minimumDonationAmount;
+        }, {
+            message: `Số tiền ủng hộ tối thiểu là ${minimumDonationAmount.toLocaleString('vi-VN')} VND.`,
+        })
+        .refine((val) => {
+            const numericValue = parseInt(val.replace(/[.,]/g, ''), 10);
+            return numericValue <= maximumDonationAmount;
+        }, {
+            message: `Số tiền ủng hộ tối đa cho 1 giao dịch là ${maximumDonationAmount.toLocaleString('vi-VN')} VND.`,
+        }),
     message: z.string().optional(),
     anonymous: z.boolean().optional(),
 });
+
+
+
+
 
 const DonateToCommonFund = () => {
     const navigate = useNavigate();
