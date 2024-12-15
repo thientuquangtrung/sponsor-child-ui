@@ -185,7 +185,7 @@ const CampaignDetail = () => {
                                     <strong>Tuổi:</strong> {new Date().getFullYear() - campaign?.childBirthYear}
                                 </p>
                                 <p className="text-lg text-gray-700 mt-2">
-                                    <strong>Giới tính:</strong> {campaign?.childGender === 1 ? 'Nam' : 'Nữ'}
+                                    <strong>Giới tính:</strong> {campaign?.childGender === 0 ? 'Nam' : 'Nữ'}
                                 </p>
                             </div>
                             <p className="text-lg text-gray-700 mt-2">
