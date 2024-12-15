@@ -23,12 +23,12 @@ export default function UpdateDisbursementRequest({ disbursementRequest }) {
         if (disbursementRequest) {
             setFormData({
                 disbursementReports:
-                    disbursementRequest.disbursementReports[0].disbursementReportDetails.map((detail) => ({
+                    disbursementRequest.disbursementReports.find(drp => drp.isCurrent)?.disbursementReportDetails.map((detail) => ({
                         ...detail,
                         amountSpent: formatAmount(detail.amountSpent.toString()),
                     })) || [],
                 totalAmountUsed: calculateTotalAmountUsed(
-                    disbursementRequest.disbursementReports[0].disbursementReportDetails || [],
+                    disbursementRequest.disbursementReports.find(drp => drp.isCurrent)?.disbursementReportDetails || [],
                 ),
             });
         }
