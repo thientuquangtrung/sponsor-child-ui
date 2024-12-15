@@ -391,7 +391,6 @@ export default function CreateDisbursementRequest() {
                                         </span>
                                     </div> */}
                                 </div>
-
                             </div>
                         </div>
 
@@ -401,7 +400,6 @@ export default function CreateDisbursementRequest() {
                                 {disbursementStage?.actualDisbursementAmount?.toLocaleString('vi-VN')} ₫
                             </span>
                         </div>
-
                         <div className="flex items-center justify-between w-full px-4">
                             <p className="text-gray-700 font-medium">Ngày giải ngân dự kiến:</p>
                             <span className="text-teal-600  font-semibold">

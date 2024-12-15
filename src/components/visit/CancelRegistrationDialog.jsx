@@ -37,14 +37,19 @@ const CancelRegistrationDialog = ({
     visitCost
 }) => {
     const needsRefund = registrationData?.status === 1;
-
+    const adminConfig = JSON.parse(localStorage.getItem('adminConfigs'))
+    const refundPercentOpenRegistration = adminConfig['Visit_RefundPercentage_OpenRegistration'] || 85;
+    const refundPercentClosedRegistration = adminConfig['Visit_RefundPercentage_ClosedRegistration'] || 65;
     const calculateRefundAmount = () => {
         if (!needsRefund || !visitCost) return 0;
 
-        const refundPercentage = eventStatus === 1 ? 0.85 : eventStatus === 2 ? 0.65 : 0;
+        const refundPercentage = eventStatus === 1
+            ? refundPercentOpenRegistration / 100
+            : eventStatus === 2
+                ? refundPercentClosedRegistration / 100
+                : 0;
         return visitCost * refundPercentage;
     };
-
     const formSchema = needsRefund
         ? cancelFormSchema
         : cancelFormSchema.omit({ bankAccount: true });
@@ -123,7 +128,7 @@ const CancelRegistrationDialog = ({
                                                     Số tiền đã thanh toán: <span className="font-semibold">{visitCost?.toLocaleString('vi-VN')} VNĐ</span>
                                                 </p>
                                                 <p className="text-gray-700">
-                                                    Số tiền sẽ được hoàn lại ({eventStatus === 1 ? '85%' : '65%'}):
+                                                    Số tiền sẽ được hoàn lại ({eventStatus === 1 ? `${refundPercentOpenRegistration}%` : `${refundPercentClosedRegistration}%`}):
                                                     <span className="font-semibold text-teal-600 ml-2">
                                                         {refundAmount.toLocaleString('vi-VN')} VNĐ
                                                     </span>

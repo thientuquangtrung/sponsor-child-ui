@@ -2,14 +2,33 @@ import { Outlet, useNavigate } from 'react-router-dom';
 import SidebarGuarantee from '@/components/navigation/SidebarGuarantee';
 import icon from '@/assets/images/no-access.png';
 import { useSelector } from 'react-redux';
-
 import HeaderSidebar from '@/components/navigation/HeaderSidebar';
-
 import { Button } from '@/components/ui/button';
 import { Home } from 'lucide-react';
+import FETCH_ADMIN_CONFIGS from '@/config/adminConfig';
+import { useGetAdminConfigQuery } from '@/redux/adminConfig/adminConfigApi';
 
 export function GuaranteeLayout() {
     const { user } = useSelector((state) => state.auth);
+    const { data } = useGetAdminConfigQuery();
+    if (data && data.length > 0) {
+        const adminConfigs = data.reduce((acc, val) => {
+            return {
+                ...acc,
+                [val.configKey]: +val.configValue
+            }
+        }, {})
+        localStorage.setItem("adminConfigs", JSON.stringify(adminConfigs));
+    }
+    else {
+        const adminConfigs = FETCH_ADMIN_CONFIGS.reduce((acc, val) => {
+            return {
+                ...acc,
+                [val.configKey]: +val.configValue
+            }
+        }, {})
+        localStorage.setItem("adminConfigs", JSON.stringify(adminConfigs));
+    }
     const navigate = useNavigate();
 
     if (!user) navigate('/home', { replace: true });

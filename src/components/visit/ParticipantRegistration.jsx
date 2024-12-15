@@ -31,7 +31,10 @@ const ParticipantRegistration = ({
     const [showCancelDialog, setShowCancelDialog] = useState(false);
     const [isPaymentClosed, setIsPaymentClosed] = useState(false);
     const [hasOpenedPayment, setHasOpenedPayment] = useState(false);
-
+    const adminConfig = JSON.parse(localStorage.getItem('adminConfigs'))
+    const refundPercentOpenRegistration = adminConfig['Visit_RefundPercentage_OpenRegistration'] || 85;
+    const refundPercentClosedRegistration = adminConfig['Visit_RefundPercentage_ClosedRegistration'] || 65;
+    const refundPercentCancelled = adminConfig['Visit_RefundPercentage_Cancelled'] || 100;
     const [payOSConfig, setPayOSConfig] = useState({
         RETURN_URL: window.location.origin,
         ELEMENT_ID: 'payment-container',
@@ -239,11 +242,15 @@ const ParticipantRegistration = ({
                             <ul className="space-y-2 text-gray-700">
                                 <li className="flex items-center gap-2">
                                     <Calendar className="w-5 h-5 shrink-0 text-teal-500" />
-                                    <span>Hủy trước ngày kết thúc mở đăng ký chuyến thăm: Hoàn lại 85% phí tham gia</span>
+                                    <span>
+                                        {`Hủy trước ngày kết thúc mở đăng ký chuyến thăm: Hoàn lại ${refundPercentOpenRegistration}% phí tham gia`}
+                                    </span>
                                 </li>
                                 <li className="flex items-center gap-2">
                                     <Calendar className="w-5 h-5 shrink-0 text-teal-500" />
-                                    <span>Hủy sau ngày kết thúc mở đăng ký chuyến thăm: Hoàn lại 65% phí tham gia</span>
+                                    <span>
+                                        {`Hủy sau ngày kết thúc mở đăng ký chuyến thăm: Hoàn lại ${refundPercentClosedRegistration}% phí tham gia`}
+                                    </span>
                                 </li>
                                 <li className="flex items-center gap-2">
                                     <CircleAlert className="w-5 h-5 shrink-0 text-teal-500" />
@@ -251,10 +258,13 @@ const ParticipantRegistration = ({
                                 </li>
                                 <li className="flex items-center gap-2">
                                     <CircleAlert className="w-5 h-5 shrink-0 text-teal-500" />
-                                    <span>Nếu chuyến thăm bị hủy, bạn được quyền hoàn đủ tiền hoặc góp số tiền đó vào quỹ chung.</span>
+                                    <span>
+                                        {`Nếu chuyến thăm bị hủy, bạn được quyền hoàn  ${refundPercentCancelled}% phí tham gia hoặc góp số tiền đó vào quỹ chung.`}
+                                    </span>
                                 </li>
                             </ul>
                         </div>
+
                     </div>
 
                     <div className="flex justify-end gap-3 mt-4">
