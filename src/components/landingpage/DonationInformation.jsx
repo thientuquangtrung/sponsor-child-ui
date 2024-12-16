@@ -379,7 +379,8 @@ const DonationInformation = () => {
                                     <FormItem>
                                         <FormLabel className="font-normal text-md text-black">Họ và tên</FormLabel>
                                         <FormControl>
-                                            <Input type="text" placeholder="Nhập họ và tên" {...field} />
+                                            <Input type="text" placeholder="Nhập họ và tên" {...field}
+                                                disabled />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>

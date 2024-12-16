@@ -163,11 +163,15 @@ export default function UpdateDisbursementRequest({ disbursementRequest }) {
                                     />
                                 </TableCell>
                                 <TableCell className="p-3 border border-slate-300">
-                                    <Input
-                                        type="text"
-                                        value={detail.amountSpent}
-                                        onChange={(e) => handleReportDetailChange(index, 'amountSpent', e.target.value)}
-                                    />
+                                    <div className="relative">
+
+                                        <Input
+                                            type="text"
+                                            value={detail.amountSpent}
+                                            onChange={(e) => handleReportDetailChange(index, 'amountSpent', e.target.value)}
+                                        />
+                                        <span className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500">₫</span>
+                                    </div>
                                 </TableCell>
                                 <TableCell className="p-3 border border-slate-300">
                                     {formData.disbursementReports.length > 1 && (
