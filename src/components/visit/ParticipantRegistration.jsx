@@ -243,13 +243,13 @@ const ParticipantRegistration = ({
                                 <li className="flex items-center gap-2">
                                     <Calendar className="w-5 h-5 shrink-0 text-teal-500" />
                                     <span>
-                                        {`Hủy trước ngày kết thúc mở đăng ký chuyến thăm: Hoàn lại ${refundPercentOpenRegistration}% phí tham gia`}
+                                        {`Hủy trước ngày đóng đăng ký chuyến thăm: Hoàn lại ${refundPercentOpenRegistration}% phí tham gia`}
                                     </span>
                                 </li>
                                 <li className="flex items-center gap-2">
                                     <Calendar className="w-5 h-5 shrink-0 text-teal-500" />
                                     <span>
-                                        {`Hủy sau ngày kết thúc mở đăng ký chuyến thăm: Hoàn lại ${refundPercentClosedRegistration}% phí tham gia`}
+                                        {`Hủy sau ngày đóng đăng ký chuyến thăm: Hoàn lại ${refundPercentClosedRegistration}% phí tham gia`}
                                     </span>
                                 </li>
                                 <li className="flex items-center gap-2">
