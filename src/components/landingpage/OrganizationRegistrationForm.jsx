@@ -261,6 +261,27 @@ const OrganizationRegistrationForm = ({ onSubmit }) => {
 
             <Card className="mb-6">
                 <CardContent className="bg-white rounded-sm p-4 shadow-sm">
+                    <Label htmlFor="phone" className="block text-black font-semibold mb-1">
+                        Điện thoại tổ chức <span className="text-red-600">*</span>
+                    </Label>
+                    <Input
+                        id="phone"
+                        type="tel"
+                        placeholder="Số điện thoại"
+                        className="w-full border-none"
+                        pattern="[0-9]*"
+                        value={organizationData.organizationPhoneNumber}
+                        onChange={(e) =>
+                            setOrganizationData({ ...organizationData, organizationPhoneNumber: e.target.value })
+                        }
+                        onInput={(e) => (e.target.value = e.target.value.replace(/[^0-9]/g, ''))}
+                    />
+                    <hr className="w-[50%] border-black border-b-[1px]" />
+                </CardContent>
+            </Card>
+
+            <Card className="mb-6">
+                <CardContent className="bg-white rounded-sm p-4 shadow-sm">
                     <Label htmlFor="activityIntroduction" className="block text-black font-semibold mb-1">
                         Thông tin giới thiệu hoạt động, kinh nghiệm, kế hoạch thiện nguyện của tổ chức (Đường dẫn
                         Facebook, website, youtube, instagram, tiktok . . .) <span className="text-red-600">*</span>
@@ -346,26 +367,7 @@ const OrganizationRegistrationForm = ({ onSubmit }) => {
                 </CardContent>
             </Card>
 
-            <Card className="mb-6">
-                <CardContent className="bg-white rounded-sm p-4 shadow-sm">
-                    <Label htmlFor="phone" className="block text-black font-semibold mb-1">
-                        Điện thoại <span className="text-red-600">*</span>
-                    </Label>
-                    <Input
-                        id="phone"
-                        type="tel"
-                        placeholder="Số điện thoại"
-                        className="w-full border-none"
-                        pattern="[0-9]*"
-                        value={organizationData.organizationPhoneNumber}
-                        onChange={(e) =>
-                            setOrganizationData({ ...organizationData, organizationPhoneNumber: e.target.value })
-                        }
-                        onInput={(e) => (e.target.value = e.target.value.replace(/[^0-9]/g, ''))}
-                    />
-                    <hr className="w-[50%] border-black border-b-[1px]" />
-                </CardContent>
-            </Card>
+
 
             <Card className="mb-6">
                 <CardContent className="bg-white rounded-sm p-4 shadow-sm">

@@ -132,6 +132,11 @@ const DonateToCommonFund = () => {
     };
 
     const onSubmit = async (data) => {
+        if (!user && !data.isAnonymous) {
+            toast.warning('Vui lòng đăng nhập nếu ủng hộ công khai');
+            return;
+        }
+
         setIsSubmitting(true);
 
         const amountValue = parseInt(amount.replace(/,/g, ''), 10);
