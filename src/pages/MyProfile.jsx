@@ -13,11 +13,13 @@ import { uploadFile, UPLOAD_FOLDER, UPLOAD_NAME } from '@/lib/cloudinary';
 import ButtonLoading from '@/components/ui/loading-button';
 import { toast } from 'sonner';
 import { UpdateUser } from '@/redux/auth/authActionCreators';
+import { DatePicker } from '@/components/ui/date-picker';
+import { formatDateForServer, setLocalDateWithoutTime } from '@/lib/utils';
 
 const profileSchema = z.object({
     fullname: z.string().min(1, 'Tên tài khoản là bắt buộc'),
     email: z.string().email('Email không hợp lệ'),
-    dateOfBirth: z.string().optional(),
+    dateOfBirth: z.date().optional(),
     phoneNumber: z.string().min(10, 'Số điện thoại phải có ít nhất 10 số').optional(),
     address: z.string().min(1, 'Địa chỉ là bắt buộc'),
     bio: z.string().min(1, 'Giới thiệu bản thân là bắt buộc'),
@@ -138,9 +140,8 @@ export default function MyProfile() {
                 <h2 className="text-3xl font-semibold mb-8">Thông tin cá nhân</h2>
                 <div className="relative flex flex-col items-center space-y-4">
                     <div
-                        className={`relative border-4 border-dashed ${
-                            dragging ? 'border-primary bg-white' : 'border-secondary bg-white'
-                        } rounded-full p-4 cursor-pointer overflow-hidden flex items-center justify-center transition-all`}
+                        className={`relative border-4 border-dashed ${dragging ? 'border-primary bg-white' : 'border-secondary bg-white'
+                            } rounded-full p-4 cursor-pointer overflow-hidden flex items-center justify-center transition-all`}
                         onDragOver={handleDragOver}
                         onDragLeave={handleDragLeave}
                         onDrop={handleDrop}
@@ -202,13 +203,22 @@ export default function MyProfile() {
                                 control={form.control}
                                 name="dateOfBirth"
                                 render={({ field }) => (
-                                    <FormItem>
+                                    <FormItem className='flex flex-col'>
                                         <FormLabel className="text-xl">Ngày sinh</FormLabel>
                                         <FormControl>
-                                            <Input
+                                            {/* <Input
                                                 type="text"
                                                 className="text-lg h-14 border-2 border-primary"
                                                 {...field}
+                                            /> */}
+                                            <DatePicker
+                                                date={setLocalDateWithoutTime(field.value)}
+                                                onDateSelect={(date) => {
+                                                    const formattedDate = formatDateForServer(date);
+                                                    field.onChange(new Date(formattedDate));
+                                                }}
+                                                variant="outline"
+                                                className="text-lg h-14 border-2 border-primary"
                                             />
                                         </FormControl>
                                         <FormMessage />

@@ -29,7 +29,7 @@ const DonationList = ({ donations, currentPage, totalPages, onPageChange }) => {
 
         const normalizedSearchTerm = normalizeString(value);
         const filtered = donations.filter((donation) =>
-            normalizeString(donation.donorName).includes(normalizedSearchTerm),
+            normalizeString(donation.donorName).includes(normalizedSearchTerm) && !donation.isAnonymous,
         );
         setFilteredDonations(filtered);
     };
@@ -108,9 +108,8 @@ const DonationList = ({ donations, currentPage, totalPages, onPageChange }) => {
                                 {filteredDonations.map((donation, index) => (
                                     <tr
                                         key={donation.donationID}
-                                        className={`border-b border-gray-200 ${
-                                            index % 2 ? 'bg-white' : 'bg-zinc-50'
-                                        } hover:bg-zinc-100`}
+                                        className={`border-b border-gray-200 ${index % 2 ? 'bg-white' : 'bg-zinc-50'
+                                            } hover:bg-zinc-100`}
                                     >
                                         <td className="py-3 px-4">
                                             {donation.isAnonymous ? 'Ủng hộ ẩn danh' : donation.donorName}
@@ -145,11 +144,10 @@ const DonationList = ({ donations, currentPage, totalPages, onPageChange }) => {
                                     <button
                                         key={page}
                                         onClick={() => handlePageChange(page)}
-                                        className={`px-3 py-1 rounded ${
-                                            currentPage === page
-                                                ? 'bg-teal-600 text-white'
-                                                : 'bg-white text-gray-700 hover:bg-gray-100'
-                                        }`}
+                                        className={`px-3 py-1 rounded ${currentPage === page
+                                            ? 'bg-teal-600 text-white'
+                                            : 'bg-white text-gray-700 hover:bg-gray-100'
+                                            }`}
                                     >
                                         {page}
                                     </button>
